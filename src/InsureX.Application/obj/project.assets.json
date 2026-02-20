@@ -1,11 +1,49 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0": {
+      "InsureX.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/InsureX.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/InsureX.Domain.dll": {}
+        }
+      },
+      "InsureX.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "InsureX.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/InsureX.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/InsureX.Infrastructure.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "InsureX.Domain/1.0.0": {
+      "type": "project",
+      "path": "../InsureX.Domain/InsureX.Domain.csproj",
+      "msbuildProject": "../InsureX.Domain/InsureX.Domain.csproj"
+    },
+    "InsureX.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../InsureX.Infrastructure/InsureX.Infrastructure.csproj",
+      "msbuildProject": "../InsureX.Infrastructure/InsureX.Infrastructure.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0": [
+      "InsureX.Domain >= 1.0.0",
+      "InsureX.Infrastructure >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\cluiz\\.nuget\\packages\\": {},
@@ -39,7 +77,14 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj": {
+              "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj"
+            },
+            "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

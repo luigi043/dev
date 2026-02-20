@@ -1,0 +1,16 @@
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\bin\Debug\net8.0\InsureX.Infrastructure.deps.json
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\bin\Debug\net8.0\InsureX.Infrastructure.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\bin\Debug\net8.0\InsureX.Infrastructure.pdb
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\bin\Debug\net8.0\InsureX.Domain.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\bin\Debug\net8.0\InsureX.Domain.pdb
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.AssemblyInfo.cs
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.sourcelink.json
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX..BC1D432C.Up2Date
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\refint\InsureX.Infrastructure.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\InsureX.Infrastructure.pdb
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Infrastructure\obj\Debug\net8.0\ref\InsureX.Infrastructure.dll

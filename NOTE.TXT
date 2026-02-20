@@ -1,0 +1,5 @@
+cd src/InsureX.Web
+dotnet run
+
+cd src/InsureX.Api
+dotnet run

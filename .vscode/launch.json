@@ -1,0 +1,48 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch InsureX.Web",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/InsureX.Web/bin/Debug/net8.0/InsureX.Web.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/InsureX.Web",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/src/InsureX.Web/Views"
+            }
+        },
+        {
+            "name": "Launch InsureX.Api",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/InsureX.Api/bin/Debug/net8.0/InsureX.Api.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/InsureX.Api",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Web & API",
+            "configurations": ["Launch InsureX.Web", "Launch InsureX.Api"]
+        }
+    ]
+}

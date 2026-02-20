@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\InsureX.Ui.Shell.Rcl.props" />
+</Project>
