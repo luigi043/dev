@@ -1,0 +1,115 @@
+@model InsureX.Application.DTOs.CreateAssetDto
+
+@{
+    ViewData["Title"] = "Create Asset";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Create New Asset</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Asset Information</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AssetTag" class="form-label">Asset Tag *</label>
+                        <input asp-for="AssetTag" class="form-control" />
+                        <span asp-validation-for="AssetTag" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Make" class="form-label">Make *</label>
+                        <input asp-for="Make" class="form-control" />
+                        <span asp-validation-for="Make" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Model" class="form-label">Model *</label>
+                        <input asp-for="Model" class="form-control" />
+                        <span asp-validation-for="Model" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Year" class="form-label">Year</label>
+                        <input asp-for="Year" class="form-control" type="number" />
+                        <span asp-validation-for="Year" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="SerialNumber" class="form-label">Serial Number</label>
+                        <input asp-for="SerialNumber" class="form-control" />
+                        <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="VIN" class="form-label">VIN</label>
+                        <input asp-for="VIN" class="form-control" maxlength="17" />
+                        <span asp-validation-for="VIN" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="InsuredValue" class="form-label">Insured Value</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="InsuredValue" class="form-control" type="number" step="0.01" />
+                        </div>
+                        <span asp-validation-for="InsuredValue" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="PurchaseDate" class="form-label">Purchase Date</label>
+                        <input asp-for="PurchaseDate" class="form-control" type="date" />
+                        <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="LastInspectionDate" class="form-label">Last Inspection</label>
+                        <input asp-for="LastInspectionDate" class="form-control" type="date" />
+                        <span asp-validation-for="LastInspectionDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label asp-for="Notes" class="form-label">Notes</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create Asset
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

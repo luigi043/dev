@@ -1,113 +1,259 @@
-@model DashboardViewModel
+@model InsureX.Application.DTOs.DashboardViewModel
 
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container-fluid">
-    <h1 class="h3 mb-4">Dashboard</h1>
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="refreshDashboard">
+        <i class="fas fa-sync fa-sm text-white-50"></i> Refresh Data
+    </a>
+</div>
 
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Assets</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalAssets</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
+<!-- Content Row - Stats Cards -->
+<div class="row">
+    <!-- Total Assets Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Assets</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalAssets">@Model.TotalAssets</div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Active Policies</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ActivePolicies</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Compliance Rate
-                            </div>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@Model.ComplianceRate%</div>
-                                </div>
-                                <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar" 
-                                             style="width: @Model.ComplianceRate%" 
-                                             aria-valuenow="@Model.ComplianceRate" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
+                    <div class="col-auto">
+                        <i class="fas fa-boxes fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Alerts</h6>
+    <!-- Active Policies Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Active Policies</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="activePolicies">@Model.ActivePolicies</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-contract fa-2x text-gray-300"></i>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Asset</th>
-                                    <th>Alert Type</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var alert in Model.RecentAlerts)
-                                {
-                                    <tr>
-                                        <td>@alert.AssetName</td>
-                                        <td>@alert.Type</td>
-                                        <td>@alert.Date.ToShortDateString()</td>
-                                        <td>
-                                            <span class="badge @(alert.Status == "Critical" ? "bg-danger" : "bg-warning")">
-                                                @alert.Status
-                                            </span>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiring Policies Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Expiring Soon (30 days)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ExpiringPolicies</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Rate Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Compliance Rate</div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="complianceRate">@Model.ComplianceRate%</div>
+                            </div>
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+                                    <div class="progress-bar bg-warning" role="progressbar"
+                                         style="width: @Model.ComplianceRate%"
+                                         aria-valuenow="@Model.ComplianceRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Content Row - Charts -->
+<div class="row">
+    <!-- Assets by Status Chart -->
+    <div class="col-xl-6 col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Assets by Status</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="assetsByStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Alerts -->
+    <div class="col-xl-6 col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Alerts</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Alert Type</th>
+                                <th>Date</th>
+                                <th>Severity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var alert in Model.RecentAlerts)
+                            {
+                                <tr>
+                                    <td>@alert.AssetName</td>
+                                    <td>@alert.AlertType</td>
+                                    <td>@alert.Date.ToShortDateString()</td>
+                                    <td>
+                                        <span class="badge bg-@alert.Severity text-white">
+                                            @alert.Severity
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row - Recent Activities -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Entity</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var activity in Model.RecentActivities)
+                            {
+                                <tr>
+                                    <td>@activity.User</td>
+                                    <td>@activity.Action</td>
+                                    <td>@activity.Entity</td>
+                                    <td>@activity.Timestamp.ToShortDateString() @activity.Timestamp.ToShortTimeString()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load chart data
+            loadAssetsByStatusChart();
+
+            // Refresh dashboard
+            $('#refreshDashboard').click(function(e) {
+                e.preventDefault();
+                refreshDashboardData();
+            });
+        });
+
+        function loadAssetsByStatusChart() {
+            var ctx = document.getElementById('assetsByStatusChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [@Html.Raw(string.Join(", ", Model.AssetsByStatus.Keys.Select(k => $"'{k}'")))],
+                    datasets: [{
+                        data: [@string.Join(", ", Model.AssetsByStatus.Values)],
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#858796",
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: false
+                    },
+                    cutoutPercentage: 80,
+                },
+            });
+        }
+
+        function refreshDashboardData() {
+            $.ajax({
+                url: '/Dashboard/GetStats',
+                type: 'GET',
+                success: function(data) {
+                    $('#totalAssets').text(data.totalAssets);
+                    $('#activePolicies').text(data.activePolicies);
+                    $('#complianceRate').text(data.complianceRate + '%');
+                    
+                    // Update progress bar
+                    $('.progress-bar').css('width', data.complianceRate + '%');
+                    $('.progress-bar').attr('aria-valuenow', data.complianceRate);
+                    
+                    // Show success message
+                    toastr.success('Dashboard updated successfully');
+                },
+                error: function() {
+                    toastr.error('Failed to refresh dashboard');
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,128 @@
+@model InsureX.Application.DTOs.PagedResult<InsureX.Application.DTOs.AssetDto>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    <a href="#" class="sort-link" data-sort="assettag">
+                        Asset Tag <i class="fas fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" class="sort-link" data-sort="make">
+                        Make <i class="fas fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" class="sort-link" data-sort="model">
+                        Model <i class="fas fa-sort"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" class="sort-link" data-sort="year">
+                        Year <i class="fas fa-sort"></i>
+                    </a>
+                </th>
+                <th>VIN/Serial</th>
+                <th>Status</th>
+                <th>Compliance</th>
+                <th>Insured Value</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Items.Any())
+            {
+                <tr>
+                    <td colspan="9" class="text-center">No assets found</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var asset in Model.Items)
+                {
+                    <tr>
+                        <td>@asset.AssetTag</td>
+                        <td>@asset.Make</td>
+                        <td>@asset.Model</td>
+                        <td>@asset.Year</td>
+                        <td>@(asset.VIN ?? asset.SerialNumber ?? "N/A")</td>
+                        <td>
+                            <span class="badge @(asset.Status switch {
+                                "Active" => "bg-success",
+                                "Inactive" => "bg-secondary",
+                                "Maintenance" => "bg-warning",
+                                "Deleted" => "bg-danger",
+                                _ => "bg-info"
+                            }) text-white">
+                                @asset.Status
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge @(asset.ComplianceStatus switch {
+                                "Compliant" => "bg-success",
+                                "Non-Compliant" => "bg-danger",
+                                "Pending" => "bg-warning",
+                                _ => "bg-info"
+                            }) text-white">
+                                @asset.ComplianceStatus
+                            </span>
+                        </td>
+                        <td>@(asset.InsuredValue?.ToString("C") ?? "N/A")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Details" asp-route-id="@asset.Id" 
+                                   class="btn btn-sm btn-info" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@asset.Id" 
+                                   class="btn btn-sm btn-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger delete-btn" 
+                                        data-id="@asset.Id" data-tag="@asset.AssetTag" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+    <div class="row">
+        <div class="col-sm-12 col-md-5">
+            <div class="dataTables_info">
+                Showing @((Model.Page - 1) * Model.PageSize + 1) to 
+                @(Math.Min(Model.Page * Model.PageSize, Model.TotalItems)) 
+                of @Model.TotalItems entries
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-7">
+            <div class="dataTables_paginate paging_simple_numbers">
+                <ul class="pagination justify-content-end">
+                    <li class="paginate_button page-item @(Model.HasPrevious ? "" : "disabled")">
+                        <a href="#" class="page-link page-link-prev" data-page="@(Model.Page - 1)">Previous</a>
+                    </li>
+                    
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="paginate_button page-item @(i == Model.Page ? "active" : "")">
+                            <a href="#" class="page-link page-link-num" data-page="@i">@i</a>
+                        </li>
+                    }
+                    
+                    <li class="paginate_button page-item @(Model.HasNext ? "" : "disabled")">
+                        <a href="#" class="page-link page-link-next" data-page="@(Model.Page + 1)">Next</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,258 @@
+@model InsureX.Application.DTOs.ComplianceDashboardDto
+
+@{
+    ViewData["Title"] = "Compliance Dashboard";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Compliance Dashboard</h1>
+        <div>
+            <a asp-action="RefreshDashboard" class="btn btn-primary">
+                <i class="fas fa-sync"></i> Refresh
+            </a>
+            <a asp-action="ExportReport" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Export Report
+            </a>
+        </div>
+    </div>
+
+    <!-- Status Summary Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Compliant Assets</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.CompliantAssets</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Warning Assets</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.WarningAssets</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Non-Compliant</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.NonCompliantAssets</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Overall Rate</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OverallComplianceRate%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percent fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Asset Type Breakdown</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="assetTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Compliance Trend (30 Days)</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts and Issues Row -->
+    <div class="row">
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Alerts</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        @foreach (var alert in Model.RecentAlerts.Take(5))
+                        {
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        <span class="badge bg-@(alert.Severity >= 3 ? "danger" : alert.Severity == 2 ? "warning" : "info") text-white">
+                                            @alert.Title
+                                        </span>
+                                    </h6>
+                                    <small>@alert.CreatedAt.ToShortDateString()</small>
+                                </div>
+                                <p class="mb-1">@alert.Description</p>
+                                <small>Asset: @alert.AssetTag</small>
+                            </div>
+                        }
+                    </div>
+                    <div class="mt-3">
+                        <a asp-action="Alerts" class="btn btn-sm btn-primary">View All Alerts</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Compliance Issues</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Issue</th>
+                                <th>Count</th>
+                                <th>Severity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var issue in Model.TopIssues)
+                            {
+                                <tr>
+                                    <td>@issue.Issue</td>
+                                    <td>@issue.Count</td>
+                                    <td>
+                                        <span class="badge bg-@(issue.Severity >= 3 ? "danger" : issue.Severity == 2 ? "warning" : "info") text-white">
+                                            @(issue.Severity == 1 ? "Low" : issue.Severity == 2 ? "Medium" : issue.Severity == 3 ? "High" : "Critical")
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary" onclick="runComplianceCheck()">
+                        <i class="fas fa-play"></i> Run Compliance Check Now
+                    </button>
+                    <a asp-action="Assets" class="btn btn-info">
+                        <i class="fas fa-list"></i> View Non-Compliant Assets
+                    </a>
+                    <a asp-action="Rules" class="btn btn-secondary">
+                        <i class="fas fa-gavel"></i> Manage Rules
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Asset Type Chart
+            var ctx1 = document.getElementById('assetTypeChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: [@Html.Raw(string.Join(", ", Model.AssetTypeBreakdown.Select(a => $"'{a.Label}'")))],
+                    datasets: [{
+                        data: [@string.Join(", ", Model.AssetTypeBreakdown.Select(a => a.Value))],
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617']
+                    }]
+                }
+            });
+
+            // Trend Chart
+            var ctx2 = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.TrendData.Select(t => t.Label))),
+                    datasets: [{
+                        label: 'Compliance Rate',
+                        data: @Html.Raw(Json.Serialize(Model.TrendData.Select(t => t.Value))),
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.05)'
+                    }]
+                }
+            });
+        });
+
+        function runComplianceCheck() {
+            $.ajax({
+                url: '@Url.Action("RunComplianceCheck")',
+                type: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('Error running compliance check');
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,179 @@
+@model InsureX.Application.DTOs.PagedResult<InsureX.Application.DTOs.PolicyDto>
+
+@{
+    ViewData["Title"] = "Policy Management";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Policy Management</h1>
+        <div>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Policy
+            </a>
+            <a asp-action="Expiring" class="btn btn-warning">
+                <i class="fas fa-clock"></i> Expiring Soon
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Active Policies</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="activeCount">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-contract fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Expiring in 30 Days</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="expiringCount">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Sum Insured</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalSumInsured">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Premium</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalPremium">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Search Policies</h6>
+        </div>
+        <div class="card-body">
+            <form id="searchForm" class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                           placeholder="Search by policy #, insurer...">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" id="statusFilter" name="status">
+                        <option value="">All Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" id="policyTypeFilter" name="policyType">
+                        <option value="">All Types</option>
+                        <option value="Comprehensive">Comprehensive</option>
+                        <option value="Third Party">Third Party</option>
+                        <option value="Fire and Theft">Fire and Theft</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" id="paymentStatusFilter" name="paymentStatus">
+                        <option value="">Payment Status</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Overdue">Overdue</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="expiringOnly" name="expiringOnly">
+                        <label class="form-check-label" for="expiringOnly">
+                            Expiring Soon
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Policies List</h6>
+        </div>
+        <div class="card-body">
+            <div id="policyTableContainer">
+                @await Html.PartialAsync("_PolicyTable", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/insurex-policies.js"></script>
+    <script>
+        $(document).ready(function() {
+            policyManagement.init();
+            loadSummaryData();
+        });
+
+        function loadSummaryData() {
+            $.ajax({
+                url: '/api/v1/policies/summary',
+                type: 'GET',
+                success: function(data) {
+                    $('#activeCount').text(data.activePolicies);
+                    $('#expiringCount').text(data.expiringPolicies);
+                    $('#totalSumInsured').text('$' + data.totalSumInsured.toLocaleString());
+                    $('#totalPremium').text('$' + data.totalPremium.toLocaleString());
+                }
+            });
+        }
+    </script>
+}

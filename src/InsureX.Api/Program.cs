@@ -1,12 +1,19 @@
+using Mapster;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// Register compliance repository and service
+builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
+builder.Services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
 
+// Add background service for automated compliance checks
+builder.Services.AddHostedService<ComplianceBackgroundService>();
 var app = builder.Build();
-
+// Add this after builder is created
+TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -20,7 +27,13 @@ var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
+// Register repositories
+builder.Services.AddScoped<IAssetRepository, AssetRepository>();
+builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
+builder.Services.AddScoped<IAuditRepository, AuditRepository>();
 
+// Register services
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 app.MapGet("/weatherforecast", () =>
 {
     var forecast =  Enumerable.Range(1, 5).Select(index =>
