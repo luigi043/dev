@@ -3,6 +3,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Register Repositories
+builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
+builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
+
+// Register Services
+builder.Services.AddScoped<IPolicyService, PolicyService>();
+builder.Services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

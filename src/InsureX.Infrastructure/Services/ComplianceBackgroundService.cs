@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting;  // ADD THIS for BackgroundService
 using Microsoft.Extensions.Logging;
 using InsureX.Application.Interfaces;
 using System;

@@ -9,6 +9,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
 builder.Services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
 
+// Register Repositories
+builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
+builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
+
+// Register Services
+builder.Services.AddScoped<IPolicyService, PolicyService>();
+builder.Services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
 // Add background service for automated compliance checks
 builder.Services.AddHostedService<ComplianceBackgroundService>();
 var app = builder.Build();

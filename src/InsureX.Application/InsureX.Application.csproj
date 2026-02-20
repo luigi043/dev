@@ -13,6 +13,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InsureX.Domain\InsureX.Domain.csproj" />
-    <ProjectReference Include="..\InsureX.Infrastructure\InsureX.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

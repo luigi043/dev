@@ -1,29 +1,22 @@
-using InsureX.Application.DTOs;
+using InsureX.Domain.Entities;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace InsureX.Application.Interfaces;
 
-public interface IPolicyService
+public interface IPolicyRepository
 {
-    // Policy CRUD
-    Task<PagedResult<PolicyDto>> GetPagedAsync(PolicySearchDto search);
-    Task<PolicyDto?> GetByIdAsync(int id);
-    Task<PolicyDto> CreateAsync(CreatePolicyDto dto);
-    Task<PolicyDto?> UpdateAsync(UpdatePolicyDto dto);
-    Task<bool> DeleteAsync(int id);
-    
-    // Policy queries
-    Task<List<PolicyDto>> GetExpiringPoliciesAsync(int days);
-    Task<List<PolicyDto>> GetByAssetIdAsync(int assetId);
-    Task<PolicySummaryDto> GetSummaryAsync();
-    Task<bool> CheckComplianceAsync(int assetId);
-    
-    // Claims
-    Task<ClaimDto?> GetClaimByIdAsync(int claimId);
-    Task<List<ClaimDto>> GetClaimsByPolicyIdAsync(int policyId);
-    Task<ClaimDto> AddClaimAsync(CreateClaimDto dto);
-    Task<ClaimDto?> UpdateClaimStatusAsync(int claimId, string status, decimal? settlementAmount);
-    
-    // Batch operations
-    Task<int> UpdateExpiredPoliciesAsync();
-    Task<int> SendRenewalRemindersAsync(int daysBeforeExpiry);
+    Task<IQueryable<Policy>> GetQueryableAsync();
+    Task<int> CountAsync(IQueryable<Policy> query);
+    Task<List<Policy>> GetPagedAsync(IQueryable<Policy> query, int page, int pageSize);
+    Task<Policy?> GetByIdAsync(int id);
+    Task<Policy?> GetByPolicyNumberAsync(string policyNumber);
+    Task<List<Policy>> GetExpiringPoliciesAsync(int days);
+    Task<List<Policy>> GetByAssetIdAsync(int assetId);
+    Task AddAsync(Policy policy);
+    Task UpdateAsync(Policy policy);
+    Task<bool> ExistsAsync(string policyNumber);
+    Task<int> GetActiveCountAsync();
+    Task<int> GetExpiringCountAsync(int days);
+    Task SaveChangesAsync();
 }

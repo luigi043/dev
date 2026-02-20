@@ -4237,8 +4237,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "c:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj": {
-              "projectPath": "c:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj"
+            "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj": {
+              "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj"
             }
           }
         }

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace InsureX.Application.DTOs;
 
 public class DashboardViewModel
@@ -7,24 +10,19 @@ public class DashboardViewModel
     public int ExpiringPolicies { get; set; }
     public double ComplianceRate { get; set; }
     public List<RecentAlertDto> RecentAlerts { get; set; } = new();
-    public List<ActivityDto> RecentActivities { get; set; } = new();
-    public Dictionary<string, int> AssetsByStatus { get; set; } = new();
+    public List<ChartDataDto> AssetTypeBreakdown { get; set; } = new();
 }
 
 public class RecentAlertDto
 {
-    public int Id { get; set; }
-    public string AssetName { get; set; } = string.Empty;
-    public string AlertType { get; set; } = string.Empty;
-    public DateTime Date { get; set; }
-    public string Status { get; set; } = string.Empty;
-    public string Severity { get; set; } = string.Empty;
+    public string AssetTag { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public int Severity { get; set; }
 }
 
-public class ActivityDto
+public class ChartDataDto
 {
-    public string User { get; set; } = string.Empty;
-    public string Action { get; set; } = string.Empty;
-    public string Entity { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
+    public string Label { get; set; } = string.Empty;
+    public int Value { get; set; }
 }

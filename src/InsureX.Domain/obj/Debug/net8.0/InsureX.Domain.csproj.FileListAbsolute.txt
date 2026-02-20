@@ -10,3 +10,4 @@ C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.
 C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Domain\obj\Debug\net8.0\refint\InsureX.Domain.dll
 C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Domain\obj\Debug\net8.0\InsureX.Domain.pdb
 C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Domain\obj\Debug\net8.0\ref\InsureX.Domain.dll
+c:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Domain\obj\Debug\net8.0\InsureX.Domain.csproj.AssemblyReference.cache
