@@ -1,5 +1,5 @@
 using InsureX.Domain.Entities;
-
+using InsureX.Domain.Interfaces;
 namespace InsureX.Application.Interfaces;
 
 public interface IComplianceRepository

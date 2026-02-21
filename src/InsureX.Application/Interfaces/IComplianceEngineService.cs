@@ -1,5 +1,5 @@
 using InsureX.Application.DTOs;
-
+using InsureX.Domain.Interfaces;
 namespace InsureX.Application.Interfaces;
 
 public interface IComplianceEngineService

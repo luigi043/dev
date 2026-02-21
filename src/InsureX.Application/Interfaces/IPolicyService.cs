@@ -1,7 +1,7 @@
 using InsureX.Domain.Entities;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
+using InsureX.Domain.Interfaces;
 namespace InsureX.Application.Interfaces;
 
 public interface IPolicyRepository
