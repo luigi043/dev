@@ -1,10 +1,12 @@
 using InsureX.Domain.Entities;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using InsureX.Domain.Interfaces;
+using InsureX.Domain.Interfaces;      // for repositories
+using InsureX.Application.Interfaces; // for Notification/User/Tenant services
+
 namespace InsureX.Application.Interfaces;
 
-public interface IPolicyRepository
+public interface IPolicyService
 {
     Task<IQueryable<Policy>> GetQueryableAsync();
     Task<int> CountAsync(IQueryable<Policy> query);
@@ -18,5 +20,11 @@ public interface IPolicyRepository
     Task<bool> ExistsAsync(string policyNumber);
     Task<int> GetActiveCountAsync();
     Task<int> GetExpiringCountAsync(int days);
+    Task<List<Policy>> GetAllAsync();
+    Task<Policy?> GetByIdAsync(int id);
+    Task AddAsync(Policy policy);
+    Task UpdateAsync(Policy policy);
+    Task DeleteAsync(int id);
+    Task SaveChangesAsync();
     Task SaveChangesAsync();
 }

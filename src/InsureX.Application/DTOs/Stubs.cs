@@ -25,9 +25,3 @@ public class ActivityDto
     public string Description { get; set; } = string.Empty;
 }
 
-// Prevent duplicate PagedResult
-public class PagedResult<T>
-{
-    public List<T> Items { get; set; } = new();
-    public int TotalCount { get; set; }
-}

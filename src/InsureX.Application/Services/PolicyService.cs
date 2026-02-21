@@ -9,7 +9,7 @@ using InsureX.Domain.Entities;
 using InsureX.Domain.Interfaces;
 using InsureX.Domain.Exceptions;
 using Mapster;
-
+using InsureX.Application.Interfaces;
 namespace InsureX.Application.Services;
 
 public class PolicyService : IPolicyService
@@ -180,6 +180,46 @@ public class PolicyService : IPolicyService
         }
 
         return policy.Adapt<PolicyDto>();
+    }
+private readonly IPolicyRepository _repository;
+
+    public PolicyService(IPolicyRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<List<Policy>> GetAllAsync()
+    {
+        return await _repository.GetAllAsync();
+    }
+
+    public async Task<Policy?> GetByIdAsync(int id)
+    {
+        return await _repository.GetByIdAsync(id);
+    }
+
+    public async Task AddAsync(Policy policy)
+    {
+        await _repository.AddAsync(policy);
+    }
+
+    public async Task UpdateAsync(Policy policy)
+    {
+        await _repository.UpdateAsync(policy);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await _repository.GetByIdAsync(id);
+        if (entity != null)
+        {
+            await _repository.DeleteAsync(entity);
+        }
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _repository.SaveChangesAsync();
     }
 
     public async Task<PolicyDto?> UpdateAsync(UpdatePolicyDto dto)

@@ -1,6 +1,7 @@
 using InsureX.Application.Interfaces;
 using InsureX.Application.DTOs;
 using InsureX.Domain.Interfaces;
+using InsureX.Domain.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace InsureX.Application.Services;

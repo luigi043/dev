@@ -9,7 +9,6 @@ using InsureX.Domain.Entities;
 using InsureX.Domain.Interfaces;
 using InsureX.Domain.Exceptions;
 using Mapster;
-
 namespace InsureX.Application.Services;
 
 public class AssetService : IAssetService
