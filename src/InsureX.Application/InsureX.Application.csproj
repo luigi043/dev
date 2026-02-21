@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InsureX.Domain\InsureX.Domain.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\InsureX.Domain\InsureX.Domain.csproj" />
+  
+</ItemGroup>
 </Project>

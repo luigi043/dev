@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using InsureX.Domain.Entities;
 namespace InsureX.Domain.Entities;
 
 public class Policy : BaseEntity

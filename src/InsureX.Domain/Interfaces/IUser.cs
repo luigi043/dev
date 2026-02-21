@@ -1,3 +1,4 @@
+using InsureX.Domain.Interfaces;
 namespace InsureX.Domain.Interfaces;
 
 public interface IUser

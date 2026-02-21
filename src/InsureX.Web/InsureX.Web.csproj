@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\InsureX.Application\InsureX.Application.csproj" />
     <ProjectReference Include="..\InsureX.Ui.Shell.Rcl\InsureX.Ui.Shell.Rcl.csproj" />
+    <ProjectReference Include="..\InsureX.Domain\InsureX.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

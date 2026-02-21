@@ -57,7 +57,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>213</FileLength>
-      <LastWriteTime>Sat, 21 Feb 2026 14:39:19 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 21 Feb 2026 16:36:00 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\InsureX.Ui.Shell.Rcl.3lq0yre42q.bundle.scp.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>

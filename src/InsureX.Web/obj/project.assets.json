@@ -1311,6 +1311,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "InsureX.Application >= 1.0.0",
+      "InsureX.Domain >= 1.0.0",
       "InsureX.Ui.Shell.Rcl >= 1.0.0",
       "Microsoft.AspNetCore.Identity.UI >= 10.0.3"
     ]
@@ -1350,6 +1351,9 @@
           "projectReferences": {
             "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Application\\InsureX.Application.csproj": {
               "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Application\\InsureX.Application.csproj"
+            },
+            "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj": {
+              "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj"
             },
             "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj": {
               "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj"

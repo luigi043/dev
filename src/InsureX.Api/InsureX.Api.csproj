@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InsureX.Application\InsureX.Application.csproj" />
+    <ProjectReference Include="..\InsureX.Domain\InsureX.Domain.csproj" />
   </ItemGroup>
 
 </Project>
