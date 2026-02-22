@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InsureX.Application.DTOs;
-using InsureX.Application.Interfaces;
-using InsureX.Domain.Interfaces;
+using AppInterfaces = InsureX.Application.Interfaces;
+using DomainInterfaces = InsureX.Domain.Interfaces;
 using InsureX.Domain.Entities;
 using Mapster;
 using OfficeOpenXml;
@@ -15,6 +15,7 @@ namespace InsureX.Application.Services;
 
 public class ComplianceEngineService : IComplianceEngineService
 {
+    private readonly AppInterfaces.ITenantContext _tenantContext;
     private readonly IComplianceRepository _complianceRepo;
     private readonly IAssetRepository _assetRepo;
     private readonly ITenantContext _tenantContext;
