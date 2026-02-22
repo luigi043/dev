@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using ITenantContext = InsureX.Domain.Interfaces.ITenantContext;
+using OfficeOpenXml;
 using InsureX.Application.DTOs;
+using InsureX.Application.Interfaces;
 using InsureX.Domain.Entities;
 using InsureX.Domain.Exceptions;
 using InsureX.Domain.Interfaces;
 using Mapster;
-using OfficeOpenXml;
-using InsureX.Application.Interfaces;
 
 namespace InsureX.Application.Services
 {
@@ -18,19 +17,19 @@ namespace InsureX.Application.Services
     {
         private readonly IAssetRepository _assetRepository;
         private readonly ITenantContext _tenantContext;
-        private readonly ICurrentUserService _currentUserService;  // Keep only ONE declaration
+        private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<AssetService> _logger;
 
         public AssetService(
             IAssetRepository assetRepository,
             ITenantContext tenantContext,
-            ICurrentUserService currentUserService,  // Use ICurrentUserService directly
+            ICurrentUserService currentUserService,
             ILogger<AssetService> logger)
         {
-            _assetRepository = assetRepository;
-            _tenantContext = tenantContext;
-            _currentUserService = currentUserService;  // Remove any duplicate assignments
-            _logger = logger;
+            _assetRepository = assetRepository ?? throw new ArgumentNullException(nameof(assetRepository));
+            _tenantContext = tenantContext ?? throw new ArgumentNullException(nameof(tenantContext));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<PagedResult<AssetDto>> GetPagedAsync(AssetSearchDto search)
@@ -38,20 +37,21 @@ namespace InsureX.Application.Services
             try
             {
                 var tenantId = _tenantContext.GetCurrentTenantId()
-                               ?? throw new UnauthorizedAccessException("Tenant not found");
+                    ?? throw new UnauthorizedAccessException("Tenant context not found");
+
+                _logger.LogInformation("Getting paged assets for tenant {TenantId}, page {Page}", tenantId, search.Page);
 
                 var query = await _assetRepository.GetQueryableAsync();
 
-                // Always filter by tenant and exclude deleted
+                // Apply tenant filter and exclude deleted
                 query = query.Where(a =>
                     a.TenantId == tenantId &&
                     a.Status != "Deleted");
 
-                // Search filter (null safe)
+                // Apply search filters
                 if (!string.IsNullOrWhiteSpace(search.SearchTerm))
                 {
                     var term = search.SearchTerm.Trim();
-
                     query = query.Where(a =>
                         (a.AssetTag ?? "").Contains(term) ||
                         (a.Make ?? "").Contains(term) ||
@@ -75,26 +75,13 @@ namespace InsureX.Application.Services
                 if (search.ToDate.HasValue)
                     query = query.Where(a => a.CreatedAt <= search.ToDate.Value);
 
-                // Sorting
-                bool asc = search.SortDir?.ToLower() == "asc";
+                // Apply sorting
+                query = ApplySorting(query, search.SortBy, search.SortDir);
 
-                query = search.SortBy?.ToLower() switch
-                {
-                    "assettag" => asc ? query.OrderBy(a => a.AssetTag)
-                                      : query.OrderByDescending(a => a.AssetTag),
-                    "make" => asc ? query.OrderBy(a => a.Make)
-                                  : query.OrderByDescending(a => a.Make),
-                    "model" => asc ? query.OrderBy(a => a.Model)
-                                   : query.OrderByDescending(a => a.Model),
-                    "year" => asc ? query.OrderBy(a => a.Year)
-                                  : query.OrderByDescending(a => a.Year),
-                    "status" => asc ? query.OrderBy(a => a.Status)
-                                    : query.OrderByDescending(a => a.Status),
-                    _ => asc ? query.OrderBy(a => a.CreatedAt)
-                             : query.OrderByDescending(a => a.CreatedAt)
-                };
-
+                // Get total count
                 var totalItems = await _assetRepository.CountAsync(query);
+
+                // Get paged results
                 var items = await _assetRepository.GetPagedAsync(query, search.Page, search.PageSize);
 
                 return new PagedResult<AssetDto>
@@ -102,7 +89,9 @@ namespace InsureX.Application.Services
                     Items = items.Adapt<List<AssetDto>>(),
                     Page = search.Page,
                     PageSize = search.PageSize,
-                    TotalItems = totalItems
+                    TotalItems = totalItems,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)search.PageSize),
+                    HasNext = search.Page * search.PageSize < totalItems
                 };
             }
             catch (Exception ex)
@@ -115,7 +104,7 @@ namespace InsureX.Application.Services
         public async Task<AssetDto?> GetByIdAsync(int id)
         {
             var tenantId = _tenantContext.GetCurrentTenantId()
-                           ?? throw new UnauthorizedAccessException();
+                ?? throw new UnauthorizedAccessException("Tenant context not found");
 
             var asset = await _assetRepository.GetByIdAsync(id);
 
@@ -127,11 +116,13 @@ namespace InsureX.Application.Services
 
         public async Task<AssetDto> CreateAsync(CreateAssetDto dto)
         {
-            if (await ExistsAsync(dto.AssetTag))
-                throw new DomainException($"Asset with tag {dto.AssetTag} already exists");
-
             var tenantId = _tenantContext.GetCurrentTenantId()
-                           ?? throw new UnauthorizedAccessException();
+                ?? throw new UnauthorizedAccessException("Tenant context not found");
+
+            // Check if asset tag already exists
+            var isUnique = await _assetRepository.IsAssetTagUniqueAsync(dto.AssetTag, tenantId);
+            if (!isUnique)
+                throw new DomainException($"Asset with tag '{dto.AssetTag}' already exists");
 
             var asset = dto.Adapt<Asset>();
             asset.TenantId = tenantId;
@@ -143,20 +134,34 @@ namespace InsureX.Application.Services
             await _assetRepository.AddAsync(asset);
             await _assetRepository.SaveChangesAsync();
 
+            _logger.LogInformation("Created asset {AssetTag} for tenant {TenantId}", asset.AssetTag, tenantId);
+
             return asset.Adapt<AssetDto>();
         }
 
         public async Task<AssetDto?> UpdateAsync(UpdateAssetDto dto)
         {
+            var tenantId = _tenantContext.GetCurrentTenantId()
+                ?? throw new UnauthorizedAccessException("Tenant context not found");
+
             var asset = await _assetRepository.GetByIdAsync(dto.Id)
-                        ?? throw new DomainException($"Asset with id {dto.Id} not found");
+                ?? throw new DomainException($"Asset with id {dto.Id} not found");
+
+            if (asset.TenantId != tenantId)
+                throw new UnauthorizedAccessException("Access denied to this asset");
 
             if (asset.Status == "Deleted")
                 throw new DomainException("Cannot update deleted asset");
 
-            if (asset.AssetTag != dto.AssetTag && await ExistsAsync(dto.AssetTag))
-                throw new DomainException($"Asset with tag {dto.AssetTag} already exists");
+            // Check if asset tag is being changed and if it's unique
+            if (asset.AssetTag != dto.AssetTag)
+            {
+                var isUnique = await _assetRepository.IsAssetTagUniqueAsync(dto.AssetTag, tenantId, dto.Id);
+                if (!isUnique)
+                    throw new DomainException($"Asset with tag '{dto.AssetTag}' already exists");
+            }
 
+            // Map DTO to existing entity
             dto.Adapt(asset);
             asset.UpdatedAt = DateTime.UtcNow;
             asset.UpdatedBy = _currentUserService.GetCurrentUserId() ?? "system";
@@ -164,15 +169,22 @@ namespace InsureX.Application.Services
             await _assetRepository.UpdateAsync(asset);
             await _assetRepository.SaveChangesAsync();
 
+            _logger.LogInformation("Updated asset {AssetId} for tenant {TenantId}", asset.Id, tenantId);
+
             return asset.Adapt<AssetDto>();
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
+            var tenantId = _tenantContext.GetCurrentTenantId()
+                ?? throw new UnauthorizedAccessException("Tenant context not found");
+
             var asset = await _assetRepository.GetByIdAsync(id);
-            if (asset == null || asset.Status == "Deleted")
+            
+            if (asset == null || asset.TenantId != tenantId || asset.Status == "Deleted")
                 return false;
 
+            // Soft delete
             asset.Status = "Deleted";
             asset.UpdatedAt = DateTime.UtcNow;
             asset.UpdatedBy = _currentUserService.GetCurrentUserId() ?? "system";
@@ -180,13 +192,15 @@ namespace InsureX.Application.Services
             await _assetRepository.UpdateAsync(asset);
             await _assetRepository.SaveChangesAsync();
 
+            _logger.LogInformation("Deleted asset {AssetId} for tenant {TenantId}", asset.Id, tenantId);
+
             return true;
         }
 
         public async Task<bool> ExistsAsync(string assetTag)
         {
             var tenantId = _tenantContext.GetCurrentTenantId()
-                           ?? throw new UnauthorizedAccessException();
+                ?? throw new UnauthorizedAccessException("Tenant context not found");
 
             return await _assetRepository.ExistsAsync(a =>
                 a.AssetTag == assetTag &&
@@ -197,34 +211,30 @@ namespace InsureX.Application.Services
         public async Task<int> GetCountAsync()
         {
             var tenantId = _tenantContext.GetCurrentTenantId()
-                        ?? throw new UnauthorizedAccessException();
+                ?? throw new UnauthorizedAccessException("Tenant context not found");
 
-            // Alternative: Use GetQueryableAsync + CountAsync
             var query = await _assetRepository.GetQueryableAsync();
             query = query.Where(a => a.TenantId == tenantId && a.Status != "Deleted");
+            
             return await _assetRepository.CountAsync(query);
         }
 
         public async Task<List<AssetDto>> GetRecentAsync(int count)
         {
             var tenantId = _tenantContext.GetCurrentTenantId()
-                        ?? throw new UnauthorizedAccessException();
+                ?? throw new UnauthorizedAccessException("Tenant context not found");
 
-            // Alternative: Use GetQueryableAsync + manual ordering
-            var query = await _assetRepository.GetQueryableAsync();
-            query = query.Where(a => a.TenantId == tenantId && a.Status != "Deleted")
-                        .OrderByDescending(a => a.CreatedAt)
-                        .Take(count);
+            var items = await _assetRepository.GetRecentAsync(tenantId, count);
             
-            var items = await _assetRepository.GetPagedAsync(query, 1, count);
             return items.Adapt<List<AssetDto>>();
         }
 
         public async Task<byte[]> ExportToExcelAsync(AssetSearchDto search)
         {
-            // For EPPlus 8+
+            // Set EPPlus license context
             ExcelPackage.License.SetNonCommercialPersonal("InsureX User");
 
+            // Get data without pagination
             search.Page = 1;
             search.PageSize = int.MaxValue;
 
@@ -233,18 +243,20 @@ namespace InsureX.Application.Services
             using var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Assets");
 
+            // Headers
             var headers = new[]
             {
                 "Asset Tag", "Make", "Model", "Year",
                 "Serial Number", "VIN", "Status",
-                "Compliance Status", "Insured Value", "Created At"
+                "Compliance Status", "Value", "Insured Value",
+                "Purchase Date", "Created At"
             };
 
             for (int i = 0; i < headers.Length; i++)
                 worksheet.Cells[1, i + 1].Value = headers[i];
 
+            // Data
             int row = 2;
-
             foreach (var asset in result.Items)
             {
                 worksheet.Cells[row, 1].Value = asset.AssetTag;
@@ -255,14 +267,47 @@ namespace InsureX.Application.Services
                 worksheet.Cells[row, 6].Value = asset.VIN;
                 worksheet.Cells[row, 7].Value = asset.Status;
                 worksheet.Cells[row, 8].Value = asset.ComplianceStatus;
-                worksheet.Cells[row, 9].Value = asset.InsuredValue;
-                worksheet.Cells[row, 10].Value = asset.CreatedAt.ToString("yyyy-MM-dd");
+                worksheet.Cells[row, 9].Value = asset.Value;
+                worksheet.Cells[row, 10].Value = asset.InsuredValue;
+                worksheet.Cells[row, 11].Value = asset.PurchaseDate.ToString("yyyy-MM-dd");
+                worksheet.Cells[row, 12].Value = asset.CreatedAt.ToString("yyyy-MM-dd");
                 row++;
             }
 
             worksheet.Cells.AutoFitColumns();
 
-            return package.GetAsByteArray();
+            return await Task.FromResult(package.GetAsByteArray());
         }
+
+        #region Private Methods
+
+        private IQueryable<Asset> ApplySorting(IQueryable<Asset> query, string? sortBy, string? sortDir)
+        {
+            var isAscending = sortDir?.ToLower() == "asc";
+
+            return sortBy?.ToLower() switch
+            {
+                "assettag" => isAscending ? query.OrderBy(a => a.AssetTag)
+                                          : query.OrderByDescending(a => a.AssetTag),
+                "make" => isAscending ? query.OrderBy(a => a.Make)
+                                      : query.OrderByDescending(a => a.Make),
+                "model" => isAscending ? query.OrderBy(a => a.Model)
+                                       : query.OrderByDescending(a => a.Model),
+                "year" => isAscending ? query.OrderBy(a => a.Year)
+                                      : query.OrderByDescending(a => a.Year),
+                "status" => isAscending ? query.OrderBy(a => a.Status)
+                                        : query.OrderByDescending(a => a.Status),
+                "compliancestatus" => isAscending ? query.OrderBy(a => a.ComplianceStatus)
+                                                  : query.OrderByDescending(a => a.ComplianceStatus),
+                "value" => isAscending ? query.OrderBy(a => a.Value)
+                                       : query.OrderByDescending(a => a.Value),
+                "purchasedate" => isAscending ? query.OrderBy(a => a.PurchaseDate)
+                                              : query.OrderByDescending(a => a.PurchaseDate),
+                _ => isAscending ? query.OrderBy(a => a.CreatedAt)
+                                 : query.OrderByDescending(a => a.CreatedAt)
+            };
+        }
+
+        #endregion
     }
 }

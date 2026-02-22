@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UX36m5KKN3A=",
+  "dgSpecHash": "t7TMgsu4T3U=",
   "success": true,
-  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cluiz\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\cluiz\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
@@ -209,9 +209,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.CSharp.Workspaces 4.5.0 requires Microsoft.CodeAnalysis.Common (= 4.5.0) but version Microsoft.CodeAnalysis.Common 4.6.0 was resolved.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net8.0"
@@ -221,9 +221,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.CSharp.Workspaces 4.5.0 requires Microsoft.CodeAnalysis.CSharp (= 4.5.0) but version Microsoft.CodeAnalysis.CSharp 4.6.0 was resolved.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "libraryId": "Microsoft.CodeAnalysis.CSharp",
       "targetGraphs": [
         "net8.0"
@@ -233,9 +233,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.Workspaces.Common 4.5.0 requires Microsoft.CodeAnalysis.Common (= 4.5.0) but version Microsoft.CodeAnalysis.Common 4.6.0 was resolved.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net8.0"
@@ -245,9 +245,9 @@
       "code": "NU1901",
       "level": "Warning",
       "message": "Package 'Moq' 4.20.0 has a known low severity vulnerability, https://github.com/advisories/GHSA-6r78-m64m-qwcf",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
       "libraryId": "Moq",
       "targetGraphs": [
         "net8.0"

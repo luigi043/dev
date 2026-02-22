@@ -1,2 +1,9 @@
 <Solution>
+  <Project Path="InsureX.Api\InsureX.Api.csproj" />
+  <Project Path="InsureX.Application\InsureX.Application.csproj" />
+  <Project Path="InsureX.Domain\InsureX.Domain.csproj" />
+  <Project Path="InsureX.Infrastructure\InsureX.Infrastructure.csproj" />
+  <Project Path="InsureX.Ui.Shell.Rcl\InsureX.Ui.Shell.Rcl.csproj" />
+  <Project Path="InsureX.Web\InsureX.Web.csproj" />
+  <Project Path="tests\InsureX.Application.Tests\InsureX.Application.Tests.csproj" />
 </Solution>

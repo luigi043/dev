@@ -19,7 +19,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+// Add tenant services
+builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddSingleton<ILogger<TenantMiddleware>>();
 
+// In the app configuration
+app.UseMiddleware<TenantMiddleware>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

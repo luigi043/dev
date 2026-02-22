@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using InsureX.Application.Common.Interfaces;
+using Microsoft.AspNetCore.Http;
+using InsureX.Application.Interfaces;
 
 namespace InsureX.Infrastructure.Services;
 
@@ -13,6 +13,7 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
+    // Properties for easy access
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
     public string? UserName => _httpContextAccessor.HttpContext?.User?.Identity?.Name;
     public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
@@ -32,4 +33,11 @@ public class CurrentUserService : ICurrentUserService
                 : null;
         }
     }
+
+    // Method implementations for ICurrentUserService interface
+    public string? GetCurrentUserId() => UserId;
+    public string? GetCurrentUserName() => UserName;
+    public string? GetUserEmail() => Email;
+    public bool IsAuthenticated() => IsAuthenticated;
+    public bool IsInRole(string role) => Roles.Contains(role);
 }
