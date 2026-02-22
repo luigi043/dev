@@ -1,12 +1,20 @@
+using System.Linq;
+using System.Threading.Tasks;
 using InsureX.Domain.Entities;
-using InsureX.Domain.Interfaces;
-namespace InsureX.Application.Interfaces
-{
+using System.Collections.Generic;
 
-public interface IAssetRepository : IRepository<Asset>
+namespace InsureX.Domain.Interfaces
 {
-    Task<int> GetCountAsync();
-    Task<int> GetCompliantCountAsync();
-    Task<Dictionary<string, int>> GetCountByStatusAsync();
-}
+    public interface IAssetRepository
+    {
+        Task<IQueryable<Asset>> GetQueryableAsync();
+        Task<Asset?> GetByIdAsync(int id);
+        Task AddAsync(Asset asset);
+        Task UpdateAsync(Asset asset);
+        Task DeleteAsync(int id);
+        Task SaveChangesAsync();
+        Task<List<Asset>> GetPagedAsync(int page, int pageSize);
+        Task<int> GetCountAsync();
+        Task<List<Asset>> GetRecentAsync(int count);
+    }
 }

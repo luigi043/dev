@@ -51,6 +51,28 @@ namespace InsureX.Application.Services
             return policy?.Adapt<PolicyDto>();
         }
 
+        public class PolicySummaryDto
+        {
+            public int TotalPolicies { get; set; }
+            public int ActivePolicies { get; set; }
+            public int ExpiringPolicies { get; set; }
+        }
+
+        public async Task<PolicySummaryDto> GetSummaryAsync()
+        {
+            var policies = await _policyRepository.GetQueryableAsync();
+            var total = policies.Count();
+            var active = policies.Count(p => p.Status == "Active");
+            var expiring = policies.Count(p => p.EndDate.HasValue && p.EndDate.Value <= DateTime.UtcNow.AddDays(30));
+
+            return new PolicySummaryDto
+            {
+                TotalPolicies = total,
+                ActivePolicies = active,
+                ExpiringPolicies = expiring
+            };
+        }
+
         public async Task<PolicyDto> CreateAsync(CreatePolicyDto dto)
         {
             var asset = await _assetRepository.GetByIdAsync(dto.AssetId)
@@ -146,7 +168,10 @@ namespace InsureX.Application.Services
         private async Task<bool> CheckComplianceAsync(int assetId)
         {
             var policies = await _policyRepository.GetByAssetIdAsync(assetId);
-            return policies.Any(p => p.Status == "Active" && p.EndDate >= DateTime.UtcNow && p.PaymentStatus == "Paid");
+            return policies.Any(p => p.Status == "Active"
+                                  && p.EndDate.HasValue
+                                  && p.EndDate.Value >= DateTime.UtcNow
+                                  && p.PaymentStatus == "Paid");
         }
     }
 }

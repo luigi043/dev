@@ -4,6 +4,6 @@ namespace InsureX.Application.Services.Helpers
 {
     public class TenantContext : ITenantContext
     {
-        public int? GetCurrentTenantId() => 1; // Temporary placeholder
+        public System.Guid? GetCurrentTenantId() => System.Guid.NewGuid(); // Temporary placeholder
     }
 }

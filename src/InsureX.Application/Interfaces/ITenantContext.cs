@@ -1,5 +1,4 @@
 namespace InsureX.Application.Interfaces
 {
-    public interface ITenantContext { int? GetCurrentTenantId(); }
-   
+    public interface ITenantContext { System.Guid? GetCurrentTenantId(); }
 }
