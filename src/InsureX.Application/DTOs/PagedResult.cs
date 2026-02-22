@@ -12,17 +12,12 @@ namespace InsureX.Application.DTOs
         /// <summary>
         /// The items in the current page.
         /// </summary>
-        public List<T> Items { get; set; } = new List<T>();
-
-        /// <summary>
-        /// Total number of items across all pages.
-        /// </summary>
-        public int TotalCount { get; set; }
+        public List<T> Items { get; set; } = new();
 
         /// <summary>
         /// Current page number (1-based).
         /// </summary>
-        public int PageNumber { get; set; }
+        public int Page { get; set; }
 
         /// <summary>
         /// Number of items per page.
@@ -30,29 +25,30 @@ namespace InsureX.Application.DTOs
         public int PageSize { get; set; }
 
         /// <summary>
-        /// Total number of pages.
+        /// Total number of items across all pages.
         /// </summary>
-        public int TotalPages 
-        { 
-            get
-            {
-                if (PageSize == 0) return 0;
-                return (int)Math.Ceiling(TotalCount / (double)PageSize);
-            }
-        }
+        public int TotalItems { get; set; }
 
         /// <summary>
-        /// Convenience method to check if there are any items.
+        /// Total number of pages.
         /// </summary>
-        public bool HasItems => Items != null && Items.Count > 0;
+        public int TotalPages =>
+            PageSize == 0
+                ? 0
+                : (int)Math.Ceiling(TotalItems / (double)PageSize);
+
+        /// <summary>
+        /// Indicates if the result contains any items.
+        /// </summary>
+        public bool HasItems => Items.Count > 0;
 
         public PagedResult() { }
 
-        public PagedResult(List<T> items, int totalCount, int pageNumber, int pageSize)
+        public PagedResult(List<T> items, int totalItems, int page, int pageSize)
         {
             Items = items ?? new List<T>();
-            TotalCount = totalCount;
-            PageNumber = pageNumber;
+            TotalItems = totalItems;
+            Page = page;
             PageSize = pageSize;
         }
     }

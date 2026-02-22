@@ -5,6 +5,20 @@ namespace InsureX.Domain.Entities;
 
 public class Asset : BaseEntity
 {
+    public int TenantId { get; set; }
+public string? AssetTag { get; set; }
+public string? Make { get; set; }
+public string? Model { get; set; }
+
+public string? VIN { get; set; }
+public string? Status { get; set; }
+public string? ComplianceStatus { get; set; }
+public int? Year { get; set; }
+public decimal? InsuredValue { get; set; }
+public DateTime CreatedAt { get; set; }
+public DateTime? UpdatedAt { get; set; }
+public string? CreatedBy { get; set; }
+public string? UpdatedBy { get; set; }
     public string AssetTag { get; set; } = string.Empty;
     public string Make { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;

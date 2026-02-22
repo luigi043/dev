@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using InsureX.Domain.Entities;
 
-namespace InsureX.Domain.Interfaces
+namespace InsureX.Application.Interfaces
 {
     public interface IPolicyRepository
     {

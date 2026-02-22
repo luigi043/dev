@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InsureX.Ui.Shell.Rcl")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+81641f87758d20ad6bc7e322620156474b9acfac")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3920822177f26bd1b73d84817e6cd4dd6038036a")]
 [assembly: System.Reflection.AssemblyProductAttribute("InsureX.Ui.Shell.Rcl")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InsureX.Ui.Shell.Rcl")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

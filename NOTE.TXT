@@ -1,5 +1,6 @@
-cd src/InsureX.Web
-dotnet run
+dotnet clean
+dotnet build
+dotnet run --project src/InsureX.Web
 
 cd src/InsureX.Api
 dotnet run

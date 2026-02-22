@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using InsureX.Application.DTOs;
-using InsureX.Domain.Interfaces;      // for repositories
-using InsureX.Application.Interfaces; // for Notification/User/Tenant services
+
 namespace InsureX.Application.Interfaces;
 
 public interface IDashboardService
 {
+    Task<DashboardSummaryDto> GetSummaryAsync();
     Task<DashboardViewModel> GetDashboardDataAsync();
     Task<int> GetTotalAssetsCountAsync();
     Task<int> GetActivePoliciesCountAsync();

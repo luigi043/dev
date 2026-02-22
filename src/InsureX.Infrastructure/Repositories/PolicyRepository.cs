@@ -8,10 +8,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace InsureX.Infrastructure.Repositories;
+using InsureX.Domain.Interfaces;
 
-public class PolicyRepository : IPolicyRepository
+namespace InsureX.Infrastructure.Repositories
 {
+    public class PolicyRepository : IPolicyRepository {
+
     private readonly AppDbContext _context;
 
     public PolicyRepository(AppDbContext context)
@@ -105,4 +107,4 @@ public class PolicyRepository : IPolicyRepository
     {
         await _context.SaveChangesAsync();
     }
-}
+}}

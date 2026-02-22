@@ -4,7 +4,14 @@ using InsureX.Domain.Interfaces;
 using InsureX.Infrastructure.Data;
 using System.Linq.Expressions;
 
-namespace InsureX.Infrastructure.Repositories;
+using InsureX.Domain.Interfaces;
+
+namespace InsureX.Infrastructure.Repositories
+{
+   
+    public class AssetRepository : IAssetRepository { }
+   
+
 
 public class AssetRepository : Repository<Asset>, IAssetRepository
 {
@@ -72,4 +79,4 @@ public class AssetRepository : Repository<Asset>, IAssetRepository
     {
         return await _context.Assets.AnyAsync(predicate);
     }
-}
+}}

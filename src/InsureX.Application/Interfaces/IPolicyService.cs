@@ -1,20 +1,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using InsureX.Domain.Entities;
+using InsureX.Application.DTOs;
 
 namespace InsureX.Application.Interfaces
 {
     public interface IPolicyService
     {
-        Task<List<Policy>> GetAllAsync();
-        Task<Policy?> GetByIdAsync(int id);
-        Task<List<Policy>> GetExpiringPoliciesAsync(int days);
-        Task AddAsync(Policy policy);
-        Task UpdateAsync(Policy policy);
-        Task DeleteAsync(int id);
-        Task<bool> ExistsAsync(string policyNumber);
-        Task<int> GetActiveCountAsync();
-        Task<int> GetExpiringCountAsync(int days);
-        Task SaveChangesAsync();
+        Task<List<PolicyDto>> GetAllAsync();
+        Task<PolicyDto?> GetByIdAsync(int id);
+        Task<PolicyDto> CreateAsync(CreatePolicyDto dto);
+        Task<PolicyDto?> UpdateAsync(UpdatePolicyDto dto);
+        Task<bool> DeleteAsync(int id);
+        Task<List<PolicyDto>> GetExpiringPoliciesAsync(int days);
     }
 }
