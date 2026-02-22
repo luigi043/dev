@@ -45,32 +45,10 @@ namespace InsureX.Application.Services
             return policies.Adapt<List<PolicyDto>>();
         }
 
-        public async Task<PolicyDto?> GetByIdAsync(int id)
+        public async Task<PolicyDto?> GetByIdAsync(Guid id)  // <- changed int -> Guid
         {
             var policy = await _policyRepository.GetByIdAsync(id);
             return policy?.Adapt<PolicyDto>();
-        }
-
-        public class PolicySummaryDto
-        {
-            public int TotalPolicies { get; set; }
-            public int ActivePolicies { get; set; }
-            public int ExpiringPolicies { get; set; }
-        }
-
-        public async Task<PolicySummaryDto> GetSummaryAsync()
-        {
-            var policies = await _policyRepository.GetQueryableAsync();
-            var total = policies.Count();
-            var active = policies.Count(p => p.Status == "Active");
-            var expiring = policies.Count(p => p.EndDate.HasValue && p.EndDate.Value <= DateTime.UtcNow.AddDays(30));
-
-            return new PolicySummaryDto
-            {
-                TotalPolicies = total,
-                ActivePolicies = active,
-                ExpiringPolicies = expiring
-            };
         }
 
         public async Task<PolicyDto> CreateAsync(CreatePolicyDto dto)
@@ -91,10 +69,8 @@ namespace InsureX.Application.Services
             await _policyRepository.AddAsync(policy);
             await _policyRepository.SaveChangesAsync();
 
-            // Update compliance status
             await UpdateAssetCompliance(asset.Id);
 
-            // Notify user if active
             if (policy.Status == "Active")
             {
                 await _notificationService.SendEmailAsync(
@@ -120,14 +96,13 @@ namespace InsureX.Application.Services
             await _policyRepository.UpdateAsync(policy);
             await _policyRepository.SaveChangesAsync();
 
-            // Update compliance
             await UpdateAssetCompliance(policy.AssetId);
 
             _logger.LogInformation("Policy updated: {PolicyNumber}", policy.PolicyNumber);
             return policy.Adapt<PolicyDto>();
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(Guid id)  // <- changed int -> Guid
         {
             var policy = await _policyRepository.GetByIdAsync(id);
             if (policy == null) return false;
@@ -149,6 +124,29 @@ namespace InsureX.Application.Services
         {
             var policies = await _policyRepository.GetExpiringPoliciesAsync(days);
             return policies.Adapt<List<PolicyDto>>();
+        }
+
+        // Public summary DTO to satisfy interface
+        public class PolicySummaryDto
+        {
+            public int TotalPolicies { get; set; }
+            public int ActivePolicies { get; set; }
+            public int ExpiringPolicies { get; set; }
+        }
+
+        public async Task<PolicySummaryDto> GetSummaryAsync()
+        {
+            var policies = await _policyRepository.GetQueryableAsync();
+            var total = policies.Count();
+            var active = policies.Count(p => p.Status == "Active");
+            var expiring = policies.Count(p => p.EndDate.HasValue && p.EndDate.Value <= DateTime.UtcNow.AddDays(30));
+
+            return new PolicySummaryDto
+            {
+                TotalPolicies = total,
+                ActivePolicies = active,
+                ExpiringPolicies = expiring
+            };
         }
 
         // ======= Private helper =======

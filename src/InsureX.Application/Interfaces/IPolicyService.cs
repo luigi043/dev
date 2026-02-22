@@ -13,6 +13,14 @@ namespace InsureX.Application.Interfaces
         Task<PolicyDto?> UpdateAsync(UpdatePolicyDto dto);
         Task<bool> DeleteAsync(Guid id);
         Task<List<PolicyDto>> GetExpiringPoliciesAsync(int days);
-        Task<PolicyService.PolicySummaryDto> GetSummaryAsync();
+        Task<PolicySummaryDto> GetSummaryAsync();
+
+        // Summary DTO for interface
+        public class PolicySummaryDto
+        {
+            public int TotalPolicies { get; set; }
+            public int ActivePolicies { get; set; }
+            public int ExpiringPolicies { get; set; }
+        }
     }
 }
