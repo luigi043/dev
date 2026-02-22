@@ -20,23 +20,6 @@ namespace InsureX.Application.Services
         private readonly ICurrentUserService _currentUserService;
         private readonly INotificationService _notificationService;
         private readonly ILogger<PolicyService> _logger;
-        public Task<List<PolicyDto>> GetAllAsync()
-            => Task.FromResult(new List<PolicyDto>());
-
-        public Task<PolicyDto?> GetByIdAsync(int id)
-            => Task.FromResult<PolicyDto?>(null);
-
-        public Task<PolicyDto> CreateAsync(CreatePolicyDto dto)
-            => Task.FromResult(new PolicyDto());
-
-        public Task<PolicyDto?> UpdateAsync(UpdatePolicyDto dto)
-            => Task.FromResult<PolicyDto?>(null);
-
-        public Task<bool> DeleteAsync(int id)
-            => Task.FromResult(true);
-
-        public Task<List<PolicyDto>> GetExpiringPoliciesAsync(int days)
-            => Task.FromResult(new List<PolicyDto>());
 
         public PolicyService(
             IPolicyRepository policyRepository,

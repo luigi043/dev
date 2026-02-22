@@ -1,0 +1,6 @@
+c:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.csproj.AssemblyReference.cache
+c:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.AssemblyInfoInputs.cache
+c:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.AssemblyInfo.cs
+c:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.csproj.CoreCompileInputs.cache
+c:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.sourcelink.json

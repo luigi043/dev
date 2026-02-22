@@ -5,7 +5,7 @@ namespace InsureX.Application.Interfaces;
 
 public interface IDashboardService
 {
-    Task<DashboardSummaryDto> GetSummaryAsync();
+    Task<DashboardViewModel> GetSummaryAsync();
     Task<DashboardViewModel> GetDashboardDataAsync();
     Task<int> GetTotalAssetsCountAsync();
     Task<int> GetActivePoliciesCountAsync();
