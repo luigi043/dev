@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.vscode-dotnet-pack",
+        "formulahendry.dotnet-test-explorer",
+        "adrianwilczynski.user-secrets",
+        "esbenp.prettier-vscode",
+        "ms-mssql.mssql",
+        "eamodio.gitlens",
+        "github.vscode-github-actions",
+        "ms-azuretools.vscode-docker",
+        "humao.rest-client"
+    ]
+}

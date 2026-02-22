@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Api\\InsureX.Api.csproj": {}
+    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Api\\InsureX.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Api\\InsureX.Api.csproj": {
+    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Api\\InsureX.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Api\\InsureX.Api.csproj",
+        "projectUniqueName": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Api\\InsureX.Api.csproj",
         "projectName": "InsureX.Api",
-        "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Api\\InsureX.Api.csproj",
+        "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Api\\InsureX.Api.csproj",
         "packagesPath": "C:\\Users\\cluiz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Api\\obj\\",
+        "outputPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -33,11 +33,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Application\\InsureX.Application.csproj": {
-                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Application\\InsureX.Application.csproj"
+              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\InsureX.Application.csproj": {
+                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\InsureX.Application.csproj"
               },
-              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\InsureX.Domain.csproj": {
-                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\InsureX.Domain.csproj"
+              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj": {
+                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj"
               }
             }
           }
@@ -58,13 +58,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.24, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.6.2, )"
+              "version": "[6.5.0, )"
             }
           },
           "imports": [
@@ -90,14 +94,14 @@
         }
       }
     },
-    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Application\\InsureX.Application.csproj": {
+    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\InsureX.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Application\\InsureX.Application.csproj",
+        "projectUniqueName": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\InsureX.Application.csproj",
         "projectName": "InsureX.Application",
-        "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Application\\InsureX.Application.csproj",
+        "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\InsureX.Application.csproj",
         "packagesPath": "C:\\Users\\cluiz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Application\\obj\\",
+        "outputPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -119,8 +123,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\InsureX.Domain.csproj": {
-                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\InsureX.Domain.csproj"
+              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj": {
+                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj"
               }
             }
           }
@@ -190,14 +194,14 @@
         }
       }
     },
-    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\InsureX.Domain.csproj": {
+    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\InsureX.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj",
         "projectName": "InsureX.Domain",
-        "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\InsureX.Domain.csproj",
+        "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj",
         "packagesPath": "C:\\Users\\cluiz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Domain\\obj\\",
+        "outputPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

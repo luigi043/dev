@@ -5,6 +5,7 @@
 }
 
 <div class="container-fluid">
+    <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Create New Asset</h1>
         <a asp-action="Index" class="btn btn-secondary">
@@ -12,104 +13,369 @@
         </a>
     </div>
 
+    <!-- Error Alert -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Please correct the following errors:</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <ul class="mt-2 mb-0">
+                @foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Main Form Card -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Asset Information</h6>
         </div>
         <div class="card-body">
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" id="createAssetForm">
                 @Html.AntiForgeryToken()
                 
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
 
+                <!-- Basic Information -->
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="AssetTag" class="form-label">Asset Tag *</label>
-                        <input asp-for="AssetTag" class="form-control" />
-                        <span asp-validation-for="AssetTag" class="text-danger"></span>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="AssetTag" class="form-label fw-bold">
+                            Asset Tag <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="AssetTag" class="form-control" placeholder="e.g., AST-2024-001" 
+                               autocomplete="off" />
+                        <span asp-validation-for="AssetTag" class="text-danger small"></span>
+                        <div class="form-text">Unique identifier for the asset</div>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Make" class="form-label">Make *</label>
-                        <input asp-for="Make" class="form-control" />
-                        <span asp-validation-for="Make" class="text-danger"></span>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="VIN" class="form-label fw-bold">VIN</label>
+                        <input asp-for="VIN" class="form-control" maxlength="17" 
+                               placeholder="17-character VIN" />
+                        <span asp-validation-for="VIN" class="text-danger small"></span>
+                        <div class="form-text">Vehicle Identification Number (if applicable)</div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="SerialNumber" class="form-label fw-bold">Serial Number</label>
+                        <input asp-for="SerialNumber" class="form-control" 
+                               placeholder="Manufacturer serial number" />
+                        <span asp-validation-for="SerialNumber" class="text-danger small"></span>
                     </div>
                 </div>
 
+                <!-- Make and Model -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label asp-for="Model" class="form-label">Model *</label>
-                        <input asp-for="Model" class="form-control" />
-                        <span asp-validation-for="Model" class="text-danger"></span>
+                        <label asp-for="Make" class="form-label fw-bold">
+                            Make <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Make" class="form-control" placeholder="e.g., Toyota, Caterpillar" />
+                        <span asp-validation-for="Make" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label asp-for="Year" class="form-label">Year</label>
-                        <input asp-for="Year" class="form-control" type="number" />
-                        <span asp-validation-for="Year" class="text-danger"></span>
+                        <label asp-for="Model" class="form-label fw-bold">
+                            Model <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Model" class="form-control" placeholder="e.g., Camry, D6T" />
+                        <span asp-validation-for="Model" class="text-danger small"></span>
                     </div>
                 </div>
 
+                <!-- Year and Category -->
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="SerialNumber" class="form-label">Serial Number</label>
-                        <input asp-for="SerialNumber" class="form-control" />
-                        <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Year" class="form-label fw-bold">Year</label>
+                        <input asp-for="Year" class="form-control" type="number" 
+                               min="1900" max="@DateTime.Now.Year" placeholder="YYYY" />
+                        <span asp-validation-for="Year" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="VIN" class="form-label">VIN</label>
-                        <input asp-for="VIN" class="form-control" maxlength="17" />
-                        <span asp-validation-for="VIN" class="text-danger"></span>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Category" class="form-label fw-bold">Category</label>
+                        <select asp-for="Category" class="form-select">
+                            <option value="">-- Select Category --</option>
+                            <option value="Vehicle">Vehicle</option>
+                            <option value="Equipment">Equipment</option>
+                            <option value="Machinery">Machinery</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Category" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Condition" class="form-label fw-bold">Condition</label>
+                        <select asp-for="Condition" class="form-select">
+                            <option value="">-- Select Condition --</option>
+                            <option value="New">New</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Poor">Poor</option>
+                        </select>
+                        <span asp-validation-for="Condition" class="text-danger small"></span>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="InsuredValue" class="form-label">Insured Value</label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input asp-for="InsuredValue" class="form-control" type="number" step="0.01" />
+                <!-- Financial Information -->
+                <div class="card bg-light mb-3">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">Financial Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="PurchasePrice" class="form-label fw-bold">Purchase Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="PurchasePrice" class="form-control" type="number" 
+                                           step="0.01" min="0" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="PurchasePrice" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="CurrentValue" class="form-label fw-bold">Current Value</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="CurrentValue" class="form-control" type="number" 
+                                           step="0.01" min="0" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="CurrentValue" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="InsuredValue" class="form-label fw-bold">Insured Value</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="InsuredValue" class="form-control" type="number" 
+                                           step="0.01" min="0" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="InsuredValue" class="text-danger small"></span>
+                            </div>
                         </div>
-                        <span asp-validation-for="InsuredValue" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label asp-for="PurchaseDate" class="form-label">Purchase Date</label>
-                        <input asp-for="PurchaseDate" class="form-control" type="date" />
-                        <span asp-validation-for="PurchaseDate" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label asp-for="LastInspectionDate" class="form-label">Last Inspection</label>
-                        <input asp-for="LastInspectionDate" class="form-control" type="date" />
-                        <span asp-validation-for="LastInspectionDate" class="text-danger"></span>
                     </div>
                 </div>
 
+                <!-- Dates -->
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="PurchaseDate" class="form-label fw-bold">Purchase Date</label>
+                        <input asp-for="PurchaseDate" class="form-control" type="date" 
+                               value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="PurchaseDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="WarrantyExpiryDate" class="form-label fw-bold">Warranty Expiry</label>
+                        <input asp-for="WarrantyExpiryDate" class="form-control" type="date" />
+                        <span asp-validation-for="WarrantyExpiryDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="LastInspectionDate" class="form-label fw-bold">Last Inspection</label>
+                        <input asp-for="LastInspectionDate" class="form-control" type="date" />
+                        <span asp-validation-for="LastInspectionDate" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Location and Status -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Location" class="form-label fw-bold">Location</label>
+                        <input asp-for="Location" class="form-control" 
+                               placeholder="e.g., Warehouse A, Site 42" />
+                        <span asp-validation-for="Location" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Status" class="form-label fw-bold">Initial Status</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="UnderMaintenance">Under Maintenance</option>
+                            <option value="Stored">Stored</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Notes -->
                 <div class="row">
                     <div class="col-12 mb-3">
-                        <label asp-for="Notes" class="form-label">Notes</label>
-                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="Notes" class="text-danger"></span>
+                        <label asp-for="Notes" class="form-label fw-bold">Notes</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" 
+                                  placeholder="Additional information about the asset..."></textarea>
+                        <span asp-validation-for="Notes" class="text-danger small"></span>
                     </div>
                 </div>
 
+                <!-- Attachments Section (Optional) -->
+                <div class="card bg-light mb-3">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">Attachments</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-info-circle"></i> 
+                                    You can add photos and documents after creating the asset.
+                                </p>
+                                <div class="border rounded p-3 text-center bg-white">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+                                    <p class="mb-0">Drag & drop files here or click to browse</p>
+                                    <small class="text-muted">Supported: PDF, JPG, PNG (Max 10MB)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
                 <div class="row mt-4">
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="fas fa-save"></i> Create Asset
                         </button>
                         <a asp-action="Index" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Cancel
                         </a>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Quick Tips Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-success">
+                <i class="fas fa-lightbulb"></i> Quick Tips
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-tag fa-2x text-primary mb-2"></i>
+                        <h6 class="fw-bold">Asset Tag</h6>
+                        <p class="small text-muted">Use a consistent format like AST-YYYY-### for easy tracking</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-dollar-sign fa-2x text-primary mb-2"></i>
+                        <h6 class="fw-bold">Valuation</h6>
+                        <p class="small text-muted">Keep insured value updated based on current market rates</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-calendar fa-2x text-primary mb-2"></i>
+                        <h6 class="fw-bold">Inspections</h6>
+                        <p class="small text-muted">Schedule regular inspections to maintain compliance</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // Prevent double submission
+            $('#createAssetForm').on('submit', function() {
+                $('#submitBtn').prop('disabled', true)
+                               .html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+            });
+
+            // Auto-format VIN to uppercase
+            $('#VIN').on('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+
+            // Auto-format Asset Tag (remove spaces, uppercase)
+            $('#AssetTag').on('blur', function() {
+                this.value = this.value.trim().replace(/\s+/g, '-').toUpperCase();
+            });
+
+            // Validate year is not in future
+            $('#Year').on('change', function() {
+                var currentYear = new Date().getFullYear();
+                if (parseInt(this.value) > currentYear) {
+                    this.value = currentYear;
+                }
+            });
+
+            // Calculate current value based on purchase price (optional)
+            $('#PurchasePrice').on('change', function() {
+                var purchasePrice = parseFloat(this.value) || 0;
+                var currentValue = $('#CurrentValue').val();
+                
+                if (!currentValue && purchasePrice > 0) {
+                    // Default current value to 80% of purchase price
+                    $('#CurrentValue').val((purchasePrice * 0.8).toFixed(2));
+                }
+            });
+        });
+    </script>
 }
+
+<style>
+    /* Custom styles for the create form */
+    .card {
+        border-radius: 0.5rem;
+    }
+    
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fc;
+    }
+    
+    /* Validation styling */
+    .field-validation-error {
+        color: #e74a3b;
+    }
+    
+    .input-validation-error {
+        border-color: #e74a3b;
+    }
+    
+    .input-validation-error:focus {
+        border-color: #e74a3b;
+        box-shadow: 0 0 0 0.2rem rgba(231, 74, 59, 0.25);
+    }
+    
+    /* Loading state */
+    .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+    
+    /* Hover effects */
+    .border.rounded:hover {
+        border-color: #4e73df !important;
+        background-color: #f8f9fc !important;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+</style>

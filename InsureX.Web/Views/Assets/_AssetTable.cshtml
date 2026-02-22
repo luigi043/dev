@@ -1,4 +1,4 @@
-@model InsureX.Application.DTOs.PagedResult<InsureX.Application.DTOs.AssetDto>
+@model InsureX.Application.Common.Models.PagedResult<InsureX.Application.DTOs.AssetDto>
 
 <div class="table-responsive">
     <table class="table table-bordered table-hover" width="100%" cellspacing="0">
@@ -35,7 +35,14 @@
             @if (!Model.Items.Any())
             {
                 <tr>
-                    <td colspan="9" class="text-center">No assets found</td>
+                    <td colspan="9" class="text-center py-4">
+                        <i class="fas fa-box-open fa-2x mb-3 text-muted"></i>
+                        <h5>No assets found</h5>
+                        <p class="text-muted">Get started by creating a new asset</p>
+                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add Asset
+                        </a>
+                    </td>
                 </tr>
             }
             else
@@ -43,19 +50,32 @@
                 @foreach (var asset in Model.Items)
                 {
                     <tr>
-                        <td>@asset.AssetTag</td>
+                        <td>
+                            <strong>@asset.AssetTag</strong>
+                        </td>
                         <td>@asset.Make</td>
                         <td>@asset.Model</td>
                         <td>@asset.Year</td>
-                        <td>@(asset.VIN ?? asset.SerialNumber ?? "N/A")</td>
+                        <td>
+                            <span class="font-monospace">@(asset.VIN ?? asset.SerialNumber ?? "N/A")</span>
+                        </td>
                         <td>
                             <span class="badge @(asset.Status switch {
                                 "Active" => "bg-success",
                                 "Inactive" => "bg-secondary",
                                 "Maintenance" => "bg-warning",
                                 "Deleted" => "bg-danger",
-                                _ => "bg-info"
-                            }) text-white">
+                                "Pending" => "bg-info",
+                                _ => "bg-light text-dark"
+                            }) text-white px-3 py-2">
+                                <i class="fas @(asset.Status switch {
+                                    "Active" => "fa-check-circle",
+                                    "Inactive" => "fa-pause-circle",
+                                    "Maintenance" => "fa-tools",
+                                    "Deleted" => "fa-trash",
+                                    "Pending" => "fa-clock",
+                                    _ => "fa-question-circle"
+                                }) me-1"></i>
                                 @asset.Status
                             </span>
                         </td>
@@ -64,26 +84,73 @@
                                 "Compliant" => "bg-success",
                                 "Non-Compliant" => "bg-danger",
                                 "Pending" => "bg-warning",
-                                _ => "bg-info"
-                            }) text-white">
+                                "Expiring" => "bg-warning",
+                                "Expired" => "bg-danger",
+                                "Under Review" => "bg-info",
+                                _ => "bg-secondary"
+                            }) text-white px-3 py-2">
+                                <i class="fas @(asset.ComplianceStatus switch {
+                                    "Compliant" => "fa-shield-alt",
+                                    "Non-Compliant" => "fa-exclamation-triangle",
+                                    "Pending" => "fa-hourglass-half",
+                                    "Expiring" => "fa-clock",
+                                    "Expired" => "fa-ban",
+                                    "Under Review" => "fa-search",
+                                    _ => "fa-question"
+                                }) me-1"></i>
                                 @asset.ComplianceStatus
                             </span>
                         </td>
-                        <td>@(asset.InsuredValue?.ToString("C") ?? "N/A")</td>
+                        <td>
+                            @if (asset.InsuredValue.HasValue)
+                            {
+                                <span class="fw-bold">@asset.InsuredValue.Value.ToString("C2")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not insured</span>
+                            }
+                        </td>
                         <td>
                             <div class="btn-group" role="group">
                                 <a asp-action="Details" asp-route-id="@asset.Id" 
-                                   class="btn btn-sm btn-info" title="View Details">
+                                   class="btn btn-sm btn-outline-info" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <a asp-action="Edit" asp-route-id="@asset.Id" 
-                                   class="btn btn-sm btn-primary" title="Edit">
+                                   class="btn btn-sm btn-outline-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-danger delete-btn" 
-                                        data-id="@asset.Id" data-tag="@asset.AssetTag" title="Delete">
+                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn" 
+                                        data-id="@asset.Id" data-tag="@asset.AssetTag" 
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                        title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="viewCompliance('@asset.Id')">
+                                                <i class="fas fa-shield-alt me-2"></i>View Compliance
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="viewPolicies('@asset.Id')">
+                                                <i class="fas fa-file-contract me-2"></i>View Policies
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-warning" href="#" onclick="auditLog('@asset.Id')">
+                                                <i class="fas fa-history me-2"></i>Audit Log
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -96,9 +163,10 @@
 <!-- Pagination -->
 @if (Model.TotalPages > 1)
 {
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-sm-12 col-md-5">
-            <div class="dataTables_info">
+            <div class="dataTables_info text-muted">
+                <i class="fas fa-list me-1"></i>
                 Showing @((Model.Page - 1) * Model.PageSize + 1) to 
                 @(Math.Min(Model.Page * Model.PageSize, Model.TotalItems)) 
                 of @Model.TotalItems entries
@@ -108,21 +176,187 @@
             <div class="dataTables_paginate paging_simple_numbers">
                 <ul class="pagination justify-content-end">
                     <li class="paginate_button page-item @(Model.HasPrevious ? "" : "disabled")">
-                        <a href="#" class="page-link page-link-prev" data-page="@(Model.Page - 1)">Previous</a>
+                        <a href="#" class="page-link page-link-prev" 
+                           data-page="@(Model.Page - 1)" 
+                           @(!Model.HasPrevious ? "tabindex=-1 aria-disabled=true" : "")>
+                            <i class="fas fa-chevron-left me-1"></i>Previous
+                        </a>
                     </li>
                     
-                    @for (int i = 1; i <= Model.TotalPages; i++)
-                    {
-                        <li class="paginate_button page-item @(i == Model.Page ? "active" : "")">
-                            <a href="#" class="page-link page-link-num" data-page="@i">@i</a>
-                        </li>
+                    @{
+                        var startPage = Math.Max(1, Model.Page - 2);
+                        var endPage = Math.Min(Model.TotalPages, Model.Page + 2);
+                        
+                        if (startPage > 1)
+                        {
+                            <li class="paginate_button page-item">
+                                <a href="#" class="page-link page-link-num" data-page="1">1</a>
+                            </li>
+                            if (startPage > 2)
+                            {
+                                <li class="paginate_button page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            }
+                        }
+                        
+                        for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="paginate_button page-item @(i == Model.Page ? "active" : "")">
+                                <a href="#" class="page-link page-link-num" data-page="@i">@i</a>
+                            </li>
+                        }
+                        
+                        if (endPage < Model.TotalPages)
+                        {
+                            if (endPage < Model.TotalPages - 1)
+                            {
+                                <li class="paginate_button page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            }
+                            <li class="paginate_button page-item">
+                                <a href="#" class="page-link page-link-num" data-page="@Model.TotalPages">@Model.TotalPages</a>
+                            </li>
+                        }
                     }
                     
                     <li class="paginate_button page-item @(Model.HasNext ? "" : "disabled")">
-                        <a href="#" class="page-link page-link-next" data-page="@(Model.Page + 1)">Next</a>
+                        <a href="#" class="page-link page-link-next" 
+                           data-page="@(Model.Page + 1)"
+                           @(!Model.HasNext ? "tabindex=-1 aria-disabled=true" : "")>
+                            Next<i class="fas fa-chevron-right ms-1"></i>
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
 }
+
+<!-- Hidden fields for JavaScript -->
+<input type="hidden" id="currentPage" value="@Model.Page" />
+<input type="hidden" id="currentSort" value="@ViewBag.CurrentSort" />
+<input type="hidden" id="currentSortDir" value="@ViewBag.CurrentSortDir" />
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                    Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete asset: <strong id="deleteAssetTag"></strong>?</p>
+                <p class="text-danger mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <form id="deleteForm" asp-action="Delete" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deleteAssetId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Handle delete button clicks
+        $('.delete-btn').click(function() {
+            var id = $(this).data('id');
+            var tag = $(this).data('tag');
+            $('#deleteAssetId').val(id);
+            $('#deleteAssetTag').text(tag);
+        });
+
+        // Handle sort links
+        $('.sort-link').click(function(e) {
+            e.preventDefault();
+            var sortBy = $(this).data('sort');
+            var currentSort = $('#currentSort').val();
+            var currentSortDir = $('#currentSortDir').val();
+            
+            // Toggle sort direction if clicking same column
+            var sortDir = 'asc';
+            if (sortBy === currentSort) {
+                sortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+            }
+            
+            // Trigger search with new sort parameters
+            var searchTerm = $('input[name="searchTerm"]').val();
+            $.ajax({
+                url: '@Url.Action("Search", "Assets")',
+                type: 'POST',
+                data: {
+                    page: 1,
+                    searchTerm: searchTerm,
+                    sortBy: sortBy,
+                    sortDir: sortDir
+                },
+                success: function(result) {
+                    $('#assetTableContainer').html(result);
+                },
+                error: function() {
+                    toastr.error('Error sorting assets');
+                }
+            });
+        });
+
+        // Handle pagination clicks
+        $('.page-link-prev, .page-link-next, .page-link-num').click(function(e) {
+            e.preventDefault();
+            var page = $(this).data('page');
+            if (page) {
+                var searchTerm = $('input[name="searchTerm"]').val();
+                var sortBy = $('#currentSort').val();
+                var sortDir = $('#currentSortDir').val();
+                
+                $.ajax({
+                    url: '@Url.Action("Search", "Assets")',
+                    type: 'POST',
+                    data: {
+                        page: page,
+                        searchTerm: searchTerm,
+                        sortBy: sortBy,
+                        sortDir: sortDir
+                    },
+                    success: function(result) {
+                        $('#assetTableContainer').html(result);
+                    },
+                    error: function() {
+                        toastr.error('Error loading page');
+                    }
+                });
+            }
+        });
+    });
+
+    // Additional functions for dropdown actions
+    function viewCompliance(assetId) {
+        // Redirect to compliance view or open modal
+        window.location.href = '@Url.Action("Compliance", "Assets")/' + assetId;
+    }
+
+    function viewPolicies(assetId) {
+        // Redirect to policies view
+        window.location.href = '@Url.Action("Policies", "Assets")/' + assetId;
+    }
+
+    function auditLog(assetId) {
+        // Redirect to audit log
+        window.location.href = '@Url.Action("AuditLog", "Assets")/' + assetId;
+    }
+</script>

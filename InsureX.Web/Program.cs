@@ -4,6 +4,18 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
+using Mapster;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Threading.Tasks;
+using System.Threading;
+
+// ======= Project Imports =======
 using InsureX.Infrastructure.Data;
 using InsureX.Infrastructure.Tenant;
 using InsureX.Domain.Entities;
@@ -12,11 +24,8 @@ using InsureX.Infrastructure.Repositories;
 using InsureX.Application.Interfaces;
 using InsureX.Application.Services;
 using InsureX.Infrastructure.Services;
-using Microsoft.Extensions.Logging;
-using System;
-using Mapster; // Add this for Mapster
-using Microsoft.AspNetCore.Http;
-using OfficeOpenXml;
+using InsureX.Application.Common.Interfaces;
+using InsureX.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +89,14 @@ builder.Services.AddHttpContextAccessor();
 // ======= Add CORS =======
 builder.Services.AddCors(options =>
 {
+    options.AddPolicy("AllowSpecific", policy =>
+    {
+        policy.WithOrigins("https://localhost:5001", "https://localhost:5002")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+    
     options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
@@ -93,7 +110,7 @@ builder.Services.AddResponseCaching();
 
 // ======= Add Health Checks =======
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>();
+    .AddDbContextCheck<AppDbContext>("Database", HealthStatus.Unhealthy);
 
 // ======= Add Razor Pages =======
 builder.Services.AddRazorPages();
@@ -108,22 +125,42 @@ builder.Services.AddEndpointsApiExplorer();
 // ======= Add Swagger =======
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "InsureX API",
         Version = "v1",
-        Description = "Insurance Asset Protection & Compliance Platform API"
+        Description = "Insurance Asset Protection & Compliance Platform API",
+        Contact = new OpenApiContact
+        {
+            Name = "InsureX Team",
+            Email = "support@insurex.com"
+        }
     });
     
     // Add JWT Authentication to Swagger
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme."
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token."
+    });
+    
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
 });
 
@@ -139,20 +176,20 @@ builder.Services.AddScoped<IPolicyService, PolicyService>();
 builder.Services.AddScoped<IAssetService, AssetService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 
 // ======= Contexts / Helpers =======
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IDataSeeder, DataSeeder>();
 
 // ======= Background Services =======
 builder.Services.AddHostedService<ComplianceBackgroundService>();
 
-// ======= Data Seeder =======
-builder.Services.AddScoped<IDataSeeder, DataSeeder>();
-
 // ======= Mapster Configuration =======
 TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
+TypeAdapterConfig.GlobalSettings.Scan(typeof(Program).Assembly);
 
 // ======= Logging =======
 builder.Services.AddLogging(logging =>
@@ -161,8 +198,12 @@ builder.Services.AddLogging(logging =>
     logging.AddConsole();
     logging.AddDebug();
     logging.AddEventSourceLogger();
+    logging.AddEventLog();
 });
+
+// ======= Set EPPlus License Context =======
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
 var app = builder.Build();
 
 // ======= Middleware Pipeline =======
@@ -180,7 +221,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -191,8 +232,15 @@ app.UseStaticFiles();
 // Routing
 app.UseRouting();
 
-// CORS
-app.UseCors("AllowAll");
+// CORS - Use specific policy for production
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowAll");
+}
+else
+{
+    app.UseCors("AllowSpecific");
+}
 
 // Response caching
 app.UseResponseCaching();
@@ -202,7 +250,26 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Health checks
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var response = new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new
+            {
+                name = e.Key,
+                status = e.Value.Status.ToString(),
+                description = e.Value.Description,
+                duration = e.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration.ToString()
+        };
+        await context.Response.WriteAsJsonAsync(response);
+    }
+});
 
 // Map endpoints
 app.MapControllerRoute(
@@ -221,9 +288,18 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<AppDbContext>();
         var logger = services.GetRequiredService<ILogger<Program>>();
         
-        // Apply migrations
-        logger.LogInformation("Applying database migrations...");
-        await context.Database.MigrateAsync();
+        // Check if database exists and apply migrations
+        logger.LogInformation("Checking database connection...");
+        if (await context.Database.CanConnectAsync())
+        {
+            logger.LogInformation("Database connection successful. Applying migrations...");
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Migrations applied successfully.");
+        }
+        else
+        {
+            logger.LogWarning("Cannot connect to database. Please check connection string.");
+        }
         
         // Seed data
         logger.LogInformation("Seeding initial data...");
@@ -236,8 +312,20 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while migrating or seeding the database");
+        
+        // In development, throw to see the error
+        if (app.Environment.IsDevelopment())
+        {
+            throw;
+        }
     }
 }
+
+// ======= Log Application Start =======
+var appLogger = app.Services.GetRequiredService<ILogger<Program>>();
+appLogger.LogInformation("Application started successfully");
+appLogger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
+appLogger.LogInformation("URLs: https://localhost:5001, https://localhost:5002");
 
 app.Run();
 

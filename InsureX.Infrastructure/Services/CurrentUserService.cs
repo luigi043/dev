@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using InsureX.Domain.Interfaces;
+using InsureX.Application.Common.Interfaces;
 
 namespace InsureX.Infrastructure.Services;
 
@@ -13,21 +13,23 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string? GetCurrentUserId()
+    public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    public string? UserName => _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+    public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
+    public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+    
+    public IEnumerable<string> Roles => _httpContextAccessor.HttpContext?.User?
+        .FindAll(ClaimTypes.Role)
+        .Select(c => c.Value) ?? Enumerable.Empty<string>();
+    
+    public Guid? TenantId
     {
-        return _httpContextAccessor.HttpContext?.User?
-            .FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    }
-
-    public string? GetCurrentUserEmail()
-    {
-        return _httpContextAccessor.HttpContext?.User?
-            .FindFirst(ClaimTypes.Email)?.Value;
-    }
-
-    public bool IsAuthenticated()
-    {
-        return _httpContextAccessor.HttpContext?.User?
-            .Identity?.IsAuthenticated == true;
+        get
+        {
+            var tenantClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant_id");
+            return tenantClaim != null && Guid.TryParse(tenantClaim.Value, out var tenantId) 
+                ? tenantId 
+                : null;
+        }
     }
 }

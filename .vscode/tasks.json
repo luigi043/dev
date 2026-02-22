@@ -15,6 +15,9 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "presentation": {
+                "reveal": "silent"
             }
         },
         {
@@ -27,32 +30,11 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "build-all",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/InsureX.slnx",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
             "problemMatcher": "$msCompile",
-            "group": "build"
-        },
-        {
-            "label": "watch-web",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "run",
-                "--project",
-                "${workspaceFolder}/src/InsureX.Web/InsureX.Web.csproj"
-            ],
-            "problemMatcher": "$msCompile"
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            }
         },
         {
             "label": "watch-api",
@@ -63,6 +45,34 @@
                 "run",
                 "--project",
                 "${workspaceFolder}/src/InsureX.Api/InsureX.Api.csproj"
+            ],
+            "problemMatcher": "$msCompile",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/InsureX.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "restore",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "restore",
+                "${workspaceFolder}/InsureX.sln"
             ],
             "problemMatcher": "$msCompile"
         }

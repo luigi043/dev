@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "64DozZ1i+gs=",
+  "dgSpecHash": "cRiyfJVPkxU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cluiz\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\cluiz\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
@@ -127,9 +127,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.CSharp.Workspaces 4.5.0 requires Microsoft.CodeAnalysis.Common (= 4.5.0) but version Microsoft.CodeAnalysis.Common 4.6.0 was resolved.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net8.0"
@@ -139,9 +139,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.CSharp.Workspaces 4.5.0 requires Microsoft.CodeAnalysis.CSharp (= 4.5.0) but version Microsoft.CodeAnalysis.CSharp 4.6.0 was resolved.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
       "libraryId": "Microsoft.CodeAnalysis.CSharp",
       "targetGraphs": [
         "net8.0"
@@ -151,9 +151,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.Workspaces.Common 4.5.0 requires Microsoft.CodeAnalysis.Common (= 4.5.0) but version Microsoft.CodeAnalysis.Common 4.6.0 was resolved.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net8.0"

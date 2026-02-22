@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using InsureX.Application.Interfaces;
 using InsureX.Application.DTOs;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
+using Mapster; // Add this for Adapt() extension
 
 namespace InsureX.Web.Controllers;
 
@@ -41,6 +43,15 @@ public class AssetsController : Controller
     {
         try
         {
+            if (search == null)
+            {
+                search = new AssetSearchDto
+                {
+                    Page = 1,
+                    PageSize = 10
+                };
+            }
+
             var result = await _assetService.GetPagedAsync(search);
             return PartialView("_AssetTable", result);
         }
@@ -107,7 +118,7 @@ public class AssetsController : Controller
 
         try
         {
-            var asset = await _assetService.UpdateAsync(dto);
+            var asset = await _assetService.UpdateAsync(id, dto);
             if (asset == null)
             {
                 return NotFound();

@@ -1,12 +1,20 @@
 {
-    "dotnet.defaultSolution": "InsureX.slnx",
+    "dotnet.defaultSolution": "InsureX.sln",
     "files.exclude": {
         "**/bin": true,
         "**/obj": true,
         "**/.vs": true
     },
+    "search.exclude": {
+        "**/bin": true,
+        "**/obj": true
+    },
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll": "explicit"
-    }
+    },
+    "csharp.inlayHints.types.enabled": true,
+    "dotnet.preferVisualStudioCodeFile": true,
+    "dotnet.inlayHints.enableInlayHintsForParameters": true,
+    "csharp.inlayHints.enableInlayHintsForTypes": true
 }

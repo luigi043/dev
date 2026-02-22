@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "InsureX.Web-Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://+:443;http://+:80"
+      },
+      "publishAllPorts": true,
+      "useSSL": true,
+      "sslPort": 5001,
+      "httpPort": 5000
+    }
+  }
+}
