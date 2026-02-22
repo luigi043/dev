@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using Mapster; // Add this for Mapster
 using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -161,7 +162,7 @@ builder.Services.AddLogging(logging =>
     logging.AddDebug();
     logging.AddEventSourceLogger();
 });
-
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 var app = builder.Build();
 
 // ======= Middleware Pipeline =======

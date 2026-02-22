@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InsureX.Domain.Entities;
+using System;
 
 namespace InsureX.Domain.Interfaces;
 
 public interface IAssetRepository : IRepository<Asset>
 {
-    // Only add EXTENSION methods here - NOT the basic CRUD ones!
-    
     // Query methods
     Task<IQueryable<Asset>> GetQueryableAsync();
     Task<int> CountAsync(IQueryable<Asset> query);
@@ -19,15 +18,9 @@ public interface IAssetRepository : IRepository<Asset>
     Task<int> GetCompliantCountAsync();
     Task<Dictionary<string, int>> GetCountByStatusAsync();
     
-    // REMOVE these - they're already in IRepository<T>!
-    // Task<Asset?> GetByIdAsync(int id);         
-    // Task<int> GetCountAsync();                  
-    // Task<List<Asset>> GetRecentAsync(int count); 
-    // Task<bool> ExistsAsync(string assetTag);    <- KEEP (specific to string parameter)
-    // Task AddAsync(Asset asset);                  
-    // Task UpdateAsync(Asset asset);               
-    // Task DeleteAsync(int id);                    
-    // Task SaveChangesAsync();                     
+    // NEW METHODS - Add these to fix the errors
+    Task<int> GetCountAsync(Func<Asset, bool> predicate);  // For line 202
+    Task<List<Asset>> GetRecentAsync(int count, Guid tenantId);  // For line 212
     
     // Keep this one - it's specific to string parameter
     Task<bool> ExistsAsync(string assetTag);

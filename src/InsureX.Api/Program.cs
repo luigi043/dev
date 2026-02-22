@@ -1,4 +1,6 @@
 using Mapster;
+using OfficeOpenXml;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -55,7 +57,7 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
-
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

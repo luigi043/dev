@@ -11,6 +11,8 @@ using InsureX.Domain.Interfaces;
 using Mapster;
 using OfficeOpenXml;
 using InsureX.Application.Interfaces;
+using DomainUserService = InsureX.Domain.Interfaces.ICurrentUserService;
+
 
 namespace InsureX.Application.Services
 {
@@ -20,6 +22,7 @@ namespace InsureX.Application.Services
         private readonly ITenantContext _tenantContext;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<AssetService> _logger;
+        private readonly DomainUserService _currentUserService;
 
         public AssetService(
             IAssetRepository assetRepository,
@@ -197,20 +200,27 @@ namespace InsureX.Application.Services
         public async Task<int> GetCountAsync()
         {
             var tenantId = _tenantContext.GetCurrentTenantId()
-                           ?? throw new UnauthorizedAccessException();
+                        ?? throw new UnauthorizedAccessException();
 
-            return await _assetRepository.GetCountAsync(a =>
-                a.TenantId == tenantId &&
-                a.Status != "Deleted");
+            // Alternative: Use GetQueryableAsync + CountAsync
+            var query = await _assetRepository.GetQueryableAsync();
+            query = query.Where(a => a.TenantId == tenantId && a.Status != "Deleted");
+            return await _assetRepository.CountAsync(query);
         }
 
         public async Task<List<AssetDto>> GetRecentAsync(int count)
         {
             var tenantId = _tenantContext.GetCurrentTenantId()
-                           ?? throw new UnauthorizedAccessException();
+                        ?? throw new UnauthorizedAccessException();
 
-            var assets = await _assetRepository.GetRecentAsync(count, tenantId);
-            return assets.Adapt<List<AssetDto>>();
+            // Alternative: Use GetQueryableAsync + manual ordering
+            var query = await _assetRepository.GetQueryableAsync();
+            query = query.Where(a => a.TenantId == tenantId && a.Status != "Deleted")
+                        .OrderByDescending(a => a.CreatedAt)
+                        .Take(count);
+            
+            var items = await _assetRepository.GetPagedAsync(query, 1, count);
+            return items.Adapt<List<AssetDto>>();
         }
 
         public async Task<byte[]> ExportToExcelAsync(AssetSearchDto search)
