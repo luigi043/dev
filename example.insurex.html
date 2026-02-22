@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsureX — Intelligent Car Insurance</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --bg2: #0f1217;
+    --bg3: #151a22;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #c8a96e;
+    --accent2: #e8c98e;
+    --accent-dim: rgba(200,169,110,0.12);
+    --accent-dim2: rgba(200,169,110,0.06);
+    --danger: #e05252;
+    --success: #4ade80;
+    --info: #60a5fa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── VIEWS ─────────────────────────────────────── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ─── LANDING ────────────────────────────────────── */
+  #landing {
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* Grid background */
+  #landing::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,169,110,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,169,110,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orb */
+  .orb {
+    position: fixed;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,169,110,0.08) 0%, transparent 70%);
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,12,15,0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+
+  .nav-links { display: flex; gap: 36px; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-actions { display: flex; gap: 12px; align-items: center; }
+
+  .btn {
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border2);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0c0f;
+    font-weight: 600;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(200,169,110,0.25); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .btn-outline:hover { background: var(--accent-dim); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 200px 60px 120px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid rgba(200,169,110,0.3);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 32px;
+    background: var(--accent-dim2);
+  }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(52px, 7vw, 96px);
+    line-height: 1.0;
+    color: var(--text);
+    margin-bottom: 28px;
+    letter-spacing: -2px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero p {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .hero-cta { display: flex; gap: 16px; align-items: center; }
+  .hero-cta .btn { padding: 14px 32px; font-size: 15px; }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-sub::before { content: '✓'; color: var(--accent); }
+
+  /* STATS */
+  .stats {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    max-width: 1200px;
+    margin: 0 auto 120px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .stat-item {
+    background: var(--bg2);
+    padding: 48px 40px;
+    transition: background 0.2s;
+  }
+  .stat-item:hover { background: var(--bg3); }
+
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -2px;
+  }
+
+  .stat-label { font-size: 14px; color: var(--muted); font-weight: 400; }
+
+  /* FEATURES */
+  .section {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto 120px;
+    padding: 0 60px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 60px;
+    color: var(--text);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .feature-card {
+    background: var(--bg2);
+    padding: 40px;
+    transition: background 0.25s;
+    cursor: default;
+  }
+  .feature-card:hover { background: var(--bg3); }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(200,169,110,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .feature-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* CTA SECTION */
+  .cta-section {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto 120px;
+    padding: 0 60px;
+  }
+
+  .cta-box {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .cta-box h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+  .cta-box p { color: var(--muted); font-size: 16px; margin-bottom: 36px; font-weight: 300; }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer p { font-size: 13px; color: var(--muted); }
+
+  /* ─── AUTH VIEW ──────────────────────────────────── */
+  #auth {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    position: relative;
+  }
+
+  #auth::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,169,110,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,169,110,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .auth-panel {
+    position: relative;
+    z-index: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 56px 52px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+
+  .auth-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .auth-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .auth-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .auth-sub { font-size: 14px; color: var(--muted); margin-bottom: 36px; font-weight: 300; }
+
+  .form-group { margin-bottom: 18px; }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-input:focus {
+    border-color: rgba(200,169,110,0.5);
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.06);
+  }
+
+  .form-input::placeholder { color: rgba(107,114,128,0.6); }
+
+  .form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    margin-top: 4px;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .checkbox-label input { accent-color: var(--accent); }
+
+  .forgot-link {
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .forgot-link:hover { text-decoration: underline; }
+
+  .auth-divider {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 24px 0;
+    position: relative;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 24px);
+    height: 1px;
+    background: var(--border);
+  }
+  .auth-divider::before { left: 0; }
+  .auth-divider::after { right: 0; }
+
+  .auth-switch {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 28px;
+  }
+
+  .auth-switch a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .auth-back {
+    position: absolute;
+    top: 24px; left: 24px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+  .auth-back:hover { color: var(--text); }
+
+  /* ─── DASHBOARD ──────────────────────────────────── */
+  #dashboard {
+    display: none;
+    min-height: 100vh;
+    background: var(--bg);
+  }
+  #dashboard.active { display: flex; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 50;
+  }
+
+  .sidebar-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--accent);
+    padding: 0 28px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar-section {
+    padding: 24px 16px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(107,114,128,0.5);
+  }
+
+  .sidebar-nav { flex: 1; padding: 8px 0; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 28px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    border-radius: 0;
+    text-decoration: none;
+    margin: 1px 0;
+  }
+
+  .nav-item:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .nav-item.active {
+    color: var(--accent);
+    background: var(--accent-dim2);
+    border-left-color: var(--accent);
+  }
+
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--danger);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 100px;
+  }
+
+  .sidebar-user {
+    padding: 20px 20px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--bg3);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .user-card:hover { background: rgba(255,255,255,0.05); }
+
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 1px solid rgba(200,169,110,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: var(--muted); }
+  .user-chevron { font-size: 12px; color: var(--muted); }
+
+  /* Main content */
+  .main-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 40px 48px;
+    width: calc(100% - 260px);
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Topbar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  .topbar h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .topbar-actions { display: flex; gap: 12px; align-items: center; }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 16px;
+    color: var(--muted);
+    font-size: 14px;
+    min-width: 220px;
+  }
+
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    width: 100%;
+  }
+  .search-box input::placeholder { color: var(--muted); }
+
+  .notif-btn {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--muted);
+    transition: all 0.2s;
+    position: relative;
+  }
+  .notif-btn:hover { background: var(--bg3); color: var(--text); }
+  .notif-btn::after {
+    content: '';
+    position: absolute;
+    top: 8px; right: 9px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .kpi-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .kpi-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+  .kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .kpi-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .kpi-trend {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 100px;
+  }
+  .kpi-trend.up { color: var(--success); background: rgba(74,222,128,0.1); }
+  .kpi-trend.down { color: var(--danger); background: rgba(224,82,82,0.1); }
+
+  .kpi-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    color: var(--text);
+    letter-spacing: -1px;
+    margin-bottom: 4px;
+  }
+
+  .kpi-label { font-size: 13px; color: var(--muted); }
+
+  /* Chart row */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .card-action {
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+  .card-action:hover { text-decoration: underline; }
+
+  /* Fake chart bars */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 160px;
+  }
+
+  .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; }
+  .bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; gap: 3px; }
+
+  .bar {
+    flex: 1;
+    border-radius: 4px 4px 0 0;
+    transition: opacity 0.2s;
+    min-height: 8px;
+  }
+  .bar:hover { opacity: 0.8; }
+  .bar.primary { background: var(--accent); }
+  .bar.secondary { background: rgba(200,169,110,0.25); }
+
+  .bar-label { font-size: 10px; color: var(--muted); }
+
+  /* Donut chart */
+  .donut-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .donut-svg { flex-shrink: 0; }
+
+  .donut-legend { display: flex; flex-direction: column; gap: 12px; }
+
+  .legend-item { display: flex; align-items: center; gap: 10px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-text { font-size: 13px; color: var(--muted); }
+  .legend-val { font-size: 13px; font-weight: 600; color: var(--text); margin-left: auto; padding-left: 16px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 16px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .status-badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+
+  .status-active { color: var(--success); background: rgba(74,222,128,0.1); }
+  .status-active::before { background: var(--success); }
+  .status-pending { color: #fbbf24; background: rgba(251,191,36,0.1); }
+  .status-pending::before { background: #fbbf24; }
+  .status-rejected { color: var(--danger); background: rgba(224,82,82,0.1); }
+  .status-rejected::before { background: var(--danger); }
+
+  /* Tab sub-nav */
+  .sub-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    width: fit-content;
+  }
+
+  .sub-tab {
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .sub-tab.active {
+    background: var(--bg3);
+    color: var(--text);
+  }
+
+  /* Policy card */
+  .policy-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+  .policy-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .policy-card:hover { border-color: var(--border2); }
+
+  .policy-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .policy-car { font-size: 32px; margin-bottom: 16px; }
+
+  .policy-name { font-weight: 600; font-size: 17px; margin-bottom: 4px; }
+  .policy-plate {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: monospace;
+    background: var(--bg3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  .policy-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .policy-info-item label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 3px; }
+  .policy-info-item span { font-size: 14px; font-weight: 500; }
+
+  .policy-actions { display: flex; gap: 8px; }
+
+  /* Claim submit */
+  .claim-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .upload-area {
+    border: 2px dashed var(--border2);
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    grid-column: span 2;
+  }
+  .upload-area:hover {
+    border-color: rgba(200,169,110,0.4);
+    background: var(--accent-dim2);
+  }
+
+  .upload-icon { font-size: 36px; margin-bottom: 12px; }
+  .upload-area p { font-size: 14px; margin-bottom: 4px; }
+  .upload-area span { font-size: 12px; color: rgba(107,114,128,0.6); }
+
+  .form-select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  textarea.form-input {
+    resize: vertical;
+    min-height: 100px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Animations */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeIn 0.35s ease forwards; }
+
+  .page.active { animation: fadeIn 0.25s ease; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ LANDING ═══════════════════════════ -->
+<div id="landing" class="view active">
+  <div class="orb"></div>
+
+  <nav>
+    <div class="logo"><span class="logo-dot"></span> InsureX</div>
+    <div class="nav-links">
+      <a>Coverage</a>
+      <a>Claims</a>
+      <a>About</a>
+      <a>Pricing</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="showAuth('login')">Sign in</button>
+      <button class="btn btn-primary" onclick="showAuth('register')">Get insured</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-badge">Trusted by 48,000+ drivers across Europe</div>
+    <h1>Insurance that<br>works <em>for you</em></h1>
+    <p>Smart, transparent car insurance designed for modern drivers. Get covered in minutes, manage everything online.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="showAuth('register')">Get your free quote</button>
+      <button class="btn btn-ghost" onclick="showAuth('login')">Existing customer →</button>
+    </div>
+  </div>
+
+  <div class="stats" style="padding:0 60px; background:none; border:none; border-radius:0; margin-bottom:0;">
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:1200px; margin:0 auto 120px;">
+      <div class="stat-item" style="border-radius:12px; border:1px solid var(--border);">
+        <div class="stat-num">48k+</div>
+        <div class="stat-label">Active policies protected</div>
+      </div>
+      <div class="stat-item" style="border-radius:12px; border:1px solid var(--border);">
+        <div class="stat-num">€2.1M</div>
+        <div class="stat-label">Claims paid this year</div>
+      </div>
+      <div class="stat-item" style="border-radius:12px; border:1px solid var(--border);">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Customer satisfaction rate</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why InsureX</div>
+    <div class="section-title">Everything you need.<br>Nothing you don't.</div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Full Coverage Plans</div>
+        <div class="feature-desc">Comprehensive, third-party, and theft plans. Compare and choose the coverage that fits your life and budget.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Instant Claims</div>
+        <div class="feature-desc">Submit accident claims in under 2 minutes. Upload photos, track status in real time, no paperwork required.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Bank-Grade Security</div>
+        <div class="feature-desc">AES-256 encryption, GDPR compliant. Your personal and financial data is protected at every layer.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <div class="feature-title">Fully Digital</div>
+        <div class="feature-desc">Manage your policy, download documents, update your info — all from a single dashboard, anytime.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <div class="feature-title">Flexible Payments</div>
+        <div class="feature-desc">Monthly or annual billing. Auto-renewal included. Seamless Stripe-powered checkout with instant invoices.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Smart Risk Scoring</div>
+        <div class="feature-desc">AI-powered premium calculation based on your driving profile. Fair pricing, not one-size-fits-all.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-section">
+    <div class="cta-box">
+      <h2>Ready to get covered?</h2>
+      <p>Join tens of thousands of drivers who trust InsureX to protect what matters.</p>
+      <button class="btn btn-primary" style="padding:16px 40px; font-size:15px;" onclick="showAuth('register')">Create your account</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="logo" style="font-size:18px;"><span class="logo-dot"></span> InsureX</div>
+    <p>© 2025 InsureX. All rights reserved. GDPR Compliant.</p>
+    <p style="font-size:12px; color:rgba(107,114,128,0.5);">Secure · Encrypted · Trusted</p>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════ AUTH ═══════════════════════════ -->
+<div id="auth" class="view">
+  <button class="auth-back" onclick="showLanding()">← Back</button>
+
+  <!-- LOGIN -->
+  <div id="auth-login" class="auth-panel">
+    <div class="auth-logo"><span class="logo-dot"></span> InsureX</div>
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-sub">Sign in to your account to manage your policies.</div>
+
+    <div class="form-group">
+      <label class="form-label">Email address</label>
+      <input type="email" class="form-input" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" placeholder="••••••••">
+    </div>
+    <div class="form-footer">
+      <label class="checkbox-label">
+        <input type="checkbox"> Remember me
+      </label>
+      <a class="forgot-link">Forgot password?</a>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; padding:13px;" onclick="showDashboard()">Sign in</button>
+
+    <div class="auth-divider">or</div>
+
+    <button class="btn btn-outline" style="width:100%; padding:13px;">Continue with Google</button>
+
+    <div class="auth-switch">
+      Don't have an account? <a onclick="switchAuth('register')">Create one</a>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="auth-register" class="auth-panel" style="display:none; max-width:520px;">
+    <div class="auth-logo"><span class="logo-dot"></span> InsureX</div>
+    <div class="auth-title">Create account</div>
+    <div class="auth-sub">Get insured in minutes. No paperwork required.</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">First name</label>
+        <input type="text" class="form-input" placeholder="João">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Last name</label>
+        <input type="text" class="form-input" placeholder="Silva">
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:14px;">
+      <label class="form-label">Email address</label>
+      <input type="email" class="form-input" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone</label>
+      <input type="tel" class="form-input" placeholder="+351 912 345 678">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" placeholder="Min. 8 characters">
+    </div>
+    <div class="form-group">
+      <label class="checkbox-label" style="font-size:12px;">
+        <input type="checkbox"> I agree to the Terms of Service and Privacy Policy
+      </label>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; padding:13px; margin-top:4px;" onclick="showDashboard()">Create account</button>
+
+    <div class="auth-switch">
+      Already have an account? <a onclick="switchAuth('login')">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ DASHBOARD ═══════════════════════════ -->
+<div id="dashboard" class="view">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo"><span class="logo-dot"></span> InsureX</div>
+    <div class="sidebar-nav">
+      <div class="sidebar-section">Main</div>
+      <div class="nav-item active" onclick="showPage('overview', this)"><span class="icon">⊞</span> Overview</div>
+      <div class="nav-item" onclick="showPage('policies', this)"><span class="icon">📄</span> My Policies</div>
+      <div class="nav-item" onclick="showPage('claims', this)"><span class="icon">🔔</span> Claims <span class="nav-badge">2</span></div>
+      <div class="nav-item" onclick="showPage('payments', this)"><span class="icon">💳</span> Payments</div>
+      <div class="sidebar-section">Account</div>
+      <div class="nav-item" onclick="showPage('documents', this)"><span class="icon">📁</span> Documents</div>
+      <div class="nav-item" onclick="showPage('profile', this)"><span class="icon">👤</span> Profile</div>
+      <div class="nav-item" onclick="showLanding()"><span class="icon">↩</span> Sign out</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-card">
+        <div class="user-avatar">JS</div>
+        <div class="user-info">
+          <div class="user-name">João Silva</div>
+          <div class="user-role">Customer</div>
+        </div>
+        <span class="user-chevron">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main-content">
+
+    <!-- OVERVIEW PAGE -->
+    <div id="page-overview" class="page active">
+      <div class="topbar">
+        <div>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:4px;">Good morning 👋</div>
+          <h1>Overview</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="search-box">
+            <span>🔍</span>
+            <input placeholder="Search policies, claims…">
+          </div>
+          <div class="notif-btn">🔔</div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">📄</div>
+            <div class="kpi-trend up">+2</div>
+          </div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-label">Active Policies</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">🔔</div>
+            <div class="kpi-trend down">2 open</div>
+          </div>
+          <div class="kpi-value">5</div>
+          <div class="kpi-label">Total Claims</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">💳</div>
+            <div class="kpi-trend up">On time</div>
+          </div>
+          <div class="kpi-value">€892</div>
+          <div class="kpi-label">Annual Premium</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon">📅</div>
+            <div class="kpi-trend up">127d</div>
+          </div>
+          <div class="kpi-value">Jul 15</div>
+          <div class="kpi-label">Next Renewal</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Premium History</div>
+            <button class="card-action">View all</button>
+          </div>
+          <div class="bar-chart">
+            <div class="bar-group">
+              <div class="bar-wrap">
+                <div class="bar primary" style="height:55%"></div>
+                <div class="bar secondary" style="height:40%"></div>
+              </div>
+              <div class="bar-label">Jan</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap">
+                <div class="bar primary" style="height:68%"></div>
+                <div class="bar secondary" style="height:50%"></div>
+              </div>
+              <div class="bar-label">Feb</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap">
+                <div class="bar primary" style="height:72%"></div>
+                <div class="bar secondary" style="height:55%"></div>
+              </div>
+              <div class="bar-label">Mar</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap">
+                <div class="bar primary" style="height:60%"></div>
+                <div class="bar secondary" style="height:62%"></div>
+              </div>
+              <div class="bar-label">Apr</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap">
+                <div class="bar primary" style="height:85%"></div>
+                <div class="bar secondary" style="height:48%"></div>
+              </div>
+              <div class="bar-label">May</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap">
+                <div class="bar primary" style="height:78%"></div>
+                <div class="bar secondary" style="height:70%"></div>
+              </div>
+              <div class="bar-label">Jun</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap">
+                <div class="bar primary" style="height:90%"></div>
+                <div class="bar secondary" style="height:55%"></div>
+              </div>
+              <div class="bar-label">Jul</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Coverage Breakdown</div>
+          </div>
+          <div class="donut-wrapper">
+            <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--bg3)" stroke-width="16"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--accent)" stroke-width="16"
+                stroke-dasharray="180 121" stroke-dashoffset="-37" stroke-linecap="round"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#60a5fa" stroke-width="16"
+                stroke-dasharray="100 201" stroke-dashoffset="-220" stroke-linecap="round"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#4ade80" stroke-width="16"
+                stroke-dasharray="20 281" stroke-dashoffset="-323" stroke-linecap="round"/>
+              <text x="60" y="55" text-anchor="middle" font-family="DM Serif Display" font-size="18" fill="var(--text)">3</text>
+              <text x="60" y="70" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="DM Sans">policies</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--accent)"></div>
+                <span class="legend-text">Comprehensive</span>
+                <span class="legend-val">60%</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#60a5fa"></div>
+                <span class="legend-text">Third-party</span>
+                <span class="legend-val">33%</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#4ade80"></div>
+                <span class="legend-text">Theft only</span>
+                <span class="legend-val">7%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Activity</div>
+          <button class="card-action">View all claims →</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Claim ID</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Vehicle</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0041</td>
+                <td>12 Jul 2025</td>
+                <td>Collision</td>
+                <td>BMW 320d</td>
+                <td>€3,200</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0038</td>
+                <td>28 Jun 2025</td>
+                <td>Theft attempt</td>
+                <td>VW Golf VIII</td>
+                <td>€850</td>
+                <td><span class="status-badge status-active">Approved</span></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0029</td>
+                <td>4 May 2025</td>
+                <td>Windshield</td>
+                <td>BMW 320d</td>
+                <td>€420</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0014</td>
+                <td>18 Feb 2025</td>
+                <td>Third-party</td>
+                <td>VW Golf VIII</td>
+                <td>€1,800</td>
+                <td><span class="status-badge status-rejected">Rejected</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- POLICIES PAGE -->
+    <div id="page-policies" class="page">
+      <div class="topbar">
+        <h1>My Policies</h1>
+        <button class="btn btn-primary">+ New Policy</button>
+      </div>
+
+      <div class="sub-tabs">
+        <button class="sub-tab active">All Policies</button>
+        <button class="sub-tab">Active</button>
+        <button class="sub-tab">Expired</button>
+      </div>
+
+      <div class="policy-cards">
+        <div class="policy-card">
+          <div class="policy-car">🚗</div>
+          <div class="policy-name">BMW 320d Sedan</div>
+          <div class="policy-plate">00-AA-000</div>
+          <div class="policy-info">
+            <div class="policy-info-item">
+              <label>Policy type</label>
+              <span>Comprehensive</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Premium</label>
+              <span>€52 / month</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Start date</label>
+              <span>15 Jan 2025</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Renewal</label>
+              <span>15 Jul 2025</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <span class="status-badge status-active">Active</span>
+          </div>
+          <div class="policy-actions">
+            <button class="btn btn-ghost" style="flex:1; font-size:13px; padding:9px;">Download PDF</button>
+            <button class="btn btn-outline" style="flex:1; font-size:13px; padding:9px;">Details</button>
+          </div>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-car">🚙</div>
+          <div class="policy-name">VW Golf VIII GTI</div>
+          <div class="policy-plate">AB-12-CD</div>
+          <div class="policy-info">
+            <div class="policy-info-item">
+              <label>Policy type</label>
+              <span>Third-party</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Premium</label>
+              <span>€31 / month</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Start date</label>
+              <span>3 Mar 2025</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Renewal</label>
+              <span>3 Sep 2025</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <span class="status-badge status-active">Active</span>
+          </div>
+          <div class="policy-actions">
+            <button class="btn btn-ghost" style="flex:1; font-size:13px; padding:9px;">Download PDF</button>
+            <button class="btn btn-outline" style="flex:1; font-size:13px; padding:9px;">Details</button>
+          </div>
+        </div>
+
+        <div class="policy-card" style="opacity:0.65;">
+          <div class="policy-car">🚐</div>
+          <div class="policy-name">Renault Kangoo Van</div>
+          <div class="policy-plate">ZZ-99-ZZ</div>
+          <div class="policy-info">
+            <div class="policy-info-item">
+              <label>Policy type</label>
+              <span>Third-party</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Premium</label>
+              <span>€29 / month</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Start date</label>
+              <span>10 Jun 2024</span>
+            </div>
+            <div class="policy-info-item">
+              <label>Expired</label>
+              <span style="color:var(--danger);">10 Dec 2024</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <span class="status-badge status-rejected">Expired</span>
+          </div>
+          <div class="policy-actions">
+            <button class="btn btn-ghost" style="flex:1; font-size:13px; padding:9px;">Download PDF</button>
+            <button class="btn btn-primary" style="flex:1; font-size:13px; padding:9px;">Renew</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLAIMS PAGE -->
+    <div id="page-claims" class="page">
+      <div class="topbar">
+        <h1>Claims</h1>
+        <button class="btn btn-primary" onclick="showPage('submit-claim', document.querySelector('[onclick=\"showPage(\'claims\', this)\"]'))">+ Submit Claim</button>
+      </div>
+
+      <div class="sub-tabs">
+        <button class="sub-tab active">All Claims</button>
+        <button class="sub-tab">Pending</button>
+        <button class="sub-tab">Approved</button>
+        <button class="sub-tab">Closed</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Claim ID</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Vehicle</th>
+                <th>Estimated</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0041</td>
+                <td>12 Jul 2025</td>
+                <td>Collision</td>
+                <td>BMW 320d</td>
+                <td>€3,200</td>
+                <td><span class="status-badge status-pending">Pending review</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">View</button></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0040</td>
+                <td>9 Jul 2025</td>
+                <td>Vandalism</td>
+                <td>VW Golf VIII</td>
+                <td>€640</td>
+                <td><span class="status-badge status-pending">Under review</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">View</button></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0038</td>
+                <td>28 Jun 2025</td>
+                <td>Theft attempt</td>
+                <td>VW Golf VIII</td>
+                <td>€850</td>
+                <td><span class="status-badge status-active">Approved</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">View</button></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0029</td>
+                <td>4 May 2025</td>
+                <td>Windshield</td>
+                <td>BMW 320d</td>
+                <td>€420</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">View</button></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">#CL-2025-0014</td>
+                <td>18 Feb 2025</td>
+                <td>Third-party</td>
+                <td>VW Golf VIII</td>
+                <td>€1,800</td>
+                <td><span class="status-badge status-rejected">Rejected</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBMIT CLAIM PAGE -->
+    <div id="page-submit-claim" class="page">
+      <div class="topbar">
+        <div>
+          <button onclick="showPage('claims', null)" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; font-family:'DM Sans',sans-serif; margin-bottom:8px; padding:0; display:block;">← Back to claims</button>
+          <h1>Submit a Claim</h1>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:800px;">
+        <div style="margin-bottom:28px;">
+          <div class="card-title" style="font-size:17px; margin-bottom:6px;">Incident Details</div>
+          <div style="font-size:13px; color:var(--muted);">Fill in the details of the incident as accurately as possible.</div>
+        </div>
+
+        <div class="claim-form-grid">
+          <div class="form-group">
+            <label class="form-label">Policy</label>
+            <select class="form-select">
+              <option>BMW 320d — Comprehensive (00-AA-000)</option>
+              <option>VW Golf VIII — Third-party (AB-12-CD)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Incident type</label>
+            <select class="form-select">
+              <option>Collision / Accident</option>
+              <option>Theft</option>
+              <option>Vandalism</option>
+              <option>Weather damage</option>
+              <option>Windshield</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Incident date</label>
+            <input type="date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location of incident</label>
+            <input type="text" class="form-input" placeholder="Lisbon, Av. da Liberdade">
+          </div>
+          <div class="form-group" style="grid-column:span 2;">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" placeholder="Describe what happened in detail…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estimated damage (€)</label>
+            <input type="number" class="form-input" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Third party involved?</label>
+            <select class="form-select">
+              <option>No</option>
+              <option>Yes</option>
+            </select>
+          </div>
+          <div class="upload-area" onclick="this.style.borderColor='rgba(200,169,110,0.6)'">
+            <div class="upload-icon">📎</div>
+            <p>Drop accident photos & documents here</p>
+            <span>PNG, JPG, PDF up to 20MB each</span>
+          </div>
+        </div>
+
+        <div style="margin-top:24px; display:flex; gap:12px;">
+          <button class="btn btn-primary" style="padding:12px 32px;" onclick="showPage('claims', null)">Submit claim</button>
+          <button class="btn btn-ghost" style="padding:12px 24px;" onclick="showPage('claims', null)">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENTS PAGE -->
+    <div id="page-payments" class="page">
+      <div class="topbar">
+        <h1>Payments</h1>
+        <button class="btn btn-outline">Download all invoices</button>
+      </div>
+
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-icon">💰</div></div>
+          <div class="kpi-value">€892</div>
+          <div class="kpi-label">Total paid this year</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-icon">📅</div></div>
+          <div class="kpi-value">€74</div>
+          <div class="kpi-label">Next payment (Jul 15)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-icon">🔄</div></div>
+          <div class="kpi-value">Auto</div>
+          <div class="kpi-label">Renewal — Enabled</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Transaction History</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>Date</th>
+                <th>Policy</th>
+                <th>Method</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">INV-202507</td>
+                <td>1 Jul 2025</td>
+                <td>BMW 320d</td>
+                <td>•••• 4892</td>
+                <td>€52.00</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">PDF</button></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">INV-202506</td>
+                <td>1 Jun 2025</td>
+                <td>BMW 320d</td>
+                <td>•••• 4892</td>
+                <td>€52.00</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">PDF</button></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace; font-size:13px; color:var(--muted);">INV-202505</td>
+                <td>1 May 2025</td>
+                <td>VW Golf VIII</td>
+                <td>•••• 4892</td>
+                <td>€31.00</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">PDF</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS PAGE -->
+    <div id="page-documents" class="page">
+      <div class="topbar">
+        <h1>Documents</h1>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Policy Documents</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Policy</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Insurance Certificate 2025</td>
+                <td>BMW 320d</td>
+                <td>📄 PDF</td>
+                <td>15 Jan 2025</td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">Download</button></td>
+              </tr>
+              <tr>
+                <td>Policy Schedule</td>
+                <td>BMW 320d</td>
+                <td>📄 PDF</td>
+                <td>15 Jan 2025</td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">Download</button></td>
+              </tr>
+              <tr>
+                <td>Insurance Certificate 2025</td>
+                <td>VW Golf VIII</td>
+                <td>📄 PDF</td>
+                <td>3 Mar 2025</td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">Download</button></td>
+              </tr>
+              <tr>
+                <td>Claim Report #CL-2025-0038</td>
+                <td>VW Golf VIII</td>
+                <td>📄 PDF</td>
+                <td>28 Jun 2025</td>
+                <td><button class="btn btn-ghost" style="padding:6px 14px; font-size:12px;">Download</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page">
+      <div class="topbar">
+        <h1>Profile</h1>
+        <button class="btn btn-primary">Save changes</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1.5fr; gap:16px; max-width:900px;">
+        <div class="card" style="height:fit-content;">
+          <div style="text-align:center; padding:12px 0;">
+            <div style="width:80px; height:80px; border-radius:50%; background:var(--accent-dim); border:2px solid rgba(200,169,110,0.3); display:flex; align-items:center; justify-content:center; font-family:'DM Serif Display',serif; font-size:28px; color:var(--accent); margin:0 auto 16px;">JS</div>
+            <div style="font-size:18px; font-weight:600; margin-bottom:4px;">João Silva</div>
+            <div style="font-size:13px; color:var(--muted); margin-bottom:20px;">Customer since Jan 2024</div>
+            <span class="status-badge status-active" style="display:inline-flex;">Verified account</span>
+          </div>
+          <div style="margin-top:24px; display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--border); padding-top:20px;">
+            <div style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span>📧</span> joao.silva@email.pt</div>
+            <div style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span>📱</span> +351 912 345 678</div>
+            <div style="font-size:13px; color:var(--muted); display:flex; gap:10px;"><span>📍</span> Lisbon, Portugal</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom:24px;">Personal Information</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group"><label class="form-label">First name</label><input type="text" class="form-input" value="João"></div>
+            <div class="form-group"><label class="form-label">Last name</label><input type="text" class="form-input" value="Silva"></div>
+            <div class="form-group" style="grid-column:span 2;"><label class="form-label">Email</label><input type="email" class="form-input" value="joao.silva@email.pt"></div>
+            <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" value="+351 912 345 678"></div>
+            <div class="form-group"><label class="form-label">Date of birth</label><input type="date" class="form-input" value="1988-04-22"></div>
+            <div class="form-group" style="grid-column:span 2;"><label class="form-label">Address</label><input type="text" class="form-input" value="Av. da Liberdade 180, 1250-146 Lisboa"></div>
+          </div>
+          <div style="margin-top:24px; border-top:1px solid var(--border); padding-top:20px;">
+            <div class="card-title" style="font-size:14px; margin-bottom:16px;">Security</div>
+            <button class="btn btn-ghost" style="font-size:13px;">Change password</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /dashboard -->
+
+<script>
+  // ─── Navigation ───────────────────────────────────────
+  function showLanding() {
+    document.getElementById('landing').classList.add('active');
+    document.getElementById('auth').classList.remove('active');
+    document.getElementById('dashboard').classList.remove('active');
+    document.getElementById('auth').style.display = '';
+    document.getElementById('dashboard').style.display = '';
+    document.body.style.overflow = '';
+  }
+
+  function showAuth(mode) {
+    document.getElementById('landing').classList.remove('active');
+    document.getElementById('auth').classList.add('active');
+    document.getElementById('auth').style.display = 'flex';
+    document.getElementById('dashboard').classList.remove('active');
+    document.getElementById('dashboard').style.display = '';
+    switchAuth(mode);
+  }
+
+  function switchAuth(mode) {
+    document.getElementById('auth-login').style.display = mode === 'login' ? 'block' : 'none';
+    document.getElementById('auth-register').style.display = mode === 'register' ? 'block' : 'none';
+  }
+
+  function showDashboard() {
+    document.getElementById('landing').classList.remove('active');
+    document.getElementById('auth').classList.remove('active');
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('dashboard').classList.add('active');
+    document.getElementById('dashboard').style.display = 'flex';
+    showPage('overview', document.querySelector('.nav-item'));
+  }
+
+  function showPage(pageId, navEl) {
+    // handle submit-claim button which doesn't have a nav counterpart
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + pageId);
+    if (target) {
+      target.classList.add('active');
+      target.style.animation = 'none';
+      requestAnimationFrame(() => { target.style.animation = ''; });
+    }
+
+    if (navEl) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      navEl.classList.add('active');
+    }
+  }
+
+  // Sub-tabs
+  document.querySelectorAll('.sub-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.closest('.sub-tabs').querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Fix claims submit button
+  document.querySelector('#page-claims .btn-primary')?.addEventListener('click', () => {
+    showPage('submit-claim', null);
+  });
+</script>
+</body>
+</html>
