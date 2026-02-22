@@ -9,7 +9,7 @@ InsureX is a modular insurance platform built with .NET 8. It includes a web fro
 
 ```
 
-InsureX/
+dev/srv/
 ├── InsureX.sln
 ├── .gitignore
 ├── README.md
