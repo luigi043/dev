@@ -4,3 +4,13 @@ C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.
 C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.AssemblyInfo.cs
 C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.csproj.CoreCompileInputs.cache
 C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.sourcelink.json
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\bin\Debug\net8.0\InsureX.Application.deps.json
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\bin\Debug\net8.0\InsureX.Application.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\bin\Debug\net8.0\InsureX.Application.pdb
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\bin\Debug\net8.0\InsureX.Domain.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\bin\Debug\net8.0\InsureX.Domain.pdb
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX..DA8CCC1A.Up2Date
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\refint\InsureX.Application.dll
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\InsureX.Application.pdb
+C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\src\InsureX.Application\obj\Debug\net8.0\ref\InsureX.Application.dll

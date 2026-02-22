@@ -52,6 +52,22 @@ public class ComplianceDashboardDto
     public List<TopIssueDto> TopIssues { get; set; } = new();
 }
 
+public class CreateComplianceRuleDto
+{
+    public string RuleName { get; set; } = string.Empty;
+    public string RuleCode { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string RuleType { get; set; } = string.Empty;
+    public string Condition { get; set; } = string.Empty;
+    public string Action { get; set; } = string.Empty;
+    public int Severity { get; set; } = 1;
+    public bool IsActive { get; set; } = true;
+    public int? DaysToExpiry { get; set; }
+    public string[] ApplicablePolicyTypes { get; set; } = Array.Empty<string>();
+    public string[] ApplicableAssetTypes { get; set; } = Array.Empty<string>();
+    public int Priority { get; set; } = 0;
+}
+
 public class TopIssueDto
 {
     public string Issue { get; set; } = string.Empty;

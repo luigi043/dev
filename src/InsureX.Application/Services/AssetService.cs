@@ -11,8 +11,6 @@ using InsureX.Domain.Interfaces;
 using Mapster;
 using OfficeOpenXml;
 using InsureX.Application.Interfaces;
-using DomainUserService = InsureX.Domain.Interfaces.ICurrentUserService;
-
 
 namespace InsureX.Application.Services
 {
@@ -20,19 +18,18 @@ namespace InsureX.Application.Services
     {
         private readonly IAssetRepository _assetRepository;
         private readonly ITenantContext _tenantContext;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;  // Keep only ONE declaration
         private readonly ILogger<AssetService> _logger;
-        private readonly DomainUserService _currentUserService;
 
         public AssetService(
             IAssetRepository assetRepository,
             ITenantContext tenantContext,
-            ICurrentUserService currentUserService,
+            ICurrentUserService currentUserService,  // Use ICurrentUserService directly
             ILogger<AssetService> logger)
         {
             _assetRepository = assetRepository;
             _tenantContext = tenantContext;
-            _currentUserService = currentUserService;
+            _currentUserService = currentUserService;  // Remove any duplicate assignments
             _logger = logger;
         }
 
@@ -225,7 +222,8 @@ namespace InsureX.Application.Services
 
         public async Task<byte[]> ExportToExcelAsync(AssetSearchDto search)
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            // For EPPlus 8+
+            ExcelPackage.License.SetNonCommercialPersonal("InsureX User");
 
             search.Page = 1;
             search.PageSize = int.MaxValue;

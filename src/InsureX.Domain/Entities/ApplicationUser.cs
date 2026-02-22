@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using InsureX.Domain.Entities; // Add this if Tenant is in a different namespace, or adjust accordingly
 
 namespace InsureX.Domain.Entities;
 
@@ -9,9 +8,12 @@ public class ApplicationUser : IdentityUser
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
-
-    // Navigation 
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public string? CreatedBy { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public string? UpdatedBy { get; set; }
+    
+    // Navigation property
     public virtual Tenant? Tenant { get; set; }
 }

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using InsureX.Domain.Interfaces;
 
 namespace InsureX.Domain.Entities;
 
-public class Policy : BaseEntity
+public class Policy : BaseEntity, ITenantScoped
 {
+    public Guid TenantId { get; set; }  // This was missing!
     public string PolicyNumber { get; set; } = string.Empty;
     public int AssetId { get; set; }
     public string InsurerCode { get; set; } = string.Empty;

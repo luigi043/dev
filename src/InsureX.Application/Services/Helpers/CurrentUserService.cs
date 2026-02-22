@@ -1,47 +1,34 @@
+using InsureX.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using InsureX.Application.Interfaces;
 
-namespace InsureX.Application.Services.Helpers;
-
-public class CurrentUserService : ICurrentUserService
+namespace InsureX.Application.Services.Helpers
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+    public class CurrentUserService : ICurrentUserService
     {
-        _httpContextAccessor = httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public string? GetCurrentUserId()
+        {
+            return _httpContextAccessor.HttpContext?.User?
+                .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        public string? GetCurrentUserEmail()
+        {
+            return _httpContextAccessor.HttpContext?.User?
+                .FindFirst(ClaimTypes.Email)?.Value;
+        }
+
+        public bool IsAuthenticated()
+        {
+            return _httpContextAccessor.HttpContext?.User?
+                .Identity?.IsAuthenticated == true;
+        }
     }
-
-    // Properties
-    public string? UserId => _httpContextAccessor.HttpContext?.User?
-        .FindFirstValue(ClaimTypes.NameIdentifier);
-
-    public string? UserName => _httpContextAccessor.HttpContext?.User?
-        .FindFirstValue(ClaimTypes.Name);
-
-    public string? Email => _httpContextAccessor.HttpContext?.User?
-        .FindFirstValue(ClaimTypes.Email);
-
-    public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?
-        .Identity?.IsAuthenticated ?? false;
-
-    public IEnumerable<string> Roles => _httpContextAccessor.HttpContext?.User?
-        .FindAll(ClaimTypes.Role).Select(c => c.Value) ?? Array.Empty<string>();
-
-    // Methods
-    public string? GetCurrentUserId() => UserId;
-
-    public string? GetCurrentUserEmail() => Email;
-
-    public string? GetCurrentUserName() => UserName;
-
-    public bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?
-        .IsInRole(role) ?? false;
-
-    public string? GetClaimValue(string claimType) => _httpContextAccessor.HttpContext?.User?
-        .FindFirstValue(claimType);
 }
