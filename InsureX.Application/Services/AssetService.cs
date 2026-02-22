@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using InsureX.Application.DTOs;
-using InsureX.Application.Interfaces;
+using InsureX.Application.Common.Interfaces;
 using InsureX.Domain.Entities;
 using InsureX.Domain.Exceptions;
 using InsureX.Domain.Interfaces;
@@ -36,8 +36,10 @@ namespace InsureX.Application.Services
         {
             try
             {
-                var tenantId = _tenantContext.GetCurrentTenantId()
-                    ?? throw new UnauthorizedAccessException("Tenant context not found");
+                // FIXED: Use TenantId property instead of GetCurrentTenantId() method
+                var tenantId = _tenantContext.HasTenant 
+                    ? _tenantContext.TenantId 
+                    : throw new UnauthorizedAccessException("Tenant context not found");
 
                 _logger.LogInformation("Getting paged assets for tenant {TenantId}, page {Page}", tenantId, search.Page);
 
@@ -103,8 +105,10 @@ namespace InsureX.Application.Services
 
         public async Task<AssetDto?> GetByIdAsync(int id)
         {
-            var tenantId = _tenantContext.GetCurrentTenantId()
-                ?? throw new UnauthorizedAccessException("Tenant context not found");
+            // FIXED: Use TenantId property
+            var tenantId = _tenantContext.HasTenant 
+                ? _tenantContext.TenantId 
+                : throw new UnauthorizedAccessException("Tenant context not found");
 
             var asset = await _assetRepository.GetByIdAsync(id);
 
@@ -116,8 +120,10 @@ namespace InsureX.Application.Services
 
         public async Task<AssetDto> CreateAsync(CreateAssetDto dto)
         {
-            var tenantId = _tenantContext.GetCurrentTenantId()
-                ?? throw new UnauthorizedAccessException("Tenant context not found");
+            // FIXED: Use TenantId property
+            var tenantId = _tenantContext.HasTenant 
+                ? _tenantContext.TenantId 
+                : throw new UnauthorizedAccessException("Tenant context not found");
 
             // Check if asset tag already exists
             var isUnique = await _assetRepository.IsAssetTagUniqueAsync(dto.AssetTag, tenantId);
@@ -126,7 +132,8 @@ namespace InsureX.Application.Services
 
             var asset = dto.Adapt<Asset>();
             asset.TenantId = tenantId;
-            asset.CreatedBy = _currentUserService.GetCurrentUserId() ?? "system";
+            // FIXED: Use UserId property instead of GetCurrentUserId() method
+            asset.CreatedBy = _currentUserService.UserId ?? "system";
             asset.CreatedAt = DateTime.UtcNow;
             asset.Status = "Active";
             asset.ComplianceStatus = "Pending";
@@ -141,8 +148,10 @@ namespace InsureX.Application.Services
 
         public async Task<AssetDto?> UpdateAsync(UpdateAssetDto dto)
         {
-            var tenantId = _tenantContext.GetCurrentTenantId()
-                ?? throw new UnauthorizedAccessException("Tenant context not found");
+            // FIXED: Use TenantId property
+            var tenantId = _tenantContext.HasTenant 
+                ? _tenantContext.TenantId 
+                : throw new UnauthorizedAccessException("Tenant context not found");
 
             var asset = await _assetRepository.GetByIdAsync(dto.Id)
                 ?? throw new DomainException($"Asset with id {dto.Id} not found");
@@ -164,7 +173,8 @@ namespace InsureX.Application.Services
             // Map DTO to existing entity
             dto.Adapt(asset);
             asset.UpdatedAt = DateTime.UtcNow;
-            asset.UpdatedBy = _currentUserService.GetCurrentUserId() ?? "system";
+            // FIXED: Use UserId property
+            asset.UpdatedBy = _currentUserService.UserId ?? "system";
 
             await _assetRepository.UpdateAsync(asset);
             await _assetRepository.SaveChangesAsync();
@@ -176,8 +186,10 @@ namespace InsureX.Application.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var tenantId = _tenantContext.GetCurrentTenantId()
-                ?? throw new UnauthorizedAccessException("Tenant context not found");
+            // FIXED: Use TenantId property
+            var tenantId = _tenantContext.HasTenant 
+                ? _tenantContext.TenantId 
+                : throw new UnauthorizedAccessException("Tenant context not found");
 
             var asset = await _assetRepository.GetByIdAsync(id);
             
@@ -187,7 +199,8 @@ namespace InsureX.Application.Services
             // Soft delete
             asset.Status = "Deleted";
             asset.UpdatedAt = DateTime.UtcNow;
-            asset.UpdatedBy = _currentUserService.GetCurrentUserId() ?? "system";
+            // FIXED: Use UserId property
+            asset.UpdatedBy = _currentUserService.UserId ?? "system";
 
             await _assetRepository.UpdateAsync(asset);
             await _assetRepository.SaveChangesAsync();
@@ -199,8 +212,10 @@ namespace InsureX.Application.Services
 
         public async Task<bool> ExistsAsync(string assetTag)
         {
-            var tenantId = _tenantContext.GetCurrentTenantId()
-                ?? throw new UnauthorizedAccessException("Tenant context not found");
+            // FIXED: Use TenantId property
+            var tenantId = _tenantContext.HasTenant 
+                ? _tenantContext.TenantId 
+                : throw new UnauthorizedAccessException("Tenant context not found");
 
             return await _assetRepository.ExistsAsync(a =>
                 a.AssetTag == assetTag &&
@@ -210,8 +225,10 @@ namespace InsureX.Application.Services
 
         public async Task<int> GetCountAsync()
         {
-            var tenantId = _tenantContext.GetCurrentTenantId()
-                ?? throw new UnauthorizedAccessException("Tenant context not found");
+            // FIXED: Use TenantId property
+            var tenantId = _tenantContext.HasTenant 
+                ? _tenantContext.TenantId 
+                : throw new UnauthorizedAccessException("Tenant context not found");
 
             var query = await _assetRepository.GetQueryableAsync();
             query = query.Where(a => a.TenantId == tenantId && a.Status != "Deleted");
@@ -221,8 +238,10 @@ namespace InsureX.Application.Services
 
         public async Task<List<AssetDto>> GetRecentAsync(int count)
         {
-            var tenantId = _tenantContext.GetCurrentTenantId()
-                ?? throw new UnauthorizedAccessException("Tenant context not found");
+            // FIXED: Use TenantId property
+            var tenantId = _tenantContext.HasTenant 
+                ? _tenantContext.TenantId 
+                : throw new UnauthorizedAccessException("Tenant context not found");
 
             var items = await _assetRepository.GetRecentAsync(tenantId, count);
             
@@ -254,6 +273,14 @@ namespace InsureX.Application.Services
 
             for (int i = 0; i < headers.Length; i++)
                 worksheet.Cells[1, i + 1].Value = headers[i];
+
+            // Style headers
+            using (var range = worksheet.Cells[1, 1, 1, headers.Length])
+            {
+                range.Style.Font.Bold = true;
+                range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+            }
 
             // Data
             int row = 2;
