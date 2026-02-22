@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using InsureX.Application.Interfaces;
+using ITenantContext = InsureX.Domain.Interfaces.ITenantContext;
 using InsureX.Application.DTOs;
 using InsureX.Domain.Entities;
 using InsureX.Domain.Exceptions;
-using InsureX.Domain.Interfaces;
 using Mapster;
-
+using InsureX.Application.Interfaces;
+using InsureX.Domain.Interfaces;
 namespace InsureX.Application.Services
 {
     public class PolicyService : IPolicyService

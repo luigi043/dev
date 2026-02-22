@@ -1,10 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using InsureX.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using InsureX.Infrastructure.Data;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace InsureX.Infrastructure.Repositories;
 
@@ -16,12 +13,12 @@ public class Repository<T> : IRepository<T> where T : class
     public Repository(AppDbContext context)
     {
         _context = context;
-        _dbSet = _context.Set<T>();
+        _dbSet = context.Set<T>();
     }
 
     public async Task<T?> GetByIdAsync(int id)
     {
-        return await _dbSet.FindAsync(id) as T;
+        return await _dbSet.FindAsync(id);
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
@@ -34,23 +31,21 @@ public class Repository<T> : IRepository<T> where T : class
         return await _dbSet.Where(predicate).ToListAsync();
     }
 
-    public async Task<T> AddAsync(T entity)
+    public async Task AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync();
-        return entity;
     }
 
-    public async Task UpdateAsync(T entity)
+    public Task UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
-        await _context.SaveChangesAsync();
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(T entity)
+    public Task DeleteAsync(T entity)
     {
         _dbSet.Remove(entity);
-        await _context.SaveChangesAsync();
+        return Task.CompletedTask;
     }
 
     public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
@@ -58,13 +53,8 @@ public class Repository<T> : IRepository<T> where T : class
         return await _dbSet.AnyAsync(predicate);
     }
 
-    public async Task<int> CountAsync()
+    public async Task<int> SaveChangesAsync()
     {
-        return await _dbSet.CountAsync();
-    }
-
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
+        return await _context.SaveChangesAsync();
     }
 }

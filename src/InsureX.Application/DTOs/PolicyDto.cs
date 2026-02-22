@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace InsureX.Application.DTOs;
 
+// PolicyDto (keep existing)
 public class PolicyDto
 {
     public int Id { get; set; }
@@ -30,6 +31,7 @@ public class PolicyDto
     public string CreatedBy { get; set; } = string.Empty;
 }
 
+// CreatePolicyDto (keep existing)
 public class CreatePolicyDto
 {
     [Required(ErrorMessage = "Policy Number is required")]
@@ -74,23 +76,13 @@ public class CreatePolicyDto
     public string? Notes { get; set; }
 }
 
+// UpdatePolicyDto (keep existing - inherits from CreatePolicyDto)
 public class UpdatePolicyDto : CreatePolicyDto
 {
     public int Id { get; set; }
 }
 
-public class PolicySummaryDto
-{
-    public int TotalPolicies { get; set; }
-    public int ActivePolicies { get; set; }
-    public int ExpiringPolicies { get; set; }
-    public int ExpiredPolicies { get; set; }
-    public decimal TotalSumInsured { get; set; }
-    public decimal TotalPremium { get; set; }
-    public Dictionary<string, int> PoliciesByType { get; set; } = new();
-    public Dictionary<string, int> PoliciesByInsurer { get; set; } = new();
-}
-
+// PolicySearchDto (keep existing)
 public class PolicySearchDto
 {
     public string? SearchTerm { get; set; }
@@ -107,6 +99,20 @@ public class PolicySearchDto
     public int PageSize { get; set; } = 25;
     public string? SortBy { get; set; } = "EndDate";
     public string SortDir { get; set; } = "asc";
+}
+
+// ===== ADD THESE MISSING DTOs =====
+
+public class PolicySummaryDto
+{
+    public int TotalPolicies { get; set; }
+    public int ActivePolicies { get; set; }
+    public int ExpiringPolicies { get; set; }
+    public int ExpiredPolicies { get; set; }
+    public decimal TotalSumInsured { get; set; }
+    public decimal TotalPremium { get; set; }
+    public Dictionary<string, int> PoliciesByType { get; set; } = new();
+    public Dictionary<string, int> PoliciesByInsurer { get; set; } = new();
 }
 
 public class ClaimDto

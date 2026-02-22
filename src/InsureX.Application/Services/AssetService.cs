@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using InsureX.Application.Interfaces;
+using ITenantContext = InsureX.Domain.Interfaces.ITenantContext;
 using InsureX.Application.DTOs;
 using InsureX.Domain.Entities;
 using InsureX.Domain.Exceptions;
 using InsureX.Domain.Interfaces;
 using Mapster;
 using OfficeOpenXml;
+using InsureX.Application.Interfaces;
 
 namespace InsureX.Application.Services
 {
@@ -247,7 +248,7 @@ namespace InsureX.Application.Services
                 worksheet.Cells[row, 7].Value = asset.Status;
                 worksheet.Cells[row, 8].Value = asset.ComplianceStatus;
                 worksheet.Cells[row, 9].Value = asset.InsuredValue;
-                worksheet.Cells[row, 10].Value = asset.CreatedAt?.ToString("yyyy-MM-dd");
+                worksheet.Cells[row, 10].Value = asset.CreatedAt.ToString("yyyy-MM-dd");
                 row++;
             }
 

@@ -12,8 +12,10 @@ using InsureX.Infrastructure.Repositories;
 using InsureX.Application.Interfaces;
 using InsureX.Application.Services;
 using InsureX.Infrastructure.Services;
-using InsureX.Application.Services.Helpers;
 using Microsoft.Extensions.Logging;
+using System;
+using Mapster; // Add this for Mapster
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -148,8 +150,8 @@ builder.Services.AddHostedService<ComplianceBackgroundService>();
 // ======= Data Seeder =======
 builder.Services.AddScoped<IDataSeeder, DataSeeder>();
 
-// ======= AutoMapper / Mapster =======
-builder.Services.AddMapster(); // Install Mapster package first
+// ======= Mapster Configuration =======
+TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
 
 // ======= Logging =======
 builder.Services.AddLogging(logging =>
