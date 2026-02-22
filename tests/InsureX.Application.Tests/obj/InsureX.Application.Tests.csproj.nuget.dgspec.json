@@ -1,0 +1,137 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+        "projectName": "InsureX.Application.Tests",
+        "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+        "packagesPath": "C:\\Users\\cluiz\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\cluiz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Application\\InsureX.Application.csproj": {
+                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Application\\InsureX.Application.csproj"
+              },
+              "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj": {
+                "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.8.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.70, )",
+              "versionCentrallyManaged": true
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[6.0.0, )",
+              "versionCentrallyManaged": true
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.6.1, )",
+              "versionCentrallyManaged": true
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.5.3, )",
+              "versionCentrallyManaged": true
+            }
+          },
+          "centralPackageVersions": {
+            "AutoMapper": "12.0.1",
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
+            "coverlet.collector": "6.0.0",
+            "EPPlus": "6.2.3",
+            "Mapster": "7.0.0",
+            "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.0",
+            "Microsoft.AspNetCore.Components.Web": "8.0.0",
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.0",
+            "Microsoft.AspNetCore.OpenApi": "8.0.0",
+            "Microsoft.CodeAnalysis.Common": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
+            "Microsoft.CodeAnalysis.Workspaces.Common": "4.5.0",
+            "Microsoft.EntityFrameworkCore": "8.0.0",
+            "Microsoft.EntityFrameworkCore.Design": "8.0.0",
+            "Microsoft.EntityFrameworkCore.SqlServer": "8.0.0",
+            "Microsoft.EntityFrameworkCore.Tools": "8.0.0",
+            "Microsoft.Extensions.Hosting": "8.0.0",
+            "Microsoft.Extensions.Options": "8.0.0",
+            "Microsoft.NET.Test.Sdk": "17.8.0",
+            "Moq": "4.20.70",
+            "Swashbuckle.AspNetCore": "6.5.0",
+            "Swashbuckle.AspNetCore.Annotations": "6.5.0",
+            "xunit": "2.6.1",
+            "xunit.runner.visualstudio": "2.5.3"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

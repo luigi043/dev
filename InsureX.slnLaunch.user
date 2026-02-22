@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "InsureX.Api\\InsureX.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "InsureX.Web\\InsureX.Web.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

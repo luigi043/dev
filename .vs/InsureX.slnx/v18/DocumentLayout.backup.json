@@ -1,0 +1,207 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{86A0B649-8454-18CB-199B-E5680FEE4767}|InsureX.Infrastructure\\InsureX.Infrastructure.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.infrastructure\\services\\currentuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86A0B649-8454-18CB-199B-E5680FEE4767}|InsureX.Infrastructure\\InsureX.Infrastructure.csproj|solutionrelative:insurex.infrastructure\\services\\currentuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86A0B649-8454-18CB-199B-E5680FEE4767}|InsureX.Infrastructure\\InsureX.Infrastructure.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.infrastructure\\services\\tenantcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86A0B649-8454-18CB-199B-E5680FEE4767}|InsureX.Infrastructure\\InsureX.Infrastructure.csproj|solutionrelative:insurex.infrastructure\\services\\tenantcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C8F6B8D-A3E1-CE26-B83F-9925A1768356}|InsureX.Web\\InsureX.Web.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.web\\insurex.web.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0C8F6B8D-A3E1-CE26-B83F-9925A1768356}|InsureX.Web\\InsureX.Web.csproj|solutionrelative:insurex.web\\insurex.web.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86A0B649-8454-18CB-199B-E5680FEE4767}|InsureX.Infrastructure\\InsureX.Infrastructure.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.infrastructure\\insurex.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{86A0B649-8454-18CB-199B-E5680FEE4767}|InsureX.Infrastructure\\InsureX.Infrastructure.csproj|solutionrelative:insurex.infrastructure\\insurex.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53172802-7428-A4AF-9F8C-64A959ED4674}|InsureX.Api\\InsureX.Api.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.api\\insurex.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{53172802-7428-A4AF-9F8C-64A959ED4674}|InsureX.Api\\InsureX.Api.csproj|solutionrelative:insurex.api\\insurex.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34F56DF4-9FDA-EC08-E135-463B54BA746F}|InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.ui.shell.rcl\\insurex.ui.shell.rcl.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{34F56DF4-9FDA-EC08-E135-463B54BA746F}|InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj|solutionrelative:insurex.ui.shell.rcl\\insurex.ui.shell.rcl.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{16CE86D1-CABF-9C2D-BD73-36D7D85E8E37}|InsureX.Domain\\InsureX.Domain.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.domain\\insurex.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{16CE86D1-CABF-9C2D-BD73-36D7D85E8E37}|InsureX.Domain\\InsureX.Domain.csproj|solutionrelative:insurex.domain\\insurex.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8710AFC-4846-5258-A1BA-13C29B6F3446}|tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\tests\\insurex.application.tests\\insurex.application.tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A8710AFC-4846-5258-A1BA-13C29B6F3446}|tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj|solutionrelative:tests\\insurex.application.tests\\insurex.application.tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{180B2D49-56E2-8E69-A2E4-64BC6EFEADFF}|InsureX.Application\\InsureX.Application.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.application\\insurex.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{180B2D49-56E2-8E69-A2E4-64BC6EFEADFF}|InsureX.Application\\InsureX.Application.csproj|solutionrelative:insurex.application\\insurex.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\Directory.Packages.props||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Directory.Packages.props||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{180B2D49-56E2-8E69-A2E4-64BC6EFEADFF}|InsureX.Application\\InsureX.Application.csproj|c:\\users\\cluiz\\onedrive - instituto politecnico de beja\\desktop\\insurex\\dev\\insurex.application\\services\\assetservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{180B2D49-56E2-8E69-A2E4-64BC6EFEADFF}|InsureX.Application\\InsureX.Application.csproj|solutionrelative:insurex.application\\services\\assetservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "AssetService.cs",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\Services\\AssetService.cs",
+              "RelativeDocumentMoniker": "InsureX.Application\\Services\\AssetService.cs",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\Services\\AssetService.cs",
+              "RelativeToolTip": "InsureX.Application\\Services\\AssetService.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-22T11:18:12.619Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CurrentUserService.cs",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\Services\\CurrentUserService.cs",
+              "RelativeDocumentMoniker": "InsureX.Infrastructure\\Services\\CurrentUserService.cs",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\Services\\CurrentUserService.cs",
+              "RelativeToolTip": "InsureX.Infrastructure\\Services\\CurrentUserService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-22T11:16:56.38Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TenantContext.cs",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\Services\\TenantContext.cs",
+              "RelativeDocumentMoniker": "InsureX.Infrastructure\\Services\\TenantContext.cs",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\Services\\TenantContext.cs",
+              "RelativeToolTip": "InsureX.Infrastructure\\Services\\TenantContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-22T11:16:20.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Directory.Packages.props",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\Directory.Packages.props",
+              "RelativeDocumentMoniker": "Directory.Packages.props",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\Directory.Packages.props",
+              "RelativeToolTip": "Directory.Packages.props",
+              "ViewState": "AgIAACUAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-02-22T11:11:20.57Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "InsureX.Application",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\InsureX.Application.csproj",
+              "RelativeDocumentMoniker": "InsureX.Application\\InsureX.Application.csproj",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Application\\InsureX.Application.csproj",
+              "RelativeToolTip": "InsureX.Application\\InsureX.Application.csproj",
+              "ViewState": "AgIAAAwAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-22T11:10:01.652Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "InsureX.Application.Tests",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+              "RelativeDocumentMoniker": "tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+              "RelativeToolTip": "tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
+              "ViewState": "AgIAAA4AAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-22T11:09:54.237Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "InsureX.Domain",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj",
+              "RelativeDocumentMoniker": "InsureX.Domain\\InsureX.Domain.csproj",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Domain\\InsureX.Domain.csproj",
+              "RelativeToolTip": "InsureX.Domain\\InsureX.Domain.csproj",
+              "ViewState": "AgIAAAkAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-22T11:09:47.595Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "InsureX.Ui.Shell.Rcl",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj",
+              "RelativeDocumentMoniker": "InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj",
+              "RelativeToolTip": "InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj",
+              "ViewState": "AgIAABAAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-22T11:09:40.896Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "InsureX.Api",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Api\\InsureX.Api.csproj",
+              "RelativeDocumentMoniker": "InsureX.Api\\InsureX.Api.csproj",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Api\\InsureX.Api.csproj",
+              "RelativeToolTip": "InsureX.Api\\InsureX.Api.csproj",
+              "ViewState": "AgIAAA0AAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-22T11:09:32.503Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "InsureX.Infrastructure",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+              "RelativeDocumentMoniker": "InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+              "RelativeToolTip": "InsureX.Infrastructure\\InsureX.Infrastructure.csproj",
+              "ViewState": "AgIAABEAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-22T11:09:24.97Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "InsureX.Web",
+              "DocumentMoniker": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Web\\InsureX.Web.csproj",
+              "RelativeDocumentMoniker": "InsureX.Web\\InsureX.Web.csproj",
+              "ToolTip": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\InsureX.Web\\InsureX.Web.csproj",
+              "RelativeToolTip": "InsureX.Web\\InsureX.Web.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-22T11:09:16.791Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

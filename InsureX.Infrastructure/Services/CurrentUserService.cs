@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using InsureX.Application.Interfaces;
+using InsureX.Domain.Interfaces;
+using System.Linq;
 
 namespace InsureX.Infrastructure.Services;
 
@@ -13,31 +14,20 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    // Properties for easy access
+    // Helper properties (not part of domain interface but useful)
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
     public string? UserName => _httpContextAccessor.HttpContext?.User?.Identity?.Name;
     public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
-    public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
-    
+
     public IEnumerable<string> Roles => _httpContextAccessor.HttpContext?.User?
         .FindAll(ClaimTypes.Role)
         .Select(c => c.Value) ?? Enumerable.Empty<string>();
-    
-    public Guid? TenantId
-    {
-        get
-        {
-            var tenantClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant_id");
-            return tenantClaim != null && Guid.TryParse(tenantClaim.Value, out var tenantId) 
-                ? tenantId 
-                : null;
-        }
-    }
 
-    // Method implementations for ICurrentUserService interface
+    // Domain interface implementations
     public string? GetCurrentUserId() => UserId;
-    public string? GetCurrentUserName() => UserName;
-    public string? GetUserEmail() => Email;
-    public bool IsAuthenticated() => IsAuthenticated;
+    public string? GetCurrentUserEmail() => Email;
+    public bool IsAuthenticated() => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
+    // Convenience
     public bool IsInRole(string role) => Roles.Contains(role);
 }

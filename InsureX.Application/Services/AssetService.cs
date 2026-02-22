@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using InsureX.Application.DTOs;
-using InsureX.Application.Common.Interfaces;
+using InsureX.Domain.Interfaces;
 using InsureX.Domain.Entities;
 using InsureX.Domain.Exceptions;
 using InsureX.Domain.Interfaces;

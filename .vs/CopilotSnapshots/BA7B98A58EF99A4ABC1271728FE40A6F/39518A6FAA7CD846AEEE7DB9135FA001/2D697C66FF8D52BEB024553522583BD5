@@ -1,4 +1,4 @@
-namespace InsureX.Application.Common.Interfaces;
+﻿namespace InsureX.Application.Common.Interfaces;
 
 public interface ICurrentUserService
 {

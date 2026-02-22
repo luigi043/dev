@@ -10,9 +10,15 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Mapster" />
+    <PackageReference Include="EPPlus" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InsureX.Application\InsureX.Application.csproj" />
+    <ProjectReference Include="..\InsureX.Domain\InsureX.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\Interfaces\" />
   </ItemGroup>
 </Project>

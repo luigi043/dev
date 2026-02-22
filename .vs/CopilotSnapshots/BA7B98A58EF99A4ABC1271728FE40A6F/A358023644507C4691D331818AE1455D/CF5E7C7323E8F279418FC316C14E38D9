@@ -1,0 +1,83 @@
+﻿namespace InsureX.Application.Common.Interfaces;
+
+/// <summary>
+/// Interface for accessing the current tenant context
+/// </summary>
+public interface ITenantContext
+{
+    /// <summary>
+    /// Gets the current tenant ID. Throws if not set.
+    /// </summary>
+    Guid TenantId { get; }
+    
+    /// <summary>
+    /// Gets the current tenant ID, or null if not set.
+    /// </summary>
+    Guid? TenantIdOrDefault { get; }
+    
+    /// <summary>
+    /// Checks if a tenant ID has been set.
+    /// </summary>
+    bool HasTenant { get; }
+    
+    /// <summary>
+    /// Sets the current tenant ID.
+    /// </summary>
+    void SetTenantId(Guid tenantId);
+    
+    /// <summary>
+    /// Clears the current tenant context.
+    /// </summary>
+    void Clear();
+}
+
+/// <summary>
+/// Thread-safe implementation of ITenantContext using AsyncLocal
+/// </summary>
+public class TenantContext : ITenantContext
+{
+    private readonly AsyncLocal<Guid?> _tenantId = new();
+
+    /// <summary>
+    /// Gets the current tenant ID. Throws InvalidOperationException if not set.
+    /// </summary>
+    public Guid TenantId 
+    { 
+        get
+        {
+            if (!_tenantId.Value.HasValue)
+                throw new InvalidOperationException("Tenant context has not been initialized. Ensure tenant resolution middleware is configured and executed.");
+            
+            return _tenantId.Value.Value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the current tenant ID, or null if not set.
+    /// </summary>
+    public Guid? TenantIdOrDefault => _tenantId.Value;
+
+    /// <summary>
+    /// Checks if a tenant ID has been set.
+    /// </summary>
+    public bool HasTenant => _tenantId.Value.HasValue;
+
+    /// <summary>
+    /// Sets the current tenant ID.
+    /// </summary>
+    public void SetTenantId(Guid tenantId)
+    {
+        if (tenantId == Guid.Empty)
+            throw new ArgumentException("Tenant ID cannot be empty.", nameof(tenantId));
+
+        _tenantId.Value = tenantId;
+    }
+
+    /// <summary>
+    /// Clears the current tenant context.
+    /// </summary>
+    public void Clear()
+    {
+        _tenantId.Value = null;
+    }
+}
