@@ -1,9 +1,0 @@
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\rpswa.dswa.cache.json
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.AssemblyInfoInputs.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.AssemblyInfo.cs
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.csproj.CoreCompileInputs.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.RazorAssemblyInfo.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.RazorAssemblyInfo.cs
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\DEV\a\src\InsureX.Web\obj\Debug\net10.0\InsureX.Web.sourcelink.json
