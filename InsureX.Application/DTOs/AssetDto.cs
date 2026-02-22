@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using InsureX.Application.Common.Constants;
 
 namespace InsureX.Application.DTOs;
 
@@ -40,7 +41,7 @@ public class CreateAssetDto
     public string Model { get; set; } = string.Empty;
     
     [Range(1900, 2100, ErrorMessage = "Year must be between 1900 and 2100")]
-    public int Year { get; set; }
+    public int Year { get; set; } = DateTime.UtcNow.Year;
     
     [StringLength(100)]
     public string? SerialNumber { get; set; }

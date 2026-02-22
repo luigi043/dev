@@ -1,306 +1,599 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Mapster;
-using OfficeOpenXml;
 using System;
+using Mapster;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Text.Json.Serialization;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 
-// ======= Namespace Imports =======
+// ======= Project Imports =======
 using InsureX.Infrastructure.Data;
+using InsureX.Infrastructure.Tenant;
 using InsureX.Domain.Entities;
 using InsureX.Domain.Interfaces;
 using InsureX.Infrastructure.Repositories;
 using InsureX.Application.Interfaces;
 using InsureX.Application.Services;
 using InsureX.Infrastructure.Services;
-using InsureX.Infrastructure.Tenant;
+using InsureX.Application.Common.Interfaces;
+using InsureX.Infrastructure.BackgroundServices;
+using InsureX.Infrastructure.Middleware; // Add this for tenant middleware
 
-namespace InsureX.Api;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+// ======= 1. Configuration Setup =======
+ConfigureConfiguration(builder);
+
+// ======= 2. Service Registration =======
+ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
+
+var app = builder.Build();
+
+// ======= 3. Middleware Pipeline =======
+ConfigureMiddleware(app);
+
+// ======= 4. Database Initialization =======
+await InitializeDatabaseAsync(app);
+
+// ======= 5. Run Application =======
+await RunApplicationAsync(app);
+
+// ============================================================================
+// CONFIGURATION METHODS
+// ============================================================================
+
+void ConfigureConfiguration(WebApplicationBuilder builder)
 {
-    public static async Task Main(string[] args)
+    // Add configuration sources
+    builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+    builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
+    builder.Configuration.AddEnvironmentVariables();
+    
+    // Add user secrets in development
+    if (builder.Environment.IsDevelopment())
     {
-        var builder = WebApplication.CreateBuilder(args);
-
-        // ======= 1. CONFIGURATION =======
-        ConfigureConfiguration(builder);
-
-        // ======= 2. DATABASE & IDENTITY =======
-        ConfigureDatabase(builder);
-        ConfigureIdentity(builder);
-        ConfigureAuthentication(builder);
-
-        // ======= 3. CORE SERVICES =======
-        ConfigureCoreServices(builder);
-
-        // ======= 4. APPLICATION SERVICES =======
-        ConfigureApplicationServices(builder);
-
-        // ======= 5. REPOSITORIES =======
-        ConfigureRepositories(builder);
-
-        // ======= 6. API & SWAGGER =======
-        ConfigureApi(builder);
-
-        // ======= 7. BACKGROUND SERVICES =======
-        ConfigureBackgroundServices(builder);
-
-        // ======= 8. MAPSTER CONFIGURATION =======
-        ConfigureMapster();
-
-        // ======= 9. EPPLUS CONFIGURATION =======
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-        var app = builder.Build();
-
-        // ======= 10. MIDDLEWARE PIPELINE =======
-        ConfigureMiddleware(app);
-
-        // ======= 11. DATABASE MIGRATION & SEEDING =======
-        await MigrateAndSeedDatabase(app);
-
-        app.Run();
+        builder.Configuration.AddUserSecrets<Program>();
     }
+}
 
-    private static void ConfigureConfiguration(WebApplicationBuilder builder)
+void ConfigureServices(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+{
+    // ======= Database Context =======
+    ConfigureDatabase(services, configuration, environment);
+    
+    // ======= Identity & Authentication =======
+    ConfigureIdentity(services);
+    
+    // ======= Core ASP.NET Services =======
+    ConfigureCoreServices(services);
+    
+    // ======= API & Documentation =======
+    ConfigureApiServices(services, environment);
+    
+    // ======= Dependency Injection =======
+    ConfigureDependencyInjection(services);
+    
+    // ======= Mapster Configuration =======
+    ConfigureMapster();
+    
+    // ======= Logging =======
+    ConfigureLogging(services);
+    
+    // ======= Health Checks =======
+    ConfigureHealthChecks(services);
+    
+    // ======= CORS =======
+    ConfigureCors(services, environment);
+    
+    // ======= EPPlus License =======
+    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+}
+
+void ConfigureDatabase(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+{
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
+    
+    if (string.IsNullOrEmpty(connectionString))
     {
-        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-        builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
-        builder.Configuration.AddEnvironmentVariables();
+        throw new InvalidOperationException("Database connection string 'DefaultConnection' not found.");
     }
-
-    private static void ConfigureDatabase(WebApplicationBuilder builder)
+    
+    services.AddDbContext<AppDbContext>((serviceProvider, options) =>
     {
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
-                builder.Configuration.GetConnectionString("DefaultConnection"),
-                sqlServerOptions => sqlServerOptions.MigrationsAssembly("InsureX.Infrastructure"))
-                .EnableSensitiveDataLogging(builder.Environment.IsDevelopment())
-                .LogTo(Console.WriteLine, LogLevel.Information));
-    }
-
-    private static void ConfigureIdentity(WebApplicationBuilder builder)
-    {
-        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-        {
-            // Password settings
-            options.Password.RequireDigit = true;
-            options.Password.RequiredLength = 8;
-            options.Password.RequireNonAlphanumeric = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireLowercase = true;
-
-            // Lockout settings
-            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-            options.Lockout.MaxFailedAccessAttempts = 5;
-            options.Lockout.AllowedForNewUsers = true;
-
-            // User settings
-            options.User.RequireUniqueEmail = true;
-            options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-
-            // SignIn settings
-            options.SignIn.RequireConfirmedEmail = false;
-            options.SignIn.RequireConfirmedPhoneNumber = false;
-            options.SignIn.RequireConfirmedAccount = false;
-        })
-        .AddEntityFrameworkStores<AppDbContext>()
-        .AddDefaultTokenProviders();
-    }
-
-    private static void ConfigureAuthentication(WebApplicationBuilder builder)
-    {
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.Cookie.SameSite = SameSiteMode.Lax;
-            options.Cookie.Name = "InsureX.Auth";
-            options.ExpireTimeSpan = TimeSpan.FromHours(8);
-            options.SlidingExpiration = true;
-            options.LoginPath = "/Account/Login";
-            options.LogoutPath = "/Account/Logout";
-            options.AccessDeniedPath = "/Account/AccessDenied";
-        });
-    }
-
-    private static void ConfigureCoreServices(WebApplicationBuilder builder)
-    {
-        builder.Services.AddHttpContextAccessor();
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("AllowAll", policy =>
+        options.UseSqlServer(
+            connectionString,
+            sqlServerOptions =>
             {
-                policy.AllowAnyOrigin()
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
+                sqlServerOptions.MigrationsAssembly("InsureX.Infrastructure");
+                sqlServerOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null);
             });
-        });
-        builder.Services.AddResponseCaching();
-        builder.Services.AddHealthChecks()
-            .AddDbContextCheck<AppDbContext>();
-        builder.Services.AddLogging(logging =>
-        {
-            logging.ClearProviders();
-            logging.AddConsole();
-            logging.AddDebug();
-            logging.AddEventSourceLogger();
-        });
-    }
-
-    private static void ConfigureApplicationServices(WebApplicationBuilder builder)
-    {
-        // Contexts / Helpers
-        builder.Services.AddScoped<ITenantContext, TenantContext>();
-        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-        builder.Services.AddScoped<INotificationService, NotificationService>();
-
-        // Services
-        builder.Services.AddScoped<IPolicyService, PolicyService>();
-        builder.Services.AddScoped<IAssetService, AssetService>();
-        builder.Services.AddScoped<IDashboardService, DashboardService>();
-        builder.Services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
-
-        // Data Seeder
-        builder.Services.AddScoped<IDataSeeder, DataSeeder>();
-    }
-
-    private static void ConfigureRepositories(WebApplicationBuilder builder)
-    {
-        builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
-        builder.Services.AddScoped<IAssetRepository, AssetRepository>();
-        builder.Services.AddScoped<IAuditRepository, AuditRepository>();
-        builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
-    }
-
-    private static void ConfigureApi(WebApplicationBuilder builder)
-    {
-        builder.Services.AddControllersWithViews()
-            .AddRazorRuntimeCompilation();
-        builder.Services.AddRazorPages();
-        builder.Services.AddEndpointsApiExplorer();
-
-        builder.Services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-            {
-                Title = "InsureX API",
-                Version = "v1",
-                Description = "Insurance Asset Protection & Compliance Platform API"
-            });
-
-            // Add JWT Authentication to Swagger
-            c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token."
-            });
-        });
-    }
-
-    private static void ConfigureBackgroundServices(WebApplicationBuilder builder)
-    {
-        builder.Services.AddHostedService<ComplianceBackgroundService>();
-    }
-
-    private static void ConfigureMapster()
-    {
-        TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         
-        // Add custom mappings here if needed
-        // TypeAdapterConfig<Source, Destination>.NewConfig()
-        //     .Map(dest => dest.Property, src => src.OtherProperty);
+        if (environment.IsDevelopment())
+        {
+            options.EnableSensitiveDataLogging();
+            options.EnableDetailedErrors();
+            options.LogTo(Console.WriteLine, LogLevel.Information);
+        }
+    });
+}
+
+void ConfigureIdentity(IServiceCollection services)
+{
+    services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        // Password settings
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        
+        // Lockout settings
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.AllowedForNewUsers = true;
+        
+        // User settings
+        options.User.RequireUniqueEmail = true;
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        
+        // SignIn settings
+        options.SignIn.RequireConfirmedEmail = false;
+        options.SignIn.RequireConfirmedPhoneNumber = false;
+        options.SignIn.RequireConfirmedAccount = false;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders()
+    .AddErrorDescriber<CustomIdentityErrorDescriber>();
+
+    // Configure cookie authentication
+    services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.Name = "InsureX.Auth";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+}
+
+void ConfigureCoreServices(IServiceCollection services)
+{
+    services.AddHttpContextAccessor();
+    services.AddResponseCaching();
+    services.AddMemoryCache();
+    
+    // Add distributed cache (use SQL Server or Redis in production)
+    services.AddDistributedMemoryCache();
+    
+    services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(30);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+        options.Cookie.Name = "InsureX.Session";
+    });
+    
+    services.AddRazorPages();
+    services.AddControllersWithViews()
+        .AddRazorRuntimeCompilation()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
+    
+    services.AddEndpointsApiExplorer();
+}
+
+void ConfigureApiServices(IServiceCollection services, IHostEnvironment environment)
+{
+    services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "InsureX API",
+            Version = "v1",
+            Description = "Insurance Asset Protection & Compliance Platform API",
+            Contact = new OpenApiContact
+            {
+                Name = "InsureX Team",
+                Email = "support@insurex.com",
+                Url = new Uri("https://insurex.com")
+            },
+            License = new OpenApiLicense
+            {
+                Name = "MIT License",
+                Url = new Uri("https://opensource.org/licenses/MIT")
+            }
+        });
+        
+        // Add JWT Authentication to Swagger
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token."
+        });
+        
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+        
+        // Include XML comments
+        var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        if (File.Exists(xmlPath))
+        {
+            c.IncludeXmlComments(xmlPath);
+        }
+    });
+}
+
+void ConfigureDependencyInjection(IServiceCollection services)
+{
+    // ===== TENANT CONTEXT (CRITICAL) =====
+    services.AddScoped<ITenantContext, TenantContext>();
+    
+    // Repositories
+    services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+    services.AddScoped<IPolicyRepository, PolicyRepository>();
+    services.AddScoped<IAssetRepository, AssetRepository>();
+    services.AddScoped<IAuditRepository, AuditRepository>();
+    services.AddScoped<IComplianceRepository, ComplianceRepository>();
+
+    // Services
+    services.AddScoped<IPolicyService, PolicyService>();
+    services.AddScoped<IAssetService, AssetService>();
+    services.AddScoped<IDashboardService, DashboardService>();
+    services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
+    services.AddScoped<INotificationService, NotificationService>();
+    services.AddScoped<IAuditService, AuditService>();
+    services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+    // Data Seeder
+    services.AddScoped<IDataSeeder, DataSeeder>();
+
+    // Background Services
+    services.AddHostedService<ComplianceBackgroundService>();
+    
+    // HTTP Clients
+    services.AddHttpClient("InsurerApi", client =>
+    {
+        client.BaseAddress = new Uri("https://api.insurer.com/");
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+        client.Timeout = TimeSpan.FromSeconds(30);
+    });
+}
+
+void ConfigureMapster()
+{
+    TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
+    TypeAdapterConfig.GlobalSettings.Scan(typeof(Program).Assembly);
+    
+    // Custom mappings
+    TypeAdapterConfig<ApplicationUser, UserDto>.NewConfig()
+        .Map(dest => dest.FullName, src => $"{src.FirstName} {src.LastName}".Trim());
+}
+
+void ConfigureLogging(IServiceCollection services)
+{
+    services.AddLogging(logging =>
+    {
+        logging.ClearProviders();
+        logging.AddConsole();
+        logging.AddDebug();
+        logging.AddEventSourceLogger();
+        logging.AddEventLog();
+        
+        // Add Application Insights if configured
+        // logging.AddApplicationInsights();
+    });
+}
+
+void ConfigureHealthChecks(IServiceCollection services)
+{
+    services.AddHealthChecks()
+        .AddDbContextCheck<AppDbContext>("Database", HealthStatus.Unhealthy)
+        .AddUrlGroup(new Uri("https://localhost:5001"), "Web App", HealthStatus.Degraded)
+        .AddUrlGroup(new Uri("https://localhost:5002"), "API", HealthStatus.Degraded);
+}
+
+void ConfigureCors(IServiceCollection services, IHostEnvironment environment)
+{
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowSpecific", policy =>
+        {
+            policy.WithOrigins(
+                    "https://localhost:5001", 
+                    "https://localhost:5002",
+                    "https://insurex-web.azurewebsites.net",
+                    "https://insurex-api.azurewebsites.net")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+        
+        options.AddPolicy("AllowAll", policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+    });
+}
+
+// ============================================================================
+// MIDDLEWARE CONFIGURATION
+// ============================================================================
+
+void ConfigureMiddleware(WebApplication app)
+{
+    var environment = app.Environment;
+    
+    // Development middleware
+    if (environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(c => 
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "InsureX API V1");
+            c.RoutePrefix = "swagger";
+            c.DocumentTitle = "InsureX API Documentation";
+        });
+        app.UseDeveloperExceptionPage();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
     }
 
-    private static void ConfigureMiddleware(WebApplication app)
+    // Security middleware
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+
+    // Routing
+    app.UseRouting();
+
+    // CORS - Use specific policy for production
+    if (environment.IsDevelopment())
     {
-        // Development middleware
+        app.UseCors("AllowAll");
+    }
+    else
+    {
+        app.UseCors("AllowSpecific");
+    }
+
+    // Session
+    app.UseSession();
+
+    // Response caching
+    app.UseResponseCaching();
+
+    // Custom middleware - ORDER IS CRITICAL!
+    app.UseMiddleware<RequestLoggingMiddleware>();          // 1. Log all requests
+    
+    // TENANT MIDDLEWARE - Must come AFTER logging but BEFORE authentication
+    app.UseMiddleware<TenantResolutionMiddleware>();        // 2. Resolve tenant from request
+    
+    app.UseMiddleware<ExceptionHandlingMiddleware>();       // 3. Global exception handling
+
+    // Authentication & Authorization - Must come AFTER tenant resolution
+    app.UseAuthentication();                                 // 4. Authenticate user
+    app.UseAuthorization();                                  // 5. Authorize user
+
+    // Health checks
+    app.MapHealthChecks("/health", new HealthCheckOptions
+    {
+        ResponseWriter = WriteHealthCheckResponse,
+        AllowCachingResponses = false,
+        ResultStatusCodes =
+        {
+            [HealthStatus.Healthy] = StatusCodes.Status200OK,
+            [HealthStatus.Degraded] = StatusCodes.Status200OK,
+            [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+        }
+    });
+
+    // Map endpoints
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+
+    app.MapRazorPages();
+    app.MapControllers();
+}
+
+// ============================================================================
+// DATABASE INITIALIZATION
+// ============================================================================
+
+async Task InitializeDatabaseAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        logger.LogInformation("Starting database initialization...");
+        
+        var context = services.GetRequiredService<AppDbContext>();
+        var seeder = services.GetRequiredService<IDataSeeder>();
+        
+        // Test database connection
+        if (await TestDatabaseConnectionAsync(context, logger))
+        {
+            // Apply migrations
+            await ApplyMigrationsAsync(context, logger);
+            
+            // Seed data
+            await SeedDatabaseAsync(seeder, logger);
+            
+            logger.LogInformation("Database initialization completed successfully");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred during database initialization");
+        
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "InsureX API V1");
-                c.RoutePrefix = "swagger";
-            });
-            app.UseDeveloperExceptionPage();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Error");
-            app.UseHsts();
-        }
-
-        // Security middleware
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-
-        // Routing
-        app.UseRouting();
-
-        // CORS
-        app.UseCors("AllowAll");
-
-        // Response caching
-        app.UseResponseCaching();
-
-        // Authentication & Authorization
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        // Health checks
-        app.MapHealthChecks("/health");
-
-        // Map endpoints
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Dashboard}/{action=Index}/{id?}");
-
-        app.MapRazorPages();
-        app.MapControllers();
-    }
-
-    private static async Task MigrateAndSeedDatabase(WebApplication app)
-    {
-        using (var scope = app.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            try
-            {
-                var context = services.GetRequiredService<AppDbContext>();
-                var logger = services.GetRequiredService<ILogger<Program>>();
-
-                // Apply migrations
-                logger.LogInformation("Applying database migrations...");
-                await context.Database.MigrateAsync();
-
-                // Seed data
-                logger.LogInformation("Seeding initial data...");
-                var seeder = services.GetRequiredService<IDataSeeder>();
-                await seeder.SeedAsync();
-
-                logger.LogInformation("Database setup completed successfully");
-            }
-            catch (Exception ex)
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occurred while migrating or seeding the database");
-            }
+            throw; // Rethrow in development to see the error
         }
     }
 }
 
-// For testing purposes
-public partial class Program { }
+async Task<bool> TestDatabaseConnectionAsync(AppDbContext context, ILogger logger)
+{
+    try
+    {
+        logger.LogInformation("Testing database connection...");
+        var canConnect = await context.Database.CanConnectAsync();
+        
+        if (canConnect)
+        {
+            logger.LogInformation("Database connection successful");
+            return true;
+        }
+        else
+        {
+            logger.LogWarning("Cannot connect to database. Please check connection string.");
+            return false;
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Database connection test failed");
+        return false;
+    }
+}
+
+async Task ApplyMigrationsAsync(AppDbContext context, ILogger logger)
+{
+    try
+    {
+        logger.LogInformation("Applying database migrations...");
+        
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+        var pendingCount = pendingMigrations.Count();
+        
+        if (pendingCount > 0)
+        {
+            logger.LogInformation("Found {Count} pending migrations", pendingCount);
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Migrations applied successfully");
+        }
+        else
+        {
+            logger.LogInformation("No pending migrations found");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error applying migrations");
+        throw;
+    }
+}
+
+async Task SeedDatabaseAsync(IDataSeeder seeder, ILogger logger)
+{
+    try
+    {
+        logger.LogInformation("Seeding initial data...");
+        await seeder.SeedAsync();
+        logger.LogInformation("Data seeding completed");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error seeding database");
+        throw;
+    }
+}
+
+// ============================================================================
+// APPLICATION STARTUP
+// ============================================================================
+
+async Task RunApplicationAsync(WebApplication app)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        logger.LogInformation("Starting InsureX application...");
+        logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
+        logger.LogInformation("URLs: https://localhost:5001, https://localhost:5002");
+        
+        await app.RunAsync();
+    }
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Application failed to start");
+        throw;
+    }
+}
+
+// ============================================================================
+// HELPER METHODS
+// ============================================================================
+
+async Task WriteHealthCheckResponse(HttpContext context, HealthReport report)
+{
+    context.Response.ContentType = "application/json";
+    
+    var response = new
+    {
+        status = report.Status.ToString(),
+        duration = report.TotalDuration.ToString(),
+        timestamp = DateTime.UtcNow,
+        checks = report.Entries.Select(e => new
+        {
+            name = e.Key,
+            status = e.Value.Status.ToString(),
+            description = e.Value.Description,
+            duration = e.Value.Duration.ToString(),
+            tags = e.Value.Tags,
+            data = e.Value.Data
+        })
+    };
+    
+    await context.Response.WriteAsJsonAsync(response);
+}

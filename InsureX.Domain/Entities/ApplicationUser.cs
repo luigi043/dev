@@ -22,7 +22,13 @@ public class ApplicationUser : IdentityUser<Guid>, ITenantScoped
     public DateTime? LastLoginAt { get; set; }
     public string? LastLoginIp { get; set; }
     
-     // Navigation properties
+    // Audit tracking - ADD THESE PROPERTIES
+    public DateTime? UpdatedAt { get; set; }
+    public string? UpdatedBy { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
+    
+    // Navigation properties
     public virtual Tenant? Tenant { get; set; }
     public virtual ICollection<UserRole>? UserRoles { get; set; }
     public virtual ICollection<UserClaim>? Claims { get; set; }
@@ -57,7 +63,14 @@ public class ApplicationUser : IdentityUser<Guid>, ITenantScoped
         IsActive = false;
     }
     
-    public class UserRole : IdentityUserRole<Guid>
+    public bool CanLogin()
+    {
+        return IsActive && !(DeletedAt.HasValue) && !LockoutEnabled;
+    }
+}
+
+// These nested classes should be OUTSIDE the ApplicationUser class
+public class UserRole : IdentityUserRole<Guid>
 {
     public virtual ApplicationUser? User { get; set; }
     public virtual Role? Role { get; set; }
@@ -81,11 +94,11 @@ public class RoleClaim : IdentityRoleClaim<Guid>
     public virtual Role? Role { get; set; }
 }
 
-
 public class UserClaim : IdentityUserClaim<Guid>
 {
     public virtual ApplicationUser? User { get; set; }
 }
+
 public class UserLogin : IdentityUserLogin<Guid>
 {
     public virtual ApplicationUser? User { get; set; }
@@ -94,9 +107,4 @@ public class UserLogin : IdentityUserLogin<Guid>
 public class UserToken : IdentityUserToken<Guid>
 {
     public virtual ApplicationUser? User { get; set; }
-}
-    public bool CanLogin()
-    {
-        return IsActive && !(DeletedAt.HasValue) && !LockoutEnabled;
-    }
 }
