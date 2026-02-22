@@ -14,7 +14,7 @@ public interface IPolicyService
     // Policy queries
     Task<List<PolicyDto>> GetExpiringPoliciesAsync(int days);
     Task<List<PolicyDto>> GetByAssetIdAsync(int assetId);
-    Task<PolicySummaryDto> GetSummaryAsync();
+    Task<PolicySummaryData> GetSummaryAsync();
     Task<bool> CheckComplianceAsync(int assetId);
     
     // Claims

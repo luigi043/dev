@@ -241,7 +241,7 @@ namespace InsureX.Application.Services
             return policies.Adapt<List<PolicyDto>>();
         }
 
-        public async Task<PolicySummaryDto> GetSummaryAsync()
+        public async Task<PolicySummaryData> GetSummaryAsync()
         {
             var tenantId = _tenantContext.GetCurrentTenantId();
             var query = await _policyRepository.GetQueryableAsync();
@@ -254,7 +254,7 @@ namespace InsureX.Application.Services
             var policies = await Task.FromResult(query.ToList());
             var now = DateTime.UtcNow;
 
-            return new PolicySummaryDto
+            return new PolicySummaryData
             {
                 TotalPolicies = policies.Count,
                 ActivePolicies = policies.Count(p => p.Status == "Active" && p.EndDate >= now),

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InsureX.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+511c86a8262add91402a2b127b232fa93959bc68")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+569c9c8b065a622f990991b476ce6c0e48159f2b")]
 [assembly: System.Reflection.AssemblyProductAttribute("InsureX.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InsureX.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

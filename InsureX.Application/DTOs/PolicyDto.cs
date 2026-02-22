@@ -1,154 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace InsureX.Application.DTOs;
-
-// PolicyDto (keep existing)
-public class PolicyDto
+namespace InsureX.Application.DTOs
 {
-    public int Id { get; set; }
-    public Guid TenantId { get; set; }
-    public string PolicyNumber { get; set; } = string.Empty;
-    public int AssetId { get; set; }
-    public string AssetTag { get; set; } = string.Empty;
-    public string InsurerCode { get; set; } = string.Empty;
-    public string InsurerName { get; set; } = string.Empty;
-    public string PolicyType { get; set; } = string.Empty;
-    public decimal SumInsured { get; set; }
-    public decimal Premium { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public DateTime? RenewalDate { get; set; }
-    public string Status { get; set; } = string.Empty;
-    public string PaymentStatus { get; set; } = string.Empty;
-    public int DaysToExpiry => (int)(EndDate - DateTime.UtcNow).TotalDays;
-    public bool IsExpiringSoon => DaysToExpiry > 0 && DaysToExpiry <= 30;
-    public bool IsExpired => DaysToExpiry <= 0;
-    public string? CoverageDetails { get; set; }
-    public int? ClaimsCount { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public string CreatedBy { get; set; } = string.Empty;
-}
+    public class PolicyDto
+    {
+        public int Id { get; set; }
+        public Guid TenantId { get; set; }
+        public string PolicyNumber { get; set; } = string.Empty;
+        public int AssetId { get; set; }
+        public string AssetTag { get; set; } = string.Empty;
+        public string InsurerCode { get; set; } = string.Empty;
+        public string InsurerName { get; set; } = string.Empty;
+        public string PolicyType { get; set; } = string.Empty;
+        public decimal SumInsured { get; set; }
+        public decimal Premium { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime? RenewalDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string PaymentStatus { get; set; } = string.Empty;
+        public int DaysToExpiry => (int)(EndDate - DateTime.UtcNow).TotalDays;
+        public bool IsExpiringSoon => DaysToExpiry > 0 && DaysToExpiry <= 30;
+        public bool IsExpired => DaysToExpiry <= 0;
+        public string? CoverageDetails { get; set; }
+        public int? ClaimsCount { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+    }
 
-// CreatePolicyDto (keep existing)
-public class CreatePolicyDto
-{
-    [Required(ErrorMessage = "Policy Number is required")]
-    [StringLength(50, ErrorMessage = "Policy Number cannot exceed 50 characters")]
-    public string PolicyNumber { get; set; } = string.Empty;
+    public class CreatePolicyDto
+    {
+        public string PolicyNumber { get; set; } = string.Empty;
+        public int AssetId { get; set; }
+        public string InsurerCode { get; set; } = string.Empty;
+        public string InsurerName { get; set; } = string.Empty;
+        public string PolicyType { get; set; } = string.Empty;
+        public decimal SumInsured { get; set; }
+        public decimal Premium { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime? RenewalDate { get; set; }
+        public string? CoverageDetails { get; set; }
+        public string? Exclusions { get; set; }
+        public string? Notes { get; set; }
+    }
 
-    [Required(ErrorMessage = "Asset is required")]
-    public int AssetId { get; set; }
-
-    [Required(ErrorMessage = "Insurer Code is required")]
-    [StringLength(20)]
-    public string InsurerCode { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Insurer Name is required")]
-    [StringLength(100)]
-    public string InsurerName { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Policy Type is required")]
-    public string PolicyType { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Sum Insured is required")]
-    [Range(0.01, 999999999.99, ErrorMessage = "Please enter a valid amount")]
-    public decimal SumInsured { get; set; }
-
-    [Required(ErrorMessage = "Premium is required")]
-    [Range(0.01, 999999999.99, ErrorMessage = "Please enter a valid amount")]
-    public decimal Premium { get; set; }
-
-    [Required(ErrorMessage = "Start Date is required")]
-    [DataType(DataType.Date)]
-    public DateTime StartDate { get; set; }
-
-    [Required(ErrorMessage = "End Date is required")]
-    [DataType(DataType.Date)]
-    public DateTime EndDate { get; set; }
-
-    [DataType(DataType.Date)]
-    public DateTime? RenewalDate { get; set; }
-
-    public string? CoverageDetails { get; set; }
-    public string? Exclusions { get; set; }
-    public string? Notes { get; set; }
-}
-
-// UpdatePolicyDto (keep existing - inherits from CreatePolicyDto)
-public class UpdatePolicyDto : CreatePolicyDto
-{
-    public int Id { get; set; }
-}
-
-// PolicySearchDto (keep existing)
-public class PolicySearchDto
-{
-    public string? SearchTerm { get; set; }
-    public int? AssetId { get; set; }
-    public string? InsurerCode { get; set; }
-    public string? PolicyType { get; set; }
-    public string? Status { get; set; }
-    public string? PaymentStatus { get; set; }
-    public DateTime? FromDate { get; set; }
-    public DateTime? ToDate { get; set; }
-    public bool? ExpiringOnly { get; set; }
-    public bool? ExpiredOnly { get; set; }
-    public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 25;
-    public string? SortBy { get; set; } = "EndDate";
-    public string SortDir { get; set; } = "asc";
-}
-
-// ===== ADD THESE MISSING DTOs =====
-
-public class PolicySummaryDto
-{
-    public int TotalPolicies { get; set; }
-    public int ActivePolicies { get; set; }
-    public int ExpiringPolicies { get; set; }
-    public int ExpiredPolicies { get; set; }
-    public decimal TotalSumInsured { get; set; }
-    public decimal TotalPremium { get; set; }
-    public Dictionary<string, int> PoliciesByType { get; set; } = new();
-    public Dictionary<string, int> PoliciesByInsurer { get; set; } = new();
-}
-
-public class ClaimDto
-{
-    public int Id { get; set; }
-    public int PolicyId { get; set; }
-    public string PolicyNumber { get; set; } = string.Empty;
-    public DateTime ClaimDate { get; set; }
-    public decimal ClaimAmount { get; set; }
-    public string ClaimType { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string? ClaimReference { get; set; }
-    public DateTime? SettlementDate { get; set; }
-    public decimal? SettlementAmount { get; set; }
-}
-
-public class CreateClaimDto
-{
-    [Required]
-    public int PolicyId { get; set; }
-
-    [Required]
-    [DataType(DataType.Date)]
-    public DateTime ClaimDate { get; set; }
-
-    [Required]
-    [Range(0.01, 999999999.99)]
-    public decimal ClaimAmount { get; set; }
-
-    [Required]
-    public string ClaimType { get; set; } = string.Empty;
-
-    [Required]
-    [StringLength(500)]
-    public string Description { get; set; } = string.Empty;
-
-    public string? ClaimReference { get; set; }
+    public class UpdatePolicyDto : CreatePolicyDto
+    {
+        public int Id { get; set; }
+    }
 }

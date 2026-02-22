@@ -32,7 +32,7 @@ namespace InsureX.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Asset?> GetByIdAsync(int id)
+        public new async Task<Asset?> GetByIdAsync(int id)
         {
             return await _context.Assets
                 .Include(a => a.Policies)
@@ -85,7 +85,7 @@ namespace InsureX.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> ExistsAsync(Expression<Func<Asset, bool>> predicate)
+        public new async Task<bool> ExistsAsync(Expression<Func<Asset, bool>> predicate)
         {
             return await _context.Assets.AnyAsync(predicate);
         }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
-namespace InsureX.Infrastructure.Tenant;
+namespace InsureX.Infrastructure.Tenant;  // This is a namespace, not the entity
 
 public interface ITenantContext
 {
@@ -23,7 +23,6 @@ public class TenantContext : ITenantContext
 
     public Guid? GetCurrentTenantId()
     {
-        // Try to get from HttpContext first
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext?.User?.Identity?.IsAuthenticated == true)
         {
@@ -33,31 +32,17 @@ public class TenantContext : ITenantContext
                 return tenantId;
             }
         }
-
-        // Try to get from header
-        if (httpContext?.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantHeader) == true)
-        {
-            if (Guid.TryParse(tenantHeader, out var tenantId))
-            {
-                return tenantId;
-            }
-        }
-
-        // Fallback to AsyncLocal for background services
         return _tenantId.Value;
     }
 
     public string? GetCurrentUserId()
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-        return httpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? httpContext?.User?.FindFirst("sub")?.Value;
+        return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
 
     public string? GetCurrentUserEmail()
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-        return httpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
+        return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
     }
 
     public bool IsAuthenticated()
@@ -65,7 +50,6 @@ public class TenantContext : ITenantContext
         return _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
     }
 
-    // For background services
     public static void SetTenantId(Guid? tenantId)
     {
         _tenantId.Value = tenantId;

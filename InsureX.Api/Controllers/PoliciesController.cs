@@ -22,7 +22,7 @@ public class PoliciesController : ControllerBase
     }
 
     [HttpGet("summary")]
-    public async Task<ActionResult<PolicySummaryDto>> GetSummary()
+    public async Task<ActionResult<PolicySummaryData>> GetSummary()
     {
         try
         {

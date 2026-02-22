@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "05tES4J4+fA=",
+  "dgSpecHash": "gcFxj6EKnEc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj",
+  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Ui.Shell.Rcl\\InsureX.Ui.Shell.Rcl.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cluiz\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.24\\microsoft.aspnetcore.authorization.8.0.24.nupkg.sha512",
     "C:\\Users\\cluiz\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.24\\microsoft.aspnetcore.components.8.0.24.nupkg.sha512",

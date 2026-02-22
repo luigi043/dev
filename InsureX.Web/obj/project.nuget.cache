@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Q5dSCjm8eIY=",
+  "dgSpecHash": "h1/H0dSQ+a0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Web\\InsureX.Web.csproj",
+  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Web\\InsureX.Web.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cluiz\\.nuget\\packages\\aspnetcore.healthchecks.sqlserver\\7.0.0\\aspnetcore.healthchecks.sqlserver.7.0.0.nupkg.sha512",
     "C:\\Users\\cluiz\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",

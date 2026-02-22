@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kpJPvAOKYZU=",
+  "dgSpecHash": "wlxyWl6H5f8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\src\\InsureX.Application\\InsureX.Application.csproj",
+  "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\DEV\\InsureX.Application\\InsureX.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cluiz\\.nuget\\packages\\epplus\\8.4.2\\epplus.8.4.2.nupkg.sha512",
     "C:\\Users\\cluiz\\.nuget\\packages\\epplus.interfaces\\8.4.0\\epplus.interfaces.8.4.0.nupkg.sha512",
