@@ -21,21 +21,8 @@ public class ApplicationUser : IdentityUser<Guid>, ITenantScoped
     // Activity tracking
     public DateTime? LastLoginAt { get; set; }
     public string? LastLoginIp { get; set; }
-    public int AccessFailedCount { get; set; }
     
-    // Audit
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string? CreatedBy { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public string? UpdatedBy { get; set; }
-    public DateTime? DeletedAt { get; set; }
-    public string? DeletedBy { get; set; }
-    
-    // Two-factor authentication
-    public bool TwoFactorEnabled { get; set; }
-    public string? TwoFactorSecret { get; set; }
-    
-    // Navigation properties
+     // Navigation properties
     public virtual Tenant? Tenant { get; set; }
     public virtual ICollection<UserRole>? UserRoles { get; set; }
     public virtual ICollection<UserClaim>? Claims { get; set; }

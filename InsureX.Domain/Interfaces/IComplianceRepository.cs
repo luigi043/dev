@@ -1,50 +1,65 @@
 ﻿using InsureX.Domain.Entities;
-using System.Linq.Expressions;
 
 namespace InsureX.Domain.Interfaces
 {
-    public interface IComplianceRepository : IRepository<ComplianceResult>
+    public interface IComplianceRepository : IRepository<ComplianceCheck>
     {
-        // Rule Management
+        // Rule Management - Only custom methods not in IRepository
         Task<List<ComplianceRule>> GetActiveRulesAsync(Guid tenantId);
         Task<ComplianceRule?> GetRuleByCodeAsync(string ruleCode, Guid tenantId);
         Task<List<ComplianceRule>> GetRulesByTypeAsync(string ruleType, Guid tenantId);
-        Task<ComplianceRule?> GetRuleByIdAsync(int id, Guid tenantId);
-        Task AddRuleAsync(ComplianceRule rule);
-        Task UpdateRuleAsync(ComplianceRule rule);
-        Task DeleteRuleAsync(int id, Guid tenantId);
-
-        // Compliance Checks
-        Task<ComplianceResult?> GetLatestCheckAsync(Guid assetId);
-        Task<List<ComplianceResult>> GetCheckHistoryAsync(Guid assetId, int days = 30);
-        Task<List<ComplianceResult>> GetAssetsNeedingCheckAsync(Guid tenantId, int hoursThreshold = 24);
-        Task<ComplianceResult> EvaluateAssetAsync(Guid assetId);
-        Task LogComplianceCheckAsync(Guid assetId, bool isCompliant, string? reason = null);
+        Task<List<ComplianceRule>> GetExpiringRulesAsync(Guid tenantId, int daysThreshold = 30);
+        Task<bool> RuleExistsAsync(string ruleCode, Guid tenantId);
+        
+        // Compliance Checks - Custom queries only
+        Task<ComplianceCheck?> GetLatestCheckAsync(Guid assetId);
+        Task<List<ComplianceCheck>> GetCheckHistoryAsync(Guid assetId, int days = 30);
+        Task<List<ComplianceCheck>> GetChecksByDateRangeAsync(Guid tenantId, DateTime startDate, DateTime endDate);
+        Task<List<ComplianceCheck>> GetAssetsNeedingCheckAsync(Guid tenantId, int hoursThreshold = 24);
+        Task<int> GetCheckCountAsync(Guid assetId, DateTime? since = null);
+        Task<double> GetAverageScoreAsync(Guid assetId, int days = 90);
 
         // Compliance History
         Task<List<ComplianceHistory>> GetHistoryAsync(Guid assetId, int days = 90);
+        Task<List<ComplianceHistory>> GetHistoryByDateRangeAsync(Guid tenantId, DateTime startDate, DateTime endDate);
+        Task<ComplianceHistory?> GetLastStatusChangeAsync(Guid assetId);
         Task AddHistoryAsync(ComplianceHistory history);
+        Task<List<ComplianceHistory>> GetAuditTrailAsync(Guid assetId, DateTime? from = null, DateTime? to = null);
 
-        // Alerts
+        // Alert Management
         Task<List<ComplianceAlert>> GetActiveAlertsAsync(Guid? assetId = null, Guid? tenantId = null);
         Task<List<ComplianceAlert>> GetAlertsByAssetAsync(Guid assetId);
-        Task<ComplianceAlert?> GetAlertByIdAsync(int id, Guid tenantId);
-        Task AddAlertAsync(ComplianceAlert alert);
-        Task UpdateAlertAsync(ComplianceAlert alert);
-        Task ResolveAlertAsync(int id, string resolution, Guid tenantId);
+        Task<List<ComplianceAlert>> GetAlertsByStatusAsync(string status, Guid tenantId);
+        Task<List<ComplianceAlert>> GetAlertsBySeverityAsync(int minSeverity, Guid tenantId);
+        Task<List<ComplianceAlert>> GetOverdueAlertsAsync(Guid tenantId);
+        Task<List<ComplianceAlert>> GetAlertsByTypeAsync(string alertType, Guid tenantId);
+        Task AcknowledgeAlertAsync(Guid id, string userId, Guid tenantId);
+        Task ResolveAlertAsync(Guid id, string resolution, string userId, Guid tenantId);
         Task<int> GetActiveAlertCountAsync(Guid? assetId = null, Guid? tenantId = null);
+        Task<Dictionary<string, int>> GetAlertStatisticsAsync(Guid tenantId);
 
-        // Dashboard & Summary
+        // Dashboard & Analytics
         Task<ComplianceDashboard?> GetLatestDashboardAsync(Guid tenantId);
+        Task<List<ComplianceDashboard>> GetDashboardHistoryAsync(Guid tenantId, int days = 30);
         Task SaveDashboardAsync(ComplianceDashboard dashboard);
         Task<Dictionary<string, int>> GetComplianceSummaryAsync(Guid tenantId);
-        Task<double> GetAverageComplianceScoreAsync(Guid tenantId);
-        Task<int> GetAssetsByStatusCountAsync(string status, Guid tenantId);
-        Task<List<Asset>> GetNonCompliantAssetsAsync(Guid tenantId, int severity = 0);
+        Task<double> GetOverallComplianceRateAsync(Guid tenantId);
+        Task<Dictionary<string, double>> GetComplianceByAssetTypeAsync(Guid tenantId);
+        Task<Dictionary<string, int>> GetViolationsByRuleTypeAsync(Guid tenantId, int days = 30);
+        Task<List<Asset>> GetNonCompliantAssetsAsync(Guid tenantId, int minSeverity = 0);
+        Task<List<Asset>> GetCriticalAssetsAsync(Guid tenantId);
+        Task<double> GetAverageResponseTimeAsync(Guid tenantId, int days = 30);
+        Task<double> GetAverageResolutionTimeAsync(Guid tenantId, int days = 30);
 
-        // Additional utility methods
-        Task<bool> IsAssetCompliantAsync(Guid assetId);
-        Task<int> GetTotalRulesCountAsync(Guid tenantId);
-        Task<Dictionary<string, double>> GetRuleEffectivenessAsync(Guid tenantId, DateTime startDate, DateTime endDate);
+        // Advanced Queries
+        Task<IEnumerable<ComplianceRule>> EvaluateAssetRulesAsync(Guid assetId);
+        Task<Dictionary<Guid, bool>> BatchCheckComplianceAsync(List<Guid> assetIds);
+        Task<List<ComplianceCheck>> GetFailedChecksAsync(Guid tenantId, DateTime? since = null);
+        Task<int> GetAssetsByStatusCountAsync(string status, Guid tenantId);
+        
+        // Reporting
+        Task<byte[]> GenerateComplianceReportAsync(Guid tenantId, DateTime startDate, DateTime endDate, string format = "pdf");
+        Task<Dictionary<string, object>> GetComplianceMetricsAsync(Guid tenantId);
+        Task<List<ComplianceHistory>> GetStatusChangeTimelineAsync(Guid assetId, int months = 6);
     }
 }

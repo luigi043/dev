@@ -1,5 +1,7 @@
 using InsureX.Domain.Entities;
 using System.Linq.Expressions;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace InsureX.Domain.Interfaces
 {

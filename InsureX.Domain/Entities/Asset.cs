@@ -19,8 +19,6 @@ public class Asset : BaseEntity, ITenantScoped
     public string? Notes { get; set; }
     public string? AssetType { get; set; }
     public int? ComplianceScore { get; set; }
-    public string? CreatedBy { get; set; }
-    public string? UpdatedBy { get; set; }
     
     // Navigation properties
     public virtual Tenant? Tenant { get; set; }

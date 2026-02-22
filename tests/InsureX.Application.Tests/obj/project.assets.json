@@ -68,23 +68,6 @@
           "build/netstandard1.0/coverlet.collector.targets": {}
         }
       },
-      "Devlooped.SponsorLink/1.0.0": {
-        "type": "package",
-        "compile": {
-          "lib/netstandard2.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/netstandard2.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/Devlooped.SponsorLink.props": {},
-          "buildTransitive/Devlooped.SponsorLink.targets": {}
-        }
-      },
       "EPPlus/8.4.2": {
         "type": "package",
         "dependencies": {
@@ -2033,21 +2016,16 @@
           "lib/netstandard2.0/Mono.TextTemplating.dll": {}
         }
       },
-      "Moq/4.20.0": {
+      "Moq/4.20.72": {
         "type": "package",
         "dependencies": {
-          "Castle.Core": "5.1.1",
-          "Devlooped.SponsorLink": "1.0.0"
+          "Castle.Core": "5.1.1"
         },
         "compile": {
-          "lib/net6.0/Moq.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Moq.dll": {}
         },
         "runtime": {
-          "lib/net6.0/Moq.dll": {
-            "related": ".xml"
-          }
+          "lib/net6.0/Moq.dll": {}
         }
       },
       "NETStandard.Library/1.6.1": {
@@ -4131,29 +4109,6 @@
         "coverlet-icon.png",
         "coverlet.collector.3.2.0.nupkg.sha512",
         "coverlet.collector.nuspec"
-      ]
-    },
-    "Devlooped.SponsorLink/1.0.0": {
-      "sha512": "YtGfB0L0OUGK/Nl7YR8jVLOb8zIYo+pM80nw86GVqqeI36D3itw/N5agupsn4sAJxQxKVJti9KvqqAR8dfrW1A==",
-      "type": "package",
-      "path": "devlooped.sponsorlink/1.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "analyzers/dotnet/Devlooped.SponsorLink.dll",
-        "analyzers/dotnet/Devlooped.SponsorLink.xml",
-        "analyzers/dotnet/System.Net.Http.WinHttpHandler.dll",
-        "analyzers/dotnet/es/Devlooped.SponsorLink.resources.dll",
-        "buildTransitive/Devlooped.SponsorLink.props",
-        "buildTransitive/Devlooped.SponsorLink.targets",
-        "devlooped.sponsorlink.1.0.0.nupkg.sha512",
-        "devlooped.sponsorlink.nuspec",
-        "icon.png",
-        "lib/netstandard2.0/Devlooped.SponsorLink.dll",
-        "lib/netstandard2.0/Devlooped.SponsorLink.xml",
-        "lib/netstandard2.0/System.Net.Http.WinHttpHandler.dll",
-        "lib/netstandard2.0/es/Devlooped.SponsorLink.resources.dll",
-        "readme.md"
       ]
     },
     "EPPlus/8.4.2": {
@@ -7156,26 +7111,19 @@
         "mono.texttemplating.nuspec"
       ]
     },
-    "Moq/4.20.0": {
-      "sha512": "QZg6hh/MCpVN9uq3/uwfgKCHsV5NqTASJbowai960f2yjkyDk02qG5LO301uMqVIc+ge/GRbUo3qaYI6mlqQrg==",
+    "Moq/4.20.72": {
+      "sha512": "EA55cjyNn8eTNWrgrdZJH5QLFp2L43oxl1tlkoYUKIE9pRwL784OWiTXeCV5ApS+AMYEAlt7Fo03A2XfouvHmQ==",
       "type": "package",
-      "path": "moq/4.20.0",
+      "path": "moq/4.20.72",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "analyzers/dotnet/roslyn4.0/Moq.CodeAnalysis.dll",
-        "analyzers/dotnet/roslyn4.0/Moq.CodeAnalysis.xml",
-        "analyzers/dotnet/roslyn4.0/es/Moq.CodeAnalysis.resources.dll",
         "icon.png",
         "lib/net462/Moq.dll",
-        "lib/net462/Moq.xml",
         "lib/net6.0/Moq.dll",
-        "lib/net6.0/Moq.xml",
         "lib/netstandard2.0/Moq.dll",
-        "lib/netstandard2.0/Moq.xml",
         "lib/netstandard2.1/Moq.dll",
-        "lib/netstandard2.1/Moq.xml",
-        "moq.4.20.0.nupkg.sha512",
+        "moq.4.20.72.nupkg.sha512",
         "moq.nuspec",
         "readme.md"
       ]
@@ -11610,7 +11558,7 @@
       "InsureX.Domain >= 1.0.0",
       "InsureX.Infrastructure >= 1.0.0",
       "Microsoft.NET.Test.Sdk >= 18.0.1",
-      "Moq >= 4.20.0",
+      "Moq >= 4.20.72",
       "coverlet.collector >= 3.2.0",
       "xunit >= 2.5.3",
       "xunit.runner.visualstudio >= 2.5.3"
@@ -11683,7 +11631,7 @@
           },
           "Moq": {
             "target": "Package",
-            "version": "[4.20.0, )"
+            "version": "[4.20.72, )"
           },
           "coverlet.collector": {
             "target": "Package",
@@ -11745,16 +11693,6 @@
       "warningLevel": 1,
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.Workspaces.Common 4.5.0 requires Microsoft.CodeAnalysis.Common (= 4.5.0) but version Microsoft.CodeAnalysis.Common 4.6.0 was resolved.",
       "libraryId": "Microsoft.CodeAnalysis.Common",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1901",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'Moq' 4.20.0 has a known low severity vulnerability, https://github.com/advisories/GHSA-6r78-m64m-qwcf",
-      "libraryId": "Moq",
       "targetGraphs": [
         "net8.0"
       ]

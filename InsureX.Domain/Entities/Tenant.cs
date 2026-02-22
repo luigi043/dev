@@ -61,7 +61,5 @@ public class Tenant : BaseEntity
     // Navigation properties
     public virtual ICollection<ApplicationUser> Users { get; set; }
 
-    // Audit fields
-    public Guid? CreatedBy { get; set; }
-    public Guid? UpdatedBy { get; set; }
+    
 }
