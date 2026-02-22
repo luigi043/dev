@@ -1,4 +1,4 @@
-namespace InsureX.Application.Common.Exceptions;
+namespace InsureX.Domain.Exceptions;
 
 public class NotFoundException : Exception
 {

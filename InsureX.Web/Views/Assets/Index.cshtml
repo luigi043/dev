@@ -6,13 +6,17 @@
     var statusFilter = Context.Request.Query["status"].ToString();
     var complianceFilter = Context.Request.Query["complianceStatus"].ToString();
     var yearFilter = Context.Request.Query["year"].ToString();
+    var sortBy = Context.Request.Query["sortBy"].ToString();
+    var sortDir = Context.Request.Query["sortDir"].ToString();
 }
 
 <div class="container-fluid px-4">
     <!-- Page Header with Stats -->
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <div>
-            <h1 class="h2">Asset Register</h1>
+            <h1 class="h2 fw-bold">
+                <i class="bi bi-boxes me-2"></i>Asset Register
+            </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
@@ -21,75 +25,111 @@
             </nav>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a asp-action="Create" class="btn btn-primary me-2">
-                <i class="bi bi-plus-circle"></i> Add New Asset
+            <a asp-action="Create" class="btn btn-primary me-2" data-bs-toggle="tooltip" title="Add new asset">
+                <i class="bi bi-plus-circle"></i> Add New
             </a>
-            <button type="button" class="btn btn-success me-2" id="exportBtn">
-                <i class="bi bi-file-earmark-excel"></i> Export
-            </button>
-            <button type="button" class="btn btn-outline-secondary" id="refreshBtn">
-                <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-success" id="exportBtn" data-bs-toggle="tooltip" title="Export to Excel">
+                    <i class="bi bi-file-earmark-excel"></i> Export
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="refreshBtn" data-bs-toggle="tooltip" title="Refresh data">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-gear"></i> Options
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" id="printView"><i class="bi bi-printer me-2"></i>Print View</a></li>
+                    <li><a class="dropdown-item" href="#" id="fullScreen"><i class="bi bi-arrows-fullscreen me-2"></i>Full Screen</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" id="bulkDelete"><i class="bi bi-trash me-2"></i>Bulk Delete</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
     <!-- Quick Stats Cards -->
     <div class="row g-4 mb-4">
-        <div class="col-md-3 col-sm-6">
-            <div class="card border-left-primary shadow-sm h-100 py-2">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-primary border-4 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Assets</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800" id="totalAssets">@Model.TotalItems</div>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-primary text-uppercase mb-1">Total Assets</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="totalAssets">@Model.TotalItems</div>
+                            <div class="small text-muted mt-2">
+                                <span class="text-success" id="monthlyGrowth">+2.5%</span> vs last month
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-box-seam fa-2x text-gray-300"></i>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-box-seam fs-1 text-primary"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
-            <div class="card border-left-success shadow-sm h-100 py-2">
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-success border-4 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Active Assets</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800" id="activeAssets">0</div>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-success text-uppercase mb-1">Active Assets</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="activeAssets">--</div>
+                            <div class="small text-muted mt-2">
+                                <span id="activePercentage">0%</span> of total
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-check-circle fs-1 text-success"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
-            <div class="card border-left-info shadow-sm h-100 py-2">
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-info border-4 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-info text-uppercase mb-1">Total Value</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800" id="totalValue">$0.00</div>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-info text-uppercase mb-1">Total Value</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="totalValue">$0.00</div>
+                            <div class="small text-muted mt-2">
+                                Avg. <span id="avgValue">$0</span> per asset
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-currency-dollar fs-1 text-info"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
-            <div class="card border-left-warning shadow-sm h-100 py-2">
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-warning border-4 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Compliance Rate</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800" id="complianceRate">0%</div>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-warning text-uppercase mb-1">Compliance Rate</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="complianceRate">0%</div>
+                            <div class="small text-muted mt-2">
+                                <span id="nonCompliant">0</span> non-compliant
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-shield-check fa-2x text-gray-300"></i>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-shield-check fs-1 text-warning"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,56 +142,108 @@
         <div class="card-header bg-white py-3">
             <h6 class="m-0 fw-bold text-primary">
                 <i class="bi bi-search me-2"></i>Advanced Search
+                <button class="btn btn-sm btn-link float-end" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
             </h6>
         </div>
-        <div class="card-body">
-            <form id="searchForm" class="row g-3" method="get">
-                <div class="col-md-4">
-                    <label class="form-label fw-bold small text-uppercase">Search</label>
-                    <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
-                           placeholder="Search by tag, make, model, VIN..." value="@searchTerm">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small text-uppercase">Status</label>
-                    <select class="form-select" id="statusFilter" name="status">
-                        <option value="">All Status</option>
-                        <option value="Active" selected="@(statusFilter == "Active")">Active</option>
-                        <option value="Inactive" selected="@(statusFilter == "Inactive")">Inactive</option>
-                        <option value="Maintenance" selected="@(statusFilter == "Maintenance")">Maintenance</option>
-                        <option value="Sold" selected="@(statusFilter == "Sold")">Sold</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small text-uppercase">Compliance</label>
-                    <select class="form-select" id="complianceFilter" name="complianceStatus">
-                        <option value="">All Compliance</option>
-                        <option value="Compliant" selected="@(complianceFilter == "Compliant")">Compliant</option>
-                        <option value="Non-Compliant" selected="@(complianceFilter == "Non-Compliant")">Non-Compliant</option>
-                        <option value="Pending" selected="@(complianceFilter == "Pending")">Pending Review</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small text-uppercase">Year</label>
-                    <input type="number" class="form-control" id="yearFilter" name="year" 
-                           placeholder="Year" value="@yearFilter" min="1900" max="@DateTime.Now.Year">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small text-uppercase">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-search"></i> Apply Filters
-                    </button>
-                </div>
-            </form>
+        <div class="collapse show" id="searchCollapse">
+            <div class="card-body">
+                <form id="searchForm" class="row g-3" method="get">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="sortBy" id="sortBy" value="@sortBy" />
+                    <input type="hidden" name="sortDir" id="sortDir" value="@sortDir" />
+                    
+                    <div class="col-lg-4">
+                        <label class="form-label fw-bold small text-uppercase">Quick Search</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                                   placeholder="Search by tag, make, model, VIN..." value="@searchTerm">
+                            @if (!string.IsNullOrEmpty(searchTerm))
+                            {
+                                <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            }
+                        </div>
+                        <div class="form-text">Search across all fields</div>
+                    </div>
+                    
+                    <div class="col-lg-2">
+                        <label class="form-label fw-bold small text-uppercase">Status</label>
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">All Status</option>
+                            <option value="Active" selected="@(statusFilter == "Active")">Active</option>
+                            <option value="Inactive" selected="@(statusFilter == "Inactive")">Inactive</option>
+                            <option value="Maintenance" selected="@(statusFilter == "Maintenance")">Maintenance</option>
+                            <option value="Sold" selected="@(statusFilter == "Sold")">Sold</option>
+                            <option value="Stolen" selected="@(statusFilter == "Stolen")">Stolen</option>
+                            <option value="Totaled" selected="@(statusFilter == "Totaled")">Totaled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-lg-2">
+                        <label class="form-label fw-bold small text-uppercase">Compliance</label>
+                        <select class="form-select" id="complianceFilter" name="complianceStatus">
+                            <option value="">All Compliance</option>
+                            <option value="Compliant" selected="@(complianceFilter == "Compliant")">Compliant</option>
+                            <option value="NonCompliant" selected="@(complianceFilter == "NonCompliant")">Non-Compliant</option>
+                            <option value="Pending" selected="@(complianceFilter == "Pending")">Pending Review</option>
+                            <option value="Expired" selected="@(complianceFilter == "Expired")">Expired</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-lg-2">
+                        <label class="form-label fw-bold small text-uppercase">Year</label>
+                        <select class="form-select" id="yearFilter" name="year">
+                            <option value="">All Years</option>
+                            @for (int year = DateTime.Now.Year; year >= 2000; year--)
+                            {
+                                <option value="@year" selected="@(yearFilter == year.ToString())">@year</option>
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="col-lg-2">
+                        <label class="form-label fw-bold small text-uppercase">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                    
+                    <div class="col-12 mt-3">
+                        <button class="btn btn-sm btn-outline-secondary" type="button" id="resetFilters">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" type="button" id="saveFilter">
+                            <i class="bi bi-bookmark-plus"></i> Save Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Results Table -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 fw-bold text-primary">
-                <i class="bi bi-table me-2"></i>Assets List
-            </h6>
-            <span class="badge bg-secondary">@Model.TotalItems Total Items</span>
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 fw-bold text-primary">
+                    <i class="bi bi-table me-2"></i>Assets List
+                </h6>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-secondary me-3">@Model.TotalItems Total Items</span>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-secondary" id="listView">
+                            <i class="bi bi-list-ul"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="gridView">
+                            <i class="bi bi-grid"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-body p-0">
             <div id="assetTableContainer" class="table-responsive">
@@ -161,9 +253,9 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal - Bootstrap 5 -->
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteModalLabel">
@@ -172,12 +264,18 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-circle me-2"></i>
-                    <strong>Warning:</strong> This action cannot be undone.
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle-fill me-3 fs-4"></i>
+                    <div>
+                        <strong>Warning:</strong> This action cannot be undone.
+                    </div>
                 </div>
-                <p>Are you sure you want to delete the asset: <strong class="asset-tag-placeholder"></strong>?</p>
-                <p class="mb-0">This will permanently remove all associated data including policies and compliance history.</p>
+                <p class="mb-2">Are you sure you want to delete the asset:</p>
+                <p class="h5 text-center py-2 bg-light rounded asset-tag-placeholder"></p>
+                <p class="small text-muted mt-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    This will permanently remove all associated data including policies and compliance history.
+                </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -191,7 +289,59 @@
     </div>
 </div>
 
-<!-- Loading Spinner -->
+<!-- Bulk Delete Modal -->
+<div class="modal fade" id="bulkDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Bulk Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select assets to delete:</p>
+                <div class="list-group" id="bulkDeleteList" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="confirmBulkDelete">Delete Selected</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Filter Modal -->
+<div class="modal fade" id="saveFilterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-bookmark-plus me-2"></i>Save Filter
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Filter Name</label>
+                    <input type="text" class="form-control" id="filterName" placeholder="e.g., Active Assets 2024">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Current Criteria</label>
+                    <div class="bg-light p-3 rounded small" id="currentFilterCriteria"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" id="saveFilterConfirm">Save Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
 <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
@@ -199,117 +349,237 @@
                 <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <h6>Processing...</h6>
+                <h6 class="mb-2">Processing...</h6>
+                <p class="small text-muted mb-0" id="loadingMessage">Please wait</p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Toast Notifications Container -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
             <i class="bi bi-info-circle me-2"></i>
-            <strong class="me-auto">Notification</strong>
-            <small>just now</small>
+            <strong class="me-auto">InsureX</strong>
+            <small class="text-muted">just now</small>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body"></div>
     </div>
 </div>
 
+<!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-eye me-2"></i>Asset Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="quickViewContent">
+                <!-- Content loaded via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        .border-left-primary {
-            border-left: 4px solid #4e73df;
+        .border-start {
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .border-left-success {
-            border-left: 4px solid #1cc88a;
-        }
-        .border-left-info {
-            border-left: 4px solid #36b9cc;
-        }
-        .border-left-warning {
-            border-left: 4px solid #f6c23e;
-        }
-        .text-gray-300 {
-            color: #dddfeb;
+        .border-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15) !important;
         }
         .text-gray-800 {
-            color: #5a5c69;
-        }
-        .card {
-            transition: transform 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-2px);
+            color: #2c3e50;
         }
         .table > :not(caption) > * > * {
-            padding: 1rem 0.5rem;
+            padding: 1rem 0.75rem;
             vertical-align: middle;
         }
         .badge {
             font-size: 0.85rem;
             padding: 0.5rem 0.75rem;
-        }
-        .btn-toolbar .btn {
-            margin-right: 0.25rem;
+            font-weight: 500;
         }
         .breadcrumb {
             background-color: transparent;
             padding: 0;
             margin-bottom: 0;
         }
+        .btn-toolbar .btn {
+            margin-right: 0.25rem;
+        }
+        .dropdown-menu {
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+            border: none;
+        }
+        .bg-opacity-10 {
+            --bs-bg-opacity: 0.1;
+        }
+        .border-4 {
+            border-width: 4px !important;
+        }
+        
+        /* Animation for loading */
+        @@keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .loading-pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        /* Toast positioning */
+        .toast-container {
+            z-index: 1100;
+        }
+        
+        /* Responsive adjustments */
         @@media (max-width: 768px) {
             .btn-toolbar {
                 margin-top: 1rem;
+                width: 100%;
+            }
+            .btn-toolbar .btn {
+                flex: 1;
             }
             .card-header .d-flex {
                 flex-direction: column;
                 align-items: start !important;
+                gap: 0.5rem;
             }
-            .card-header .badge {
-                margin-top: 0.5rem;
+            .h3 {
+                font-size: 1.5rem;
             }
+        }
+        
+        /* Custom scrollbar */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 }
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Global variables
+        let currentAssetId = null;
+        let selectedAssets = [];
+        let deleteModal, loadingModal, quickViewModal, toast;
+
         $(document).ready(function() {
+            // Initialize Bootstrap modals
+            deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            quickViewModal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+            toast = new bootstrap.Toast(document.getElementById('liveToast'));
+
             // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
+            initializeTooltips();
 
             // Load statistics
             loadStatistics();
 
-            // Handle refresh button
+            // Event handlers
             $('#refreshBtn').click(function() {
                 refreshTable();
             });
 
-            // Handle export button
             $('#exportBtn').click(function() {
                 exportData();
             });
 
+            $('#clearSearch').click(function() {
+                $('#searchTerm').val('');
+                $('#searchForm').submit();
+            });
+
+            $('#resetFilters').click(function() {
+                $('#searchTerm').val('');
+                $('#statusFilter').val('');
+                $('#complianceFilter').val('');
+                $('#yearFilter').val('');
+                $('#sortBy').val('');
+                $('#sortDir').val('');
+                $('#searchForm').submit();
+            });
+
+            $('#saveFilter').click(function() {
+                showSaveFilterModal();
+            });
+
+            $('#printView').click(function(e) {
+                e.preventDefault();
+                printView();
+            });
+
+            $('#fullScreen').click(function(e) {
+                e.preventDefault();
+                toggleFullScreen();
+            });
+
+            $('#bulkDelete').click(function(e) {
+                e.preventDefault();
+                showBulkDeleteModal();
+            });
+
+            // List/Grid view toggle
+            $('#listView').click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                $('#assetTableContainer').removeClass('grid-view').addClass('list-view');
+                localStorage.setItem('assetViewMode', 'list');
+            });
+
+            $('#gridView').click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                $('#assetTableContainer').removeClass('list-view').addClass('grid-view');
+                localStorage.setItem('assetViewMode', 'grid');
+            });
+
+            // Load saved view preference
+            var savedView = localStorage.getItem('assetViewMode');
+            if (savedView === 'grid') {
+                $('#gridView').click();
+            }
+
             // Handle delete confirmation
-            var assetToDelete = null;
-            
             $(document).on('click', '.delete-btn', function() {
-                assetToDelete = $(this).data('id');
-                var assetTag = $(this).data('tag');
+                currentAssetId = $(this).data('id');
+                var assetTag = $(this).data('tag') || 'Unknown';
                 $('.asset-tag-placeholder').text(assetTag);
-                new bootstrap.Modal(document.getElementById('deleteModal')).show();
+                deleteModal.show();
+            });
+
+            // Handle quick view
+            $(document).on('click', '.quick-view-btn', function() {
+                var assetId = $(this).data('id');
+                quickViewAsset(assetId);
             });
 
             $('#confirmDelete').click(function() {
-                if (assetToDelete) {
-                    deleteAsset(assetToDelete);
+                if (currentAssetId) {
+                    deleteAsset(currentAssetId);
                 }
             });
 
@@ -318,33 +588,90 @@
                 e.preventDefault();
                 refreshTable();
             });
+
+            // Handle sort
+            $(document).on('click', '.sortable', function() {
+                var sortField = $(this).data('sort');
+                var currentSort = $('#sortBy').val();
+                var currentDir = $('#sortDir').val();
+                
+                if (sortField === currentSort) {
+                    $('#sortDir').val(currentDir === 'asc' ? 'desc' : 'asc');
+                } else {
+                    $('#sortBy').val(sortField);
+                    $('#sortDir').val('asc');
+                }
+                
+                refreshTable();
+            });
+
+            // Handle page size change
+            $(document).on('change', '#pageSize', function() {
+                refreshTable();
+            });
+
+            // Keyboard shortcuts
+            $(document).keydown(function(e) {
+                // Ctrl/Cmd + F for search focus
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    $('#searchTerm').focus();
+                }
+                // Esc to clear search
+                if (e.key === 'Escape' && $('#searchTerm').is(':focus')) {
+                    $('#searchTerm').val('');
+                }
+            });
         });
+
+        function initializeTooltips() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
 
         function loadStatistics() {
             $.ajax({
                 url: '@Url.Action("GetStatistics", "Assets")',
                 type: 'GET',
                 success: function(data) {
-                    $('#activeAssets').text(data.activeCount);
-                    $('#totalValue').text('$' + data.totalValue.toFixed(2));
-                    $('#complianceRate').text(data.complianceRate + '%');
+                    $('#activeAssets').text(data.activeCount || 0);
+                    $('#totalValue').text('$' + (data.totalValue || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+                    $('#complianceRate').text((data.complianceRate || 0) + '%');
+                    
+                    var total = @Model.TotalItems;
+                    if (total > 0) {
+                        var activePercent = Math.round((data.activeCount / total) * 100);
+                        $('#activePercentage').text(activePercent + '%');
+                    }
+                    
+                    if (data.avgValue) {
+                        $('#avgValue').text('$' + data.avgValue.toFixed(2));
+                    }
+                    
+                    if (data.nonCompliant) {
+                        $('#nonCompliant').text(data.nonCompliant);
+                    }
                 },
-                error: function() {
-                    showToast('Failed to load statistics', 'error');
+                error: function(xhr) {
+                    showToast('Failed to load statistics: ' + (xhr.responseJSON?.message || 'Unknown error'), 'error');
                 }
             });
         }
 
-        function refreshTable() {
-            showLoading();
+        function refreshTable(page) {
+            showLoading('Loading assets...');
             
             var formData = $('#searchForm').serialize();
-            var page = getParameterByName('page') || 1;
+            if (page) {
+                formData += '&page=' + page;
+            }
             
             $.ajax({
                 url: '@Url.Action("Search", "Assets")',
                 type: 'GET',
-                data: formData + '&page=' + page,
+                data: formData,
                 success: function(result) {
                     $('#assetTableContainer').html(result);
                     hideLoading();
@@ -352,17 +679,23 @@
                     // Update URL with search parameters
                     var newUrl = window.location.pathname + '?' + formData;
                     window.history.pushState({ path: newUrl }, '', newUrl);
+                    
+                    showToast('Assets loaded successfully', 'success');
+                    
+                    // Reinitialize tooltips for new content
+                    initializeTooltips();
                 },
                 error: function(xhr) {
                     hideLoading();
                     var errorMessage = xhr.responseJSON?.message || 'Error loading assets';
                     showToast(errorMessage, 'error');
+                    console.error('Error loading assets:', xhr.responseText);
                 }
             });
         }
 
         function deleteAsset(id) {
-            showLoading();
+            showLoading('Deleting asset...');
             
             $.ajax({
                 url: '@Url.Action("Delete", "Assets")/' + id,
@@ -372,7 +705,7 @@
                 },
                 success: function() {
                     hideLoading();
-                    bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                    deleteModal.hide();
                     showToast('Asset deleted successfully', 'success');
                     refreshTable();
                     loadStatistics();
@@ -381,12 +714,31 @@
                     hideLoading();
                     var errorMessage = xhr.responseJSON?.message || 'Error deleting asset';
                     showToast(errorMessage, 'error');
+                    console.error('Error deleting asset:', xhr.responseText);
+                }
+            });
+        }
+
+        function quickViewAsset(id) {
+            showLoading('Loading asset details...');
+            
+            $.ajax({
+                url: '@Url.Action("QuickView", "Assets")/' + id,
+                type: 'GET',
+                success: function(result) {
+                    $('#quickViewContent').html(result);
+                    hideLoading();
+                    quickViewModal.show();
+                },
+                error: function(xhr) {
+                    hideLoading();
+                    showToast('Error loading asset details', 'error');
                 }
             });
         }
 
         function exportData() {
-            showLoading();
+            showLoading('Preparing export...');
             
             var formData = $('#searchForm').serialize();
             
@@ -400,7 +752,6 @@
                 success: function(blob) {
                     hideLoading();
                     
-                    // Create download link
                     var url = window.URL.createObjectURL(blob);
                     var a = document.createElement('a');
                     a.href = url;
@@ -412,38 +763,82 @@
                     
                     showToast('Export completed successfully', 'success');
                 },
-                error: function() {
+                error: function(xhr) {
                     hideLoading();
-                    showToast('Error exporting data', 'error');
+                    showToast('Error exporting data: ' + (xhr.responseJSON?.message || 'Unknown error'), 'error');
                 }
             });
         }
 
-        function showLoading() {
-            new bootstrap.Modal(document.getElementById('loadingModal')).show();
+        function showBulkDeleteModal() {
+            // Get visible asset IDs from table
+            selectedAssets = [];
+            $('#assetTable tbody tr').each(function() {
+                var id = $(this).data('id');
+                var tag = $(this).find('.asset-tag').text();
+                selectedAssets.push({ id: id, tag: tag });
+            });
+            
+            var listHtml = '';
+            selectedAssets.forEach(function(asset) {
+                listHtml += '<div class="list-group-item">' +
+                    '<input class="form-check-input me-2" type="checkbox" value="' + asset.id + '" id="asset_' + asset.id + '">' +
+                    '<label class="form-check-label" for="asset_' + asset.id + '">' + asset.tag + '</label>' +
+                    '</div>';
+            });
+            
+            $('#bulkDeleteList').html(listHtml);
+            new bootstrap.Modal(document.getElementById('bulkDeleteModal')).show();
+        }
+
+        function showSaveFilterModal() {
+            var criteria = [];
+            if ($('#searchTerm').val()) criteria.push('Search: ' + $('#searchTerm').val());
+            if ($('#statusFilter').val()) criteria.push('Status: ' + $('#statusFilter').val());
+            if ($('#complianceFilter').val()) criteria.push('Compliance: ' + $('#complianceFilter').val());
+            if ($('#yearFilter').val()) criteria.push('Year: ' + $('#yearFilter').val());
+            
+            $('#currentFilterCriteria').html(criteria.join('<br>') || 'No filters applied');
+            new bootstrap.Modal(document.getElementById('saveFilterModal')).show();
+        }
+
+        function showLoading(message) {
+            $('#loadingMessage').text(message || 'Please wait');
+            loadingModal.show();
         }
 
         function hideLoading() {
-            bootstrap.Modal.getInstance(document.getElementById('loadingModal')).hide();
+            loadingModal.hide();
         }
 
         function showToast(message, type) {
-            var toast = new bootstrap.Toast(document.getElementById('liveToast'));
-            var toastBody = $('#liveToast .toast-body');
-            var toastHeader = $('#liveToast .toast-header');
+            var toastElement = document.getElementById('liveToast');
+            var toastHeader = toastElement.querySelector('.toast-header');
+            var toastBody = toastElement.querySelector('.toast-body');
             
-            toastBody.text(message);
+            toastBody.textContent = message;
             
-            // Set toast color based on type
-            toastHeader.removeClass('bg-success bg-danger bg-warning bg-info');
-            if (type === 'success') {
-                toastHeader.addClass('bg-success text-white');
-            } else if (type === 'error') {
-                toastHeader.addClass('bg-danger text-white');
-            } else if (type === 'warning') {
-                toastHeader.addClass('bg-warning');
-            } else {
-                toastHeader.addClass('bg-info text-white');
+            // Reset header classes
+            toastHeader.className = 'toast-header';
+            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white');
+            
+            // Set appropriate styling
+            switch(type) {
+                case 'success':
+                    toastHeader.classList.add('bg-success', 'text-white');
+                    toastHeader.querySelector('i').className = 'bi bi-check-circle me-2';
+                    break;
+                case 'error':
+                    toastHeader.classList.add('bg-danger', 'text-white');
+                    toastHeader.querySelector('i').className = 'bi bi-exclamation-circle me-2';
+                    break;
+                case 'warning':
+                    toastHeader.classList.add('bg-warning');
+                    toastHeader.querySelector('i').className = 'bi bi-exclamation-triangle me-2';
+                    break;
+                default:
+                    toastHeader.classList.add('bg-info', 'text-white');
+                    toastHeader.querySelector('i').className = 'bi bi-info-circle me-2';
             }
             
             toast.show();
@@ -452,11 +847,54 @@
         function getParameterByName(name) {
             var url = window.location.href;
             name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(url);
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+            var results = regex.exec(url);
             if (!results) return null;
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, ' '));
         }
+
+        function printView() {
+            var printWindow = window.open('', '_blank');
+            var content = document.getElementById('assetTableContainer').innerHTML;
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Asset Register - Print View</title>
+                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+                        <style>
+                            body { padding: 20px; }
+                            @@media print {
+                                .no-print { display: none; }
+                                table { page-break-inside: avoid; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h2 class="mb-4">Asset Register</h2>
+                        <p>Generated: ${new Date().toLocaleString()}</p>
+                        ${content}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Handle browser back/forward
+        window.onpopstate = function(event) {
+            refreshTable();
+        };
     </script>
 }

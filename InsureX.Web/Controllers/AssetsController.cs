@@ -184,4 +184,40 @@ public class AssetsController : Controller
             return RedirectToAction(nameof(Index));
         }
     }
+}[HttpPost]
+public async Task<IActionResult> UpdateStatus(Guid id, string status)
+{
+    await _assetService.UpdateStatusAsync(id, status);
+    return Ok();
+}
+
+public async Task<IActionResult> Export(string searchTerm)
+{
+    var assets = await _assetService.GetAllForExportAsync(searchTerm);
+    var csv = GenerateCsv(assets);
+    return File(Encoding.UTF8.GetBytes(csv), "text/csv", "assets.csv");
+}
+
+public async Task<IActionResult> Compliance(Guid id)
+{
+    var compliance = await _complianceService.GetForAssetAsync(id);
+    return View(compliance);
+}
+
+public async Task<IActionResult> Policies(Guid id)
+{
+    var policies = await _policyService.GetForAssetAsync(id);
+    return View(policies);
+}
+
+public async Task<IActionResult> Documents(Guid id)
+{
+    var documents = await _documentService.GetForAssetAsync(id);
+    return View(documents);
+}
+
+public async Task<IActionResult> AuditLog(Guid id)
+{
+    var auditLog = await _auditService.GetForEntityAsync("Asset", id);
+    return View(auditLog);
 }
