@@ -1,0 +1,93 @@
+﻿## .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+**/Properties/launchSettings.json
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio files
+*.swp
+*._*
+*.sln.docstates
+
+## User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+## NuGet Packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+nupkg/
+
+## MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+## NUNIT
+*.VisualState.xml
+TestResult.xml
+
+## Project files
+*.csproj.user
+*.dbmdl
+*.pubxml
+*.pubxml.user
+
+## Profiling
+*.vsp
+*.vspx
+*.sap
+
+## Backup files
+*~
+*.bak
+*.orig
+*.tmp
+
+## SQL Server files
+**/App_Data/*.mdf
+**/App_Data/*.ldf
+
+## Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+## Folder config files
+Desktop.ini
+
+## Recycle Bin used on file shares
+.BIN/
+
+## Mac desktop service files
+.DS_Store
+
+## Azure functions local settings
+local.settings.json
+appsettings.Local.json

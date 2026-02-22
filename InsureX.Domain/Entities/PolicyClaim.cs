@@ -2,16 +2,27 @@ namespace InsureX.Domain.Entities;
 
 public class PolicyClaim : BaseEntity
 {
-    public int PolicyId { get; set; }  // Changed from int (already correct)
-    public DateTime ClaimDate { get; set; }
-    public decimal ClaimAmount { get; set; }
-    public string ClaimType { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
+    public Guid PolicyId { get; set; }
+    public string ClaimNumber { get; set; } = string.Empty;
+    public DateTime DateOfLoss { get; set; }
+    public DateTime DateReported { get; set; }
     public string Description { get; set; } = string.Empty;
-    public string? ClaimReference { get; set; }
-    public DateTime? SettlementDate { get; set; }
-    public decimal? SettlementAmount { get; set; }
+    public decimal EstimatedAmount { get; set; }
+    public decimal? PaidAmount { get; set; }
+    public ClaimStatus Status { get; set; }
+    public DateTime? StatusDate { get; set; }
+    public string? AdjusterNotes { get; set; }
     
-    // Navigation properties
-    public virtual Policy? Policy { get; set; }
+    // Navigation
+    public virtual Policy Policy { get; set; }
+}
+
+public enum ClaimStatus
+{
+    Reported = 1,
+    InReview = 2,
+    Approved = 3,
+    Paid = 4,
+    Denied = 5,
+    Closed = 6
 }

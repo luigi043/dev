@@ -1,79 +1,99 @@
-﻿namespace InsureX.Application.DTOs;
+﻿using System;
+using System.Collections.Generic;
+
+namespace InsureX.Application.DTOs;
 
 public class PolicyDto
 {
-    public int Id { get; set; }
-    public int TenantId { get; set; }  // Changed from Guid
+    public Guid Id { get; set; }
     public string PolicyNumber { get; set; } = string.Empty;
-    public int AssetId { get; set; }
-    public string AssetTag { get; set; } = string.Empty;
-    public string InsurerCode { get; set; } = string.Empty;
-    public string InsurerName { get; set; } = string.Empty;
+    public string InsuredName { get; set; } = string.Empty;
+    public string InsuredEmail { get; set; } = string.Empty;
     public string PolicyType { get; set; } = string.Empty;
-    public decimal SumInsured { get; set; }
-    public decimal Premium { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public DateTime? RenewalDate { get; set; }
     public string Status { get; set; } = string.Empty;
-    public string PaymentStatus { get; set; } = string.Empty;
-    public int DaysToExpiry => (int)(EndDate - DateTime.UtcNow).TotalDays;
+    public DateTime EffectiveDate { get; set; }
+    public DateTime ExpiryDate { get; set; }
+    public decimal Premium { get; set; }
+    public decimal CoverageAmount { get; set; }
+    public string InsurerCompany { get; set; } = string.Empty;
+    public int DaysToExpiry => (ExpiryDate - DateTime.Today).Days;
     public bool IsExpiringSoon => DaysToExpiry > 0 && DaysToExpiry <= 30;
-    public bool IsExpired => DaysToExpiry <= 0;
-    public string? CoverageDetails { get; set; }
-    public int? ClaimsCount { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public string? CreatedBy { get; set; }
+    public bool IsExpired => DaysToExpiry < 0;
 }
 
 public class CreatePolicyDto
 {
     public string PolicyNumber { get; set; } = string.Empty;
-    public int AssetId { get; set; }
-    public string InsurerCode { get; set; } = string.Empty;
-    public string InsurerName { get; set; } = string.Empty;
-    public string PolicyType { get; set; } = string.Empty;
-    public decimal SumInsured { get; set; }
+    public string InsuredName { get; set; } = string.Empty;
+    public string InsuredEmail { get; set; } = string.Empty;
+    public string InsuredPhone { get; set; } = string.Empty;
+    public PolicyType PolicyType { get; set; }
+    public DateTime EffectiveDate { get; set; }
+    public DateTime ExpiryDate { get; set; }
     public decimal Premium { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public DateTime? RenewalDate { get; set; }
-    public string? CoverageDetails { get; set; }
-    public string? Exclusions { get; set; }
+    public decimal CoverageAmount { get; set; }
+    public string Deductible { get; set; } = string.Empty;
+    public string InsurerCompany { get; set; } = string.Empty;
+    public string InsurerPolicyNumber { get; set; } = string.Empty;
     public string? Notes { get; set; }
+    public List<Guid> AssetIds { get; set; } = new();
 }
 
 public class UpdatePolicyDto : CreatePolicyDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
+    public PolicyStatus Status { get; set; }
+}
+
+public class PolicyDetailDto : PolicyDto
+{
+    public string InsuredPhone { get; set; } = string.Empty;
+    public string Deductible { get; set; } = string.Empty;
+    public string InsurerPolicyNumber { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+    public List<AssetDto> Assets { get; set; } = new();
+    public List<PolicyDocumentDto> Documents { get; set; } = new();
+    public List<PolicyClaimDto> Claims { get; set; } = new();
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+}
+
+public class PolicyDocumentDto
+{
+    public Guid Id { get; set; }
+    public string DocumentType { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
+    public long FileSize { get; set; }
+    public DateTime UploadedAt { get; set; }
+    public string UploadedBy { get; set; } = string.Empty;
+}
+
+public class PaymentDto
+{
+    public string Status { get; set; } = string.Empty; // Paid, Pending, Failed
+    public DateTime PaymentDate { get; set; }
+    public string Reference { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string PaymentMethod { get; set; } = string.Empty;
+}
+public class PolicyClaimDto
+{
+    public Guid Id { get; set; }
+    public string ClaimNumber { get; set; } = string.Empty;
+    public DateTime DateOfLoss { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public decimal EstimatedAmount { get; set; }
+    public decimal? PaidAmount { get; set; }
+    public string Status { get; set; } = string.Empty;
 }
 
 public class PolicySearchDto
 {
     public string? SearchTerm { get; set; }
-    public int? AssetId { get; set; }
-    public string? InsurerCode { get; set; }
-    public string? PolicyType { get; set; }
     public string? Status { get; set; }
-    public string? PaymentStatus { get; set; }
+    public string? PolicyType { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
-    public bool? ExpiringOnly { get; set; }
-    public bool? ExpiredOnly { get; set; }
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 25;
-    public string? SortBy { get; set; } = "EndDate";
-    public string SortDir { get; set; } = "asc";
-}
-
-public class PolicySummaryDto
-{
-    public int TotalPolicies { get; set; }
-    public int ActivePolicies { get; set; }
-    public int ExpiringPolicies { get; set; }
-    public int ExpiredPolicies { get; set; }
-    public decimal TotalSumInsured { get; set; }
-    public decimal TotalPremium { get; set; }
-    public Dictionary<string, int> PoliciesByType { get; set; } = new();
-    public Dictionary<string, int> PoliciesByInsurer { get; set; } = new();
 }

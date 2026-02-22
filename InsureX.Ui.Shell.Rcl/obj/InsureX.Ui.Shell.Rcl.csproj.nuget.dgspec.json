@@ -56,35 +56,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "AutoMapper": {
+            "FluentValidation": {
               "target": "Package",
-              "version": "[12.0.1, )",
-              "versionCentrallyManaged": true
-            },
-            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
-              "target": "Package",
-              "version": "[12.0.1, )",
-              "versionCentrallyManaged": true
-            },
-            "EPPlus": {
-              "target": "Package",
-              "version": "[6.2.3, )",
-              "versionCentrallyManaged": true
+              "version": "[11.9.0, )"
             },
             "Mapster": {
               "target": "Package",
-              "version": "[7.0.0, )",
-              "versionCentrallyManaged": true
+              "version": "[7.4.0, )"
             },
-            "Microsoft.EntityFrameworkCore.Design": {
+            "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
-              "version": "[8.0.0, )",
-              "versionCentrallyManaged": true
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "target": "Package",
-              "version": "[8.0.0, )",
-              "versionCentrallyManaged": true
+              "version": "[8.0.0, )"
             }
           },
           "centralPackageVersions": {
@@ -92,14 +74,15 @@
             "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
             "coverlet.collector": "6.0.0",
             "EPPlus": "6.2.3",
+            "FluentValidation.DependencyInjectionExtensions": "11.8.0",
             "Mapster": "7.0.0",
             "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.0",
             "Microsoft.AspNetCore.Components.Web": "8.0.0",
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.0",
             "Microsoft.AspNetCore.OpenApi": "8.0.0",
             "Microsoft.CodeAnalysis.Common": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.8.0",
+            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
             "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
             "Microsoft.CodeAnalysis.Workspaces.Common": "4.5.0",
             "Microsoft.EntityFrameworkCore": "8.0.0",
@@ -127,9 +110,6 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
@@ -197,14 +177,15 @@
             "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
             "coverlet.collector": "6.0.0",
             "EPPlus": "6.2.3",
+            "FluentValidation.DependencyInjectionExtensions": "11.8.0",
             "Mapster": "7.0.0",
             "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.0",
             "Microsoft.AspNetCore.Components.Web": "8.0.0",
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.0",
             "Microsoft.AspNetCore.OpenApi": "8.0.0",
             "Microsoft.CodeAnalysis.Common": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.8.0",
+            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
             "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
             "Microsoft.CodeAnalysis.Workspaces.Common": "4.5.0",
             "Microsoft.EntityFrameworkCore": "8.0.0",
@@ -291,36 +272,20 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "AutoMapper": {
-              "target": "Package",
-              "version": "[12.0.1, )",
-              "versionCentrallyManaged": true
-            },
-            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
-              "target": "Package",
-              "version": "[12.0.1, )",
-              "versionCentrallyManaged": true
-            },
-            "Microsoft.AspNetCore.Components.Web": {
-              "target": "Package",
-              "version": "[8.0.0, )",
-              "versionCentrallyManaged": true
-            }
-          },
           "centralPackageVersions": {
             "AutoMapper": "12.0.1",
             "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
             "coverlet.collector": "6.0.0",
             "EPPlus": "6.2.3",
+            "FluentValidation.DependencyInjectionExtensions": "11.8.0",
             "Mapster": "7.0.0",
             "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.0",
             "Microsoft.AspNetCore.Components.Web": "8.0.0",
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.0",
             "Microsoft.AspNetCore.OpenApi": "8.0.0",
             "Microsoft.CodeAnalysis.Common": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.8.0",
+            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
             "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
             "Microsoft.CodeAnalysis.Workspaces.Common": "4.5.0",
             "Microsoft.EntityFrameworkCore": "8.0.0",

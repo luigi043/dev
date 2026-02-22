@@ -1,8 +1,0 @@
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\InsureX.Api.csproj.AssemblyReference.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\InsureX.Api.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\InsureX.Api.AssemblyInfoInputs.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\InsureX.Api.AssemblyInfo.cs
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\InsureX.Api.csproj.CoreCompileInputs.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\InsureX.Api.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\cluiz\OneDrive - Instituto Politecnico de Beja\Desktop\InsureX\DEV\InsureX.Api\obj\Debug\net8.0\InsureX.Api.sourcelink.json

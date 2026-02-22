@@ -1,37 +1,25 @@
-using System.Linq.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using InsureX.Domain.Entities;
 
 namespace InsureX.Domain.Interfaces;
 
 public interface IPolicyRepository : IRepository<Policy>
 {
-    // Policy specific methods with int IDs
-    Task<Policy?> GetByPolicyNumberAsync(string policyNumber, int tenantId);
-    Task<List<Policy>> GetExpiringPoliciesAsync(int tenantId, int days);
-    Task<List<Policy>> GetExpiredPoliciesAsync(int tenantId);
-    Task<List<Policy>> GetByAssetIdAsync(int assetId);
-    Task<List<Policy>> GetByTenantIdAsync(int tenantId);
-    Task<int> GetActiveCountAsync(int tenantId);
-    Task<int> GetExpiringCountAsync(int tenantId, int days);
+    Task<Policy?> GetPolicyWithDetailsAsync(int id);
+    Task<IEnumerable<Policy>> GetByAssetIdAsync(int assetId);
+    Task<IEnumerable<Policy>> GetExpiringPoliciesAsync(int days);
+    Task<IEnumerable<Policy>> GetExpiredPoliciesAsync();
+    Task<bool> ExistsAsync(string policyNumber);
+    Task<IQueryable<Policy>> GetQueryableAsync();
+    Task<List<Policy>> GetPagedAsync(IQueryable<Policy> query, int page, int pageSize);
+    Task<int> CountAsync(IQueryable<Policy> query);
     
-    // Claims methods with int IDs
+    // Claims
     Task<PolicyClaim?> GetClaimByIdAsync(int claimId);
-    Task<List<PolicyClaim>> GetClaimsByPolicyIdAsync(int policyId);
-    Task<PolicyClaim> AddClaimAsync(PolicyClaim claim);
+    Task<IEnumerable<PolicyClaim>> GetClaimsByPolicyIdAsync(int policyId);
+    Task AddClaimAsync(PolicyClaim claim);
     Task UpdateClaimAsync(PolicyClaim claim);
-    Task DeleteClaimAsync(int claimId);
-    
-    // Existence checks
-    Task<bool> ExistsAsync(string policyNumber, int tenantId);
-    Task<bool> PolicyNumberExistsAsync(string policyNumber, int tenantId, int? excludeId = null);
-    
-    // Advanced queries
-    Task<List<Policy>> GetPoliciesByStatusAsync(string status, int tenantId);
-    Task<List<Policy>> GetPoliciesByDateRangeAsync(int tenantId, DateTime startDate, DateTime endDate);
-    Task<Dictionary<string, int>> GetPolicyStatisticsAsync(int tenantId);
-    Task<List<Policy>> GetPoliciesWithExpiringCoverageAsync(int tenantId, int daysThreshold = 30);
-    
-    // Batch operations
-    Task<int> BulkRenewPoliciesAsync(List<int> policyIds, int tenantId);
-    Task<int> BulkCancelPoliciesAsync(List<int> policyIds, string reason, int tenantId);
 }

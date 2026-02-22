@@ -1,0 +1,40 @@
+* [33md1e5565[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: initial project setup with clean architecture
+* [33mdbcbc18[m .
+* [33m634de36[m resolve circular dependencies in project references
+* [33me8b1f2d[m  Implement multi-tenant architecture with AsyncLocal tenant context
+* [33mc81c497[m update
+* [33maa2e78c[m Fix compliance module architecture and resolve build errors
+* [33m7cb6296[m Implement core domain and infrastructure layers
+* [33mfdb841c[m qucik ajust
+* [33me36b498[m Add comprehensive compliance entities
+* [33m6b46b1f[m api ajust
+* [33m6706279[m test
+* [33mc59b9bb[m Add missing IComplianceRepository interface
+* [33m31af9a9[m ✅ Complete Asset Management system
+* [33m569c9c8[m move files
+* [33mceceb4d[m run in problems
+* [33m511c86a[m Fix: Resolve ICurrentUserService namespace conflict
+* [33mc564d39[m Fix repository interfaces and service implementations
+* [33me655237[m quick fix
+* [33mba2a749[m errors problem
+* [33m14b729d[m Fix PolicyService and DTOs to resolve build errors
+* [33mc94fe35[m fixed read me
+* [33m9586445[m cheange readme
+* [33m8faf93f[m removed
+* [33m3571b61[m remove
+* [33mab117ed[m test
+* [33m844e041[m test
+* [33m621e8da[m Remove duplicate AssetSearchDto definition
+* [33md9474f0[m Fix Asset entity duplication and clean domain structure
+* [33mf9bbae7[m Fix domain entity duplication and clean architecture structure
+* [33m3920822[m quick ajust
+* [33m81641f8[m quick ajust remove some. files
+* [33m75581cf[m quick fix
+* [33mde5fd09[m quick ajust
+* [33mcf6dbdb[m 4 errors
+* [33m08cba62[m .
+* [33mf1c220a[m fix
+* [33mbd3ac1f[m Asset Management Policy Management with Claims  Compliance Engine with Rules Automated Monitoring Dashboard with Charts Alert System
+* [33m671b04f[m GOOD
+* [33med7996d[m Phase 1: Added core Domain entities (Tenant, Asset, ApplicationUser) and ITenantScoped interface.
+* [33m3b3c675[m Initial commit

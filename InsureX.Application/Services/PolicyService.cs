@@ -440,3 +440,107 @@ namespace InsureX.Application.Services
         }
     }
 }
+// Add these methods to your existing PolicyService class
+
+public async Task<byte[]> ExportPoliciesAsync(PolicySearchDto search)
+{
+    try
+    {
+        var query = await _policyRepository.GetQueryableAsync();
+        
+        // Apply tenant filter
+        var tenantId = _tenantContext.GetCurrentTenantId();
+        if (tenantId.HasValue)
+        {
+            query = query.Where(p => p.TenantId == tenantId.Value);
+        }
+
+        // Apply same filters as GetPagedAsync
+        if (!string.IsNullOrWhiteSpace(search.SearchTerm))
+        {
+            query = query.Where(p => 
+                p.PolicyNumber.Contains(search.SearchTerm) ||
+                p.InsurerName.Contains(search.SearchTerm));
+        }
+
+        if (search.AssetId.HasValue)
+        {
+            query = query.Where(p => p.AssetId == search.AssetId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search.Status))
+        {
+            query = query.Where(p => p.Status == search.Status);
+        }
+
+        var policies = await query.ToListAsync();
+        
+        // Generate CSV
+        using var memoryStream = new MemoryStream();
+        using var writer = new StreamWriter(memoryStream);
+        
+        // Write headers
+        await writer.WriteLineAsync("PolicyNumber,InsurerName,PolicyType,StartDate,EndDate,Premium,SumInsured,Status");
+        
+        // Write data
+        foreach (var policy in policies)
+        {
+            await writer.WriteLineAsync($"{policy.PolicyNumber},{policy.InsurerName},{policy.PolicyType},{policy.StartDate:d},{policy.EndDate:d},{policy.Premium},{policy.SumInsured},{policy.Status}");
+        }
+        
+        await writer.FlushAsync();
+        return memoryStream.ToArray();
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error exporting policies");
+        throw;
+    }
+}
+
+public async Task<bool> ProcessPaymentAsync(int policyId, PaymentDto payment)
+{
+    try
+    {
+        var policy = await _policyRepository.GetByIdAsync(policyId);
+        if (policy == null)
+        {
+            return false;
+        }
+
+        policy.PaymentStatus = payment.Status;
+        policy.PaymentDate = payment.PaymentDate;
+        policy.PaymentReference = payment.Reference;
+        policy.UpdatedAt = DateTime.UtcNow;
+        policy.UpdatedBy = _currentUserService.GetCurrentUserId() ?? "system";
+
+        // If payment received, activate policy if start date is due
+        if (payment.Status == "Paid" && policy.StartDate <= DateTime.UtcNow)
+        {
+            policy.Status = "Active";
+        }
+
+        await _policyRepository.UpdateAsync(policy);
+        await _policyRepository.SaveChangesAsync();
+
+        // Update asset compliance
+        await UpdateAssetCompliance(policy.AssetId);
+
+        // Send confirmation
+        await _notificationService.SendEmailAsync(
+            _currentUserService.GetCurrentUserEmail() ?? "",
+            $"Payment Confirmed: {policy.PolicyNumber}",
+            $"Payment of {policy.Premium:C} has been received for policy {policy.PolicyNumber}"
+        );
+
+        _logger.LogInformation("Payment processed for policy {PolicyNumber}, Status: {Status}", 
+            policy.PolicyNumber, payment.Status);
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error processing payment for policy {PolicyId}", policyId);
+        return false;
+    }
+}
