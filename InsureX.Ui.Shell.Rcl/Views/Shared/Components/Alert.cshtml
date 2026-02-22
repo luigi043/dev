@@ -1,0 +1,19 @@
+@model AlertModel
+
+<div class="alert alert-@Model.Type alert-dismissible fade show" role="alert">
+    @if (!string.IsNullOrEmpty(Model.Title))
+    {
+        <strong>@Model.Title</strong>
+    }
+    @Model.Message
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+@functions {
+    public class AlertModel
+    {
+        public string Type { get; set; } = "info"; // success, info, warning, danger
+        public string? Title { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+}

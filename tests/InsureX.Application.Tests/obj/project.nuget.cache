@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "dWH4Ru0BBAQ=",
-  "success": false,
+  "dgSpecHash": "KCm3r/y7N+g=",
+  "success": true,
   "projectFilePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cluiz\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
@@ -97,28 +97,5 @@
     "C:\\Users\\cluiz\\.nuget\\packages\\xunit.extensibility.execution\\2.6.1\\xunit.extensibility.execution.2.6.1.nupkg.sha512",
     "C:\\Users\\cluiz\\.nuget\\packages\\xunit.runner.visualstudio\\2.5.3\\xunit.runner.visualstudio.2.5.3.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1104",
-      "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj'. Check that the project reference is valid and that the project file exists.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
-      "libraryId": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Domain\\InsureX.Domain.csproj",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1104",
-      "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Application\\InsureX.Application.csproj'. Check that the project reference is valid and that the project file exists.",
-      "projectPath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
-      "filePath": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\tests\\InsureX.Application.Tests\\InsureX.Application.Tests.csproj",
-      "libraryId": "C:\\Users\\cluiz\\OneDrive - Instituto Politecnico de Beja\\Desktop\\InsureX\\DEV\\src\\InsureX.Application\\InsureX.Application.csproj",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }

@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
 namespace InsureX.Domain.Entities;
 
-public class Tenant : BaseEntity
+public class Tenant : BaseEntity  // Note: Tenant does NOT implement ITenantScoped
 {
     public Tenant()
     {
-        Id = Guid.NewGuid();
-        CreatedAt = DateTime.UtcNow;
         Users = new HashSet<ApplicationUser>();
     }
 
@@ -30,17 +24,15 @@ public class Tenant : BaseEntity
     public string? DatabaseConnectionString { get; set; }
 
     [StringLength(50)]
-    public string TenantType { get; set; } = "Standard"; // Standard, Enterprise, Trial
+    public string TenantType { get; set; } = "Standard";
 
     public bool IsActive { get; set; } = true;
 
     [StringLength(4000)]
-    public string? Settings { get; set; } // JSON serialized settings
+    public string? Settings { get; set; }
 
     public DateTime? SubscriptionExpiry { get; set; }
-
     public int MaxUsers { get; set; } = 10;
-
     public int MaxAssets { get; set; } = 1000;
 
     [StringLength(200)]
@@ -53,13 +45,9 @@ public class Tenant : BaseEntity
     public string? Address { get; set; }
 
     public string? LogoUrl { get; set; }
-
     public string? PrimaryColor { get; set; } = "#007bff";
-
     public DateTime? LastActivityAt { get; set; }
 
     // Navigation properties
     public virtual ICollection<ApplicationUser> Users { get; set; }
-
-    
 }

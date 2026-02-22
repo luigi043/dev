@@ -3,10 +3,10 @@ using InsureX.Domain.Interfaces;
 
 namespace InsureX.Domain.Entities;
 
-public class ApplicationUser : IdentityUser<Guid>, ITenantScoped
+public class ApplicationUser : IdentityUser<int>, ITenantScoped  // Changed to IdentityUser<int>
 {
-    // Tenant relationship
-    public Guid TenantId { get; set; }
+    // Tenant relationship - using int
+    public int TenantId { get; set; }
     
     // User profile
     public string? FirstName { get; set; }
@@ -15,14 +15,12 @@ public class ApplicationUser : IdentityUser<Guid>, ITenantScoped
     
     // Status
     public bool IsActive { get; set; } = true;
-    public bool IsEmailConfirmed => EmailConfirmed;
-    public bool IsPhoneConfirmed => PhoneNumberConfirmed;
     
     // Activity tracking
     public DateTime? LastLoginAt { get; set; }
     public string? LastLoginIp { get; set; }
     
-    // Audit tracking - ADD THESE PROPERTIES
+    // Audit tracking
     public DateTime? UpdatedAt { get; set; }
     public string? UpdatedBy { get; set; }
     public DateTime? DeletedAt { get; set; }
@@ -30,12 +28,7 @@ public class ApplicationUser : IdentityUser<Guid>, ITenantScoped
     
     // Navigation properties
     public virtual Tenant? Tenant { get; set; }
-    public virtual ICollection<UserRole>? UserRoles { get; set; }
-    public virtual ICollection<UserClaim>? Claims { get; set; }
-    public virtual ICollection<UserLogin>? Logins { get; set; }
-    public virtual ICollection<UserToken>? Tokens { get; set; }
     
-    // Methods
     public void UpdateLastLogin(string? ipAddress = null)
     {
         LastLoginAt = DateTime.UtcNow;
@@ -67,44 +60,4 @@ public class ApplicationUser : IdentityUser<Guid>, ITenantScoped
     {
         return IsActive && !(DeletedAt.HasValue) && !LockoutEnabled;
     }
-}
-
-// These nested classes should be OUTSIDE the ApplicationUser class
-public class UserRole : IdentityUserRole<Guid>
-{
-    public virtual ApplicationUser? User { get; set; }
-    public virtual Role? Role { get; set; }
-}
-
-public class Role : IdentityRole<Guid>
-{
-    public string? Description { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string? CreatedBy { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public string? UpdatedBy { get; set; }
-    
-    // Navigation properties
-    public virtual ICollection<UserRole>? UserRoles { get; set; }
-    public virtual ICollection<RoleClaim>? RoleClaims { get; set; }
-}
-
-public class RoleClaim : IdentityRoleClaim<Guid>
-{
-    public virtual Role? Role { get; set; }
-}
-
-public class UserClaim : IdentityUserClaim<Guid>
-{
-    public virtual ApplicationUser? User { get; set; }
-}
-
-public class UserLogin : IdentityUserLogin<Guid>
-{
-    public virtual ApplicationUser? User { get; set; }
-}
-
-public class UserToken : IdentityUserToken<Guid>
-{
-    public virtual ApplicationUser? User { get; set; }
 }

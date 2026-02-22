@@ -713,3 +713,26 @@ public class UserDto
 
 // For testing purposes
 public partial class Program { }
+// Update Identity configuration to use int
+builder.Services.AddIdentity<ApplicationUser, Role>(options =>
+{
+    // Password settings
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    
+    // Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    
+    // User settings
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();// Add this to use RCL views
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
+// In Configure method, ensure static files are served
+app.UseStaticFiles(); // This will serve files from RCL wwwroot too

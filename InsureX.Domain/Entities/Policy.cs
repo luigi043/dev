@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
 using InsureX.Domain.Interfaces;
 
 namespace InsureX.Domain.Entities;
 
 public class Policy : BaseEntity, ITenantScoped
 {
-    public Guid TenantId { get; set; }  // This was missing!
+    public int TenantId { get; set; }  // Changed from Guid to int
     public string PolicyNumber { get; set; } = string.Empty;
-    public int AssetId { get; set; }
+    public int AssetId { get; set; }  // Changed from Guid? to int
     public string InsurerCode { get; set; } = string.Empty;
     public string InsurerName { get; set; } = string.Empty;
     public string PolicyType { get; set; } = string.Empty;
@@ -26,6 +24,8 @@ public class Policy : BaseEntity, ITenantScoped
     public int? ClaimsCount { get; set; }
     public string? Notes { get; set; }
     
-    // Navigation property
+    // Navigation properties
     public virtual Asset? Asset { get; set; }
+    public virtual Tenant? Tenant { get; set; }
+    public virtual ICollection<PolicyClaim> Claims { get; set; } = new List<PolicyClaim>();
 }

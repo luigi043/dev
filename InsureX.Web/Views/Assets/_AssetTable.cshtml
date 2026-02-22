@@ -1,425 +1,324 @@
-@model InsureX.Application.Common.Models.PagedResult<InsureX.Application.DTOs.AssetDto>
-@using InsureX.Domain.Enums
-
+@model List<InsureX.Application.DTOs.AssetDto>
 @{
+    ViewData["Title"] = "Non-Compliant Assets";
     var currentSort = ViewBag.CurrentSort as string ?? "assettag";
     var currentSortDir = ViewBag.CurrentSortDir as string ?? "asc";
     var searchTerm = ViewBag.SearchTerm as string ?? "";
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">
-            <i class="fas fa-box me-2"></i>Asset Registry
-            <span class="badge bg-secondary ms-2">@Model.TotalItems Total</span>
-        </h6>
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <div>
-            <button type="button" class="btn btn-sm btn-outline-primary" onclick="exportTableToCSV()">
-                <i class="fas fa-download me-1"></i>Export
+            <h1 class="h2 fw-bold">
+                <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Non-Compliant Assets
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index">Compliance</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Non-Compliant Assets</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <button type="button" class="btn btn-primary" onclick="exportReport()">
+                <i class="bi bi-file-earmark-excel"></i> Export Report
             </button>
         </div>
     </div>
-    
-    <div class="card-body">
-        <!-- Table -->
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped" id="assetsTable" width="100%" cellspacing="0">
-                <thead class="table-light">
-                    <tr>
-                        <th>
-                            <a href="#" class="sort-link text-decoration-none text-dark" data-sort="assettag">
-                                Asset Tag
-                                @RenderSortIcon("assettag")
-                            </a>
-                        </th>
-                        <th>
-                            <a href="#" class="sort-link text-decoration-none text-dark" data-sort="make">
-                                Make
-                                @RenderSortIcon("make")
-                            </a>
-                        </th>
-                        <th>
-                            <a href="#" class="sort-link text-decoration-none text-dark" data-sort="model">
-                                Model
-                                @RenderSortIcon("model")
-                            </a>
-                        </th>
-                        <th>
-                            <a href="#" class="sort-link text-decoration-none text-dark" data-sort="year">
-                                Year
-                                @RenderSortIcon("year")
-                            </a>
-                        </th>
-                        <th>VIN/Serial</th>
-                        <th>Status</th>
-                        <th>Compliance</th>
-                        <th class="text-end">Insured Value</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (!Model.Items.Any())
-                    {
-                        <tr>
-                            <td colspan="9" class="text-center py-5">
-                                <div class="empty-state">
-                                    <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
-                                    <h5>No assets found</h5>
-                                    <p class="text-muted mb-3">
-                                        @(string.IsNullOrEmpty(searchTerm) 
-                                            ? "Get started by creating your first asset" 
-                                            : "No assets match your search criteria")
-                                    </p>
-                                    @if (string.IsNullOrEmpty(searchTerm))
-                                    {
-                                        <a asp-action="Create" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-plus me-1"></i>Add Asset
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearSearch()">
-                                            <i class="fas fa-times me-1"></i>Clear Search
-                                        </button>
-                                    }
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                    else
-                    {
-                        @foreach (var asset in Model.Items)
-                        {
-                            <tr>
-                                <td>
-                                    <strong>@asset.AssetTag</strong>
-                                    @if (!string.IsNullOrEmpty(asset.Description))
-                                    {
-                                        <small class="d-block text-muted">@Truncate(asset.Description, 30)</small>
-                                    }
-                                </td>
-                                <td>@asset.Make</td>
-                                <td>@asset.Model</td>
-                                <td>@asset.Year</td>
-                                <td>
-                                    <span class="font-monospace user-select-all">@(asset.VIN ?? asset.SerialNumber ?? "N/A")</span>
-                                    @if (!string.IsNullOrEmpty(asset.VIN))
-                                    {
-                                        <button type="button" class="btn btn-sm btn-link p-0 ms-1" 
-                                                onclick="copyToClipboard('@asset.VIN')" 
-                                                title="Copy VIN">
-                                            <i class="fas fa-copy text-muted"></i>
-                                        </button>
-                                    }
-                                </td>
-                                <td>
-                                    @RenderStatusBadge(asset.Status)
-                                </td>
-                                <td>
-                                    @RenderComplianceBadge(asset.ComplianceStatus, asset.ComplianceScore)
-                                </td>
-                                <td class="text-end fw-bold">
-                                    @if (asset.InsuredValue > 0)
-                                    {
-                                        @asset.InsuredValue.ToString("C2")
-                                        if (asset.PolicyCount > 0)
-                                        {
-                                            <small class="d-block text-muted">@asset.PolicyCount policy(ies)</small>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning text-dark">Not Insured</span>
-                                    }
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <!-- View Details -->
-                                        <a asp-action="Details" asp-route-id="@asset.Id" 
-                                           class="btn btn-sm btn-outline-info" 
-                                           title="View Details"
-                                           data-bs-toggle="tooltip">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        
-                                        <!-- Edit -->
-                                        <a asp-action="Edit" asp-route-id="@asset.Id" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           title="Edit Asset"
-                                           data-bs-toggle="tooltip">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        
-                                        <!-- Delete -->
-                                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn" 
-                                                data-id="@asset.Id" 
-                                                data-tag="@asset.AssetTag" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#deleteModal"
-                                                title="Delete Asset"
-                                                data-bs-toggle="tooltip">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        
-                                        <!-- More Actions Dropdown -->
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" 
-                                                    data-bs-toggle="dropdown" 
-                                                    aria-expanded="false"
-                                                    title="More Actions">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                                <li>
-                                                    <a class="dropdown-item" href="#" onclick="viewCompliance('@asset.Id')">
-                                                        <i class="fas fa-shield-alt me-2 text-info"></i>View Compliance
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="#" onclick="viewPolicies('@asset.Id')">
-                                                        <i class="fas fa-file-contract me-2 text-primary"></i>Manage Policies (@asset.PolicyCount)
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="#" onclick="viewDocuments('@asset.Id')">
-                                                        <i class="fas fa-file-pdf me-2 text-danger"></i>Documents
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                    <a class="dropdown-item" href="#" onclick="auditLog('@asset.Id')">
-                                                        <i class="fas fa-history me-2 text-warning"></i>Audit Log
-                                                    </a>
-                                                </li>
-                                                @if (asset.Status == "Active")
-                                                {
-                                                    <li>
-                                                        <a class="dropdown-item text-warning" href="#" onclick="markInactive('@asset.Id')">
-                                                            <i class="fas fa-pause-circle me-2"></i>Mark Inactive
-                                                        </a>
-                                                    </li>
-                                                }
-                                                else
-                                                {
-                                                    <li>
-                                                        <a class="dropdown-item text-success" href="#" onclick="markActive('@asset.Id')">
-                                                            <i class="fas fa-play-circle me-2"></i>Mark Active
-                                                        </a>
-                                                    </li>
-                                                }
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Pagination & Info -->
-        @if (Model.TotalPages > 1 || Model.Items.Any())
-        {
-            <div class="row mt-4 align-items-center">
-                <div class="col-sm-12 col-md-5">
-                    <div class="dataTables_info text-muted" id="dataTableInfo">
-                        <i class="fas fa-list me-1"></i>
-                        Showing 
-                        <span class="fw-bold">@(((Model.Page - 1) * Model.PageSize) + 1)</span> 
-                        to 
-                        <span class="fw-bold">@(Math.Min(Model.Page * Model.PageSize, Model.TotalItems))</span> 
-                        of <span class="fw-bold">@Model.TotalItems</span> entries
-                        
-                        @if (!string.IsNullOrEmpty(searchTerm))
-                        {
-                            <span class="ms-2">
-                                (filtered from <span class="fw-bold">@Model.TotalItems</span> total)
-                                <button type="button" class="btn btn-sm btn-link p-0 ms-1" 
-                                        onclick="clearSearch()" title="Clear filter">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </span>
-                        }
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-danger border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-danger text-uppercase mb-1">Critical Issues</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="criticalCount">
+                                @Model.Count(a => a.ComplianceScore < 60)
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-danger bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-exclamation-octagon fs-1 text-danger"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="col-sm-12 col-md-7">
-                    @if (Model.TotalPages > 1)
-                    {
-                        <nav aria-label="Asset table navigation">
-                            <ul class="pagination justify-content-end mb-0">
-                                <!-- First Page -->
-                                <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
-                                    <a class="page-link page-link-first" href="#" data-page="1" 
-                                       @(!Model.HasPrevious ? "tabindex=-1 aria-disabled=true" : "")
-                                       title="First Page">
-                                        <i class="fas fa-angle-double-left"></i>
-                                    </a>
-                                </li>
-                                
-                                <!-- Previous Page -->
-                                <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
-                                    <a class="page-link page-link-prev" href="#" 
-                                       data-page="@(Model.Page - 1)"
-                                       @(!Model.HasPrevious ? "tabindex=-1 aria-disabled=true" : "")
-                                       title="Previous Page">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                </li>
-                                
-                                <!-- Page Numbers -->
-                                @{
-                                    var startPage = Math.Max(1, Model.Page - 2);
-                                    var endPage = Math.Min(Model.TotalPages, Model.Page + 2);
-                                    
-                                    if (startPage > 1)
-                                    {
-                                        <li class="page-item">
-                                            <a class="page-link page-link-num" href="#" data-page="1">1</a>
-                                        </li>
-                                        if (startPage > 2)
-                                        {
-                                            <li class="page-item disabled">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        }
-                                    }
-                                    
-                                    for (int i = startPage; i <= endPage; i++)
-                                    {
-                                        <li class="page-item @(i == Model.Page ? "active" : "")">
-                                            <a class="page-link page-link-num" href="#" data-page="@i">@i</a>
-                                        </li>
-                                    }
-                                    
-                                    if (endPage < Model.TotalPages)
-                                    {
-                                        if (endPage < Model.TotalPages - 1)
-                                        {
-                                            <li class="page-item disabled">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        }
-                                        <li class="page-item">
-                                            <a class="page-link page-link-num" href="#" data-page="@Model.TotalPages">@Model.TotalPages</a>
-                                        </li>
-                                    }
-                                }
-                                
-                                <!-- Next Page -->
-                                <li class="page-item @(Model.HasNext ? "" : "disabled")">
-                                    <a class="page-link page-link-next" href="#" 
-                                       data-page="@(Model.Page + 1)"
-                                       @(!Model.HasNext ? "tabindex=-1 aria-disabled=true" : "")
-                                       title="Next Page">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                </li>
-                                
-                                <!-- Last Page -->
-                                <li class="page-item @(Model.HasNext ? "" : "disabled")">
-                                    <a class="page-link page-link-last" href="#" 
-                                       data-page="@Model.TotalPages"
-                                       @(!Model.HasNext ? "tabindex=-1 aria-disabled=true" : "")
-                                       title="Last Page">
-                                        <i class="fas fa-angle-double-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    }
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-warning border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-warning text-uppercase mb-1">Warning Level</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="warningCount">
+                                @Model.Count(a => a.ComplianceScore >= 60 && a.ComplianceScore < 80)
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        }
-
-        <!-- Page Size Selector -->
-        <div class="row mt-3">
-            <div class="col-md-12">
-                <div class="d-flex justify-content-end align-items-center">
-                    <label class="text-muted me-2">Show:</label>
-                    <select class="form-select form-select-sm w-auto" id="pageSize" onchange="changePageSize(this.value)">
-                        <option value="10" selected="@(Model.PageSize == 10)">10 entries</option>
-                        <option value="25" selected="@(Model.PageSize == 25)">25 entries</option>
-                        <option value="50" selected="@(Model.PageSize == 50)">50 entries</option>
-                        <option value="100" selected="@(Model.PageSize == 100)">100 entries</option>
-                    </select>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-info border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-info text-uppercase mb-1">Average Score</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="avgScore">
+                                @(Model.Any() ? Model.Average(a => a.ComplianceScore ?? 0).ToString("F1") : "0")%
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-bar-chart fs-1 text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-primary border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-primary text-uppercase mb-1">Total Assets</div>
+                            <div class="h3 mb-0 fw-bold text-gray-800" id="totalAssets">@Model.Count</div>
+                        </div>
+                        <div class="flex-shrink-0 ms-3">
+                            <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-box-seam fs-1 text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Hidden fields for JavaScript -->
-<input type="hidden" id="currentPage" value="@Model.Page" />
-<input type="hidden" id="currentSort" value="@currentSort" />
-<input type="hidden" id="currentSortDir" value="@currentSortDir" />
-<input type="hidden" id="currentSearchTerm" value="@searchTerm" />
-<input type="hidden" id="currentPageSize" value="@Model.PageSize" />
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Confirm Delete
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-info-circle me-2"></i>
-                    This action cannot be undone.
-                </div>
-                <p>Are you sure you want to delete asset:</p>
-                <div class="bg-light p-3 rounded">
-                    <strong id="deleteAssetTag" class="h5"></strong>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-1"></i>Cancel
+    <!-- Search and Filter Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="bi bi-funnel me-2"></i>Filter Assets
+                <button class="btn btn-sm btn-link float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                    <i class="bi bi-chevron-up"></i>
                 </button>
-                <form id="deleteForm" asp-action="Delete" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" id="deleteAssetId" />
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-1"></i>Delete Asset
-                    </button>
+            </h6>
+        </div>
+        <div class="collapse show" id="filterCollapse">
+            <div class="card-body">
+                <form id="filterForm" class="row g-3">
+                    <input type="hidden" name="sortBy" id="sortBy" value="@currentSort" />
+                    <input type="hidden" name="sortDir" id="sortDir" value="@currentSortDir" />
+                    
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase">Search</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                                   placeholder="Search by asset tag, make, model..." value="@searchTerm">
+                            @if (!string.IsNullOrEmpty(searchTerm))
+                            {
+                                <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small text-uppercase">Severity</label>
+                        <select class="form-select" id="severityFilter" name="severity">
+                            <option value="">All Severities</option>
+                            <option value="critical">Critical (&lt;60%)</option>
+                            <option value="warning">Warning (60-80%)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small text-uppercase">Asset Type</label>
+                        <select class="form-select" id="assetTypeFilter" name="assetType">
+                            <option value="">All Types</option>
+                            <option value="Vehicle">Vehicle</option>
+                            <option value="Equipment">Equipment</option>
+                            <option value="Machinery">Machinery</option>
+                            <option value="Electronics">Electronics</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Apply Filters
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Bulk Actions Modal -->
-<div class="modal fade" id="bulkActionsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-tasks me-2"></i>Bulk Actions
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Select bulk action for selected assets:</p>
-                <div class="list-group">
-                    <button type="button" class="list-group-item list-group-item-action" onclick="bulkStatusUpdate('Active')">
-                        <i class="fas fa-play-circle me-2 text-success"></i>Mark as Active
-                    </button>
-                    <button type="button" class="list-group-item list-group-item-action" onclick="bulkStatusUpdate('Inactive')">
-                        <i class="fas fa-pause-circle me-2 text-warning"></i>Mark as Inactive
-                    </button>
-                    <button type="button" class="list-group-item list-group-item-action" onclick="bulkExport()">
-                        <i class="fas fa-file-export me-2 text-primary"></i>Export Selected
-                    </button>
-                    <button type="button" class="list-group-item list-group-item-action text-danger" onclick="bulkDelete()">
-                        <i class="fas fa-trash me-2"></i>Delete Selected
+    <!-- Results Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 fw-bold text-primary">
+                    <i class="bi bi-table me-2"></i>Non-Compliant Assets List
+                    <span class="badge bg-danger ms-2">@Model.Count Issues Found</span>
+                </h6>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-secondary" onclick="refreshData()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
                     </button>
                 </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0" id="assetsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <a href="#" class="sort-link text-decoration-none text-dark" data-sort="assettag">
+                                    Asset Tag
+                                    @RenderSortIcon("assettag")
+                                </a>
+                            </th>
+                            <th>Make/Model</th>
+                            <th>Status</th>
+                            <th>
+                                <a href="#" class="sort-link text-decoration-none text-dark" data-sort="compliancescore">
+                                    Compliance Score
+                                    @RenderSortIcon("compliancescore")
+                                </a>
+                            </th>
+                            <th>Severity</th>
+                            <th>Issues</th>
+                            <th>Last Checked</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                                        <h5 class="mt-3">All Assets are Compliant!</h5>
+                                        <p class="text-muted">No non-compliant assets found.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var asset in Model)
+                            {
+                                var severity = asset.ComplianceScore < 60 ? "Critical" : 
+                                              asset.ComplianceScore < 80 ? "Warning" : "Info";
+                                var severityClass = severity == "Critical" ? "danger" : 
+                                                    severity == "Warning" ? "warning" : "info";
+                                
+                                <tr>
+                                    <td>
+                                        <strong>@asset.AssetTag</strong>
+                                        <small class="d-block text-muted">ID: @asset.Id</small>
+                                    </td>
+                                    <td>
+                                        @asset.Make @asset.Model
+                                        <small class="d-block text-muted">@asset.Year</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(asset.Status == "Active" ? "bg-success" : "bg-secondary")">
+                                            @asset.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-@severityClass" 
+                                                     role="progressbar" 
+                                                     style="width: @(asset.ComplianceScore ?? 0)%"
+                                                     aria-valuenow="@asset.ComplianceScore" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <span class="fw-bold">@(asset.ComplianceScore?.ToString("F0") ?? "N/A")%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@severityClass text-white px-3 py-2">
+                                            @severity
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (severity == "Critical")
+                                        {
+                                            <span class="badge bg-danger">Immediate Action Required</span>
+                                        }
+                                        else if (severity == "Warning")
+                                        {
+                                            <span class="badge bg-warning text-dark">Review Required</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (asset.LastInspectionDate.HasValue)
+                                        {
+                                            <small>@asset.LastInspectionDate.Value.ToString("MMM dd, yyyy")</small>
+                                            @if ((DateTime.UtcNow - asset.LastInspectionDate.Value).Days > 30)
+                                            {
+                                                <span class="badge bg-warning ms-1">Overdue</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Never</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="AssetDetails" asp-route-id="@asset.Id" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="View Details"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    onclick="runComplianceCheck(@asset.Id)"
+                                                    title="Run Compliance Check"
+                                                    data-bs-toggle="tooltip">
+                                                <i class="bi bi-play-circle"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-info" 
+                                                    onclick="viewHistory(@asset.Id)"
+                                                    title="View History"
+                                                    data-bs-toggle="tooltip">
+                                                <i class="bi bi-clock-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -433,304 +332,198 @@
         
         if (currentSort.Equals(column, StringComparison.OrdinalIgnoreCase))
         {
-            var icon = currentSortDir == "asc" ? "fa-sort-up" : "fa-sort-down";
-            return Html.Raw($"<i class=\"fas {icon} ms-1\"></i>");
+            var icon = currentSortDir == "asc" ? "bi-sort-up" : "bi-sort-down";
+            return Html.Raw($"<i class=\"bi {icon} ms-1\"></i>");
         }
         
-        return Html.Raw("<i class=\"fas fa-sort ms-1 text-muted\"></i>");
-    }
-
-    private IHtmlContent RenderStatusBadge(string status)
-    {
-        var (bgClass, icon) = status?.ToLower() switch
-        {
-            "active" => ("bg-success", "fa-check-circle"),
-            "inactive" => ("bg-secondary", "fa-pause-circle"),
-            "maintenance" => ("bg-warning text-dark", "fa-tools"),
-            "deleted" => ("bg-danger", "fa-trash"),
-            "pending" => ("bg-info", "fa-clock"),
-            _ => ("bg-light text-dark", "fa-question-circle")
-        };
-        
-        return Html.Raw($"""
-            <span class="badge {bgClass} text-white px-3 py-2">
-                <i class="fas {icon} me-1"></i>{status ?? "Unknown"}
-            </span>
-        """);
-    }
-
-    private IHtmlContent RenderComplianceBadge(string status, int? score = null)
-    {
-        var (bgClass, icon) = status?.ToLower() switch
-        {
-            "compliant" => ("bg-success", "fa-shield-alt"),
-            "non-compliant" or "expired" => ("bg-danger", "fa-exclamation-triangle"),
-            "pending" => ("bg-warning text-dark", "fa-hourglass-half"),
-            "expiring" => ("bg-warning text-dark", "fa-clock"),
-            "under review" => ("bg-info", "fa-search"),
-            _ => ("bg-secondary", "fa-question")
-        };
-        
-        var scoreHtml = score.HasValue ? $" <span class=\"badge bg-light text-dark ms-2\">{score}%</span>" : "";
-        
-        return Html.Raw($"""
-            <span class="badge {bgClass} text-white px-3 py-2">
-                <i class="fas {icon} me-1"></i>{status ?? "Unknown"}{scoreHtml}
-            </span>
-        """);
-    }
-
-    private string Truncate(string value, int length)
-    {
-        if (string.IsNullOrEmpty(value)) return "";
-        return value.Length <= length ? value : value.Substring(0, length) + "...";
+        return Html.Raw("<i class=\"bi bi-arrow-down-up ms-1 text-muted\"></i>");
     }
 }
 
-<script>
-    $(document).ready(function() {
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
-        // Handle delete button clicks
-        $('.delete-btn').click(function() {
-            var id = $(this).data('id');
-            var tag = $(this).data('tag');
-            $('#deleteAssetId').val(id);
-            $('#deleteAssetTag').text(tag);
-        });
-
-        // Handle sort links
-        $('.sort-link').click(function(e) {
-            e.preventDefault();
-            var sortBy = $(this).data('sort');
-            var currentSort = $('#currentSort').val();
-            var currentSortDir = $('#currentSortDir').val();
-            var searchTerm = $('#currentSearchTerm').val();
-            var pageSize = $('#currentPageSize').val();
-            
-            // Toggle sort direction if clicking same column
-            var sortDir = 'asc';
-            if (sortBy === currentSort) {
-                sortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
-            }
-            
-            loadAssetTable(1, searchTerm, sortBy, sortDir, pageSize);
-        });
-
-        // Handle pagination clicks
-        $(document).on('click', '.page-link-first, .page-link-prev, .page-link-next, .page-link-last, .page-link-num', function(e) {
-            e.preventDefault();
-            var page = $(this).data('page');
-            if (page) {
-                var searchTerm = $('#currentSearchTerm').val();
-                var sortBy = $('#currentSort').val();
-                var sortDir = $('#currentSortDir').val();
-                var pageSize = $('#currentPageSize').val();
+            // Handle sort links
+            $('.sort-link').click(function(e) {
+                e.preventDefault();
+                var sortBy = $(this).data('sort');
+                var currentSort = $('#sortBy').val();
+                var currentSortDir = $('#sortDir').val();
                 
-                loadAssetTable(page, searchTerm, sortBy, sortDir, pageSize);
-            }
-        });
-
-        // Handle page size change
-        window.changePageSize = function(pageSize) {
-            var searchTerm = $('#currentSearchTerm').val();
-            var sortBy = $('#currentSort').val();
-            var sortDir = $('#currentSortDir').val();
-            loadAssetTable(1, searchTerm, sortBy, sortDir, pageSize);
-        };
-
-        // Handle delete form submission
-        $('#deleteForm').submit(function(e) {
-            e.preventDefault();
-            
-            $.ajax({
-                url: $(this).attr('action'),
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function() {
-                    $('#deleteModal').modal('hide');
-                    showNotification('Asset deleted successfully', 'success');
-                    
-                    // Reload current page
-                    var currentPage = $('#currentPage').val();
-                    var searchTerm = $('#currentSearchTerm').val();
-                    var sortBy = $('#currentSort').val();
-                    var sortDir = $('#currentSortDir').val();
-                    var pageSize = $('#currentPageSize').val();
-                    loadAssetTable(currentPage, searchTerm, sortBy, sortDir, pageSize);
-                },
-                error: function(xhr) {
-                    $('#deleteModal').modal('hide');
-                    showNotification('Error deleting asset: ' + xhr.responseText, 'error');
+                var sortDir = 'asc';
+                if (sortBy === currentSort) {
+                    sortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
                 }
+                
+                $('#sortBy').val(sortBy);
+                $('#sortDir').val(sortDir);
+                applyFilters();
+            });
+
+            // Handle filter form submit
+            $('#filterForm').submit(function(e) {
+                e.preventDefault();
+                applyFilters();
+            });
+
+            // Handle clear search
+            $('#clearSearch').click(function() {
+                $('#searchTerm').val('');
+                applyFilters();
+            });
+
+            // Handle filter changes
+            $('#severityFilter, #assetTypeFilter').change(function() {
+                applyFilters();
             });
         });
-    });
 
-    function loadAssetTable(page, searchTerm, sortBy, sortDir, pageSize) {
-        $.ajax({
-            url: '@Url.Action("Search", "Assets")',
-            type: 'POST',
-            data: {
-                page: page,
+        function applyFilters() {
+            var searchTerm = $('#searchTerm').val();
+            var severity = $('#severityFilter').val();
+            var assetType = $('#assetTypeFilter').val();
+            var sortBy = $('#sortBy').val();
+            var sortDir = $('#sortDir').val();
+            
+            // Build query string
+            var queryParams = new URLSearchParams({
                 searchTerm: searchTerm,
+                severity: severity,
+                assetType: assetType,
                 sortBy: sortBy,
-                sortDir: sortDir,
-                pageSize: pageSize
-            },
-            beforeSend: function() {
-                $('#assetTableContainer').html(`
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-2 text-muted">Loading assets...</p>
-                    </div>
-                `);
-            },
-            success: function(result) {
-                $('#assetTableContainer').html(result);
-            },
-            error: function(xhr, status, error) {
-                $('#assetTableContainer').html(`
-                    <div class="alert alert-danger m-3">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Error loading assets: ${error}
-                    </div>
-                `);
-                console.error('Error:', error);
+                sortDir: sortDir
+            });
+            
+            window.location.href = '@Url.Action("Assets")?' + queryParams.toString();
+        }
+
+        function refreshData() {
+            applyFilters();
+        }
+
+        function runComplianceCheck(assetId) {
+            $.ajax({
+                url: '@Url.Action("RunComplianceCheck", "Compliance")',
+                type: 'POST',
+                data: { assetId: assetId },
+                success: function(response) {
+                    if (response.success) {
+                        if (typeof toastr !== 'undefined') {
+                            toastr.success(response.message);
+                        } else {
+                            alert('Success: ' + response.message);
+                        }
+                        setTimeout(() => refreshData(), 2000);
+                    } else {
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(response.message);
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    }
+                },
+                error: function() {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error('Error running compliance check');
+                    } else {
+                        alert('Error running compliance check');
+                    }
+                }
+            });
+        }
+
+        function viewHistory(assetId) {
+            // You can implement a modal or redirect to history page
+            window.location.href = '@Url.Action("AssetDetails", "Compliance")/' + assetId + '?tab=history';
+        }
+
+        function exportReport() {
+            var searchTerm = $('#searchTerm').val();
+            var severity = $('#severityFilter').val();
+            var assetType = $('#assetTypeFilter').val();
+            
+            var queryParams = new URLSearchParams({
+                searchTerm: searchTerm,
+                severity: severity,
+                assetType: assetType
+            });
+            
+            window.location.href = '@Url.Action("ExportReport", "Compliance")?' + queryParams.toString();
+        }
+    </script>
+
+    <style>
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #28a745;
+        }
+        
+        .table th .sort-link {
+            display: inline-block;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .table th .sort-link:hover {
+            color: #0d6efd !important;
+        }
+        
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        
+        .progress-bar {
+            transition: width 0.6s ease;
+        }
+        
+        .border-start {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .border-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15) !important;
+        }
+        
+        .text-gray-800 {
+            color: #2c3e50;
+        }
+        
+        .bg-opacity-10 {
+            --bs-bg-opacity: 0.1;
+        }
+        
+        .border-4 {
+            border-width: 4px !important;
+        }
+        
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .table-responsive {
+                border: 0;
             }
-        });
-    }
-
-    function clearSearch() {
-        $('#searchTerm').val('');
-        var sortBy = $('#currentSort').val();
-        var sortDir = $('#currentSortDir').val();
-        var pageSize = $('#currentPageSize').val();
-        loadAssetTable(1, '', sortBy, sortDir, pageSize);
-    }
-
-    function showNotification(message, type) {
-        if (typeof toastr !== 'undefined') {
-            toastr[type](message);
-        } else {
-            alert(message);
+            
+            .btn-group {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .btn-group .btn {
+                border-radius: 0.25rem !important;
+                margin-bottom: 0.25rem;
+            }
         }
-    }
-
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(function() {
-            showNotification('Copied to clipboard!', 'success');
-        }, function(err) {
-            console.error('Could not copy text: ', err);
-        });
-    }
-
-    function exportTableToCSV() {
-        var searchTerm = $('#currentSearchTerm').val();
-        window.location.href = '@Url.Action("Export", "Assets")?searchTerm=' + encodeURIComponent(searchTerm);
-    }
-
-    // Action functions
-    function viewCompliance(assetId) {
-        window.location.href = '@Url.Action("Compliance", "Assets")/' + assetId;
-    }
-
-    function viewPolicies(assetId) {
-        window.location.href = '@Url.Action("Policies", "Assets")/' + assetId;
-    }
-
-    function viewDocuments(assetId) {
-        window.location.href = '@Url.Action("Documents", "Assets")/' + assetId;
-    }
-
-    function auditLog(assetId) {
-        window.location.href = '@Url.Action("AuditLog", "Assets")/' + assetId;
-    }
-
-    function markActive(assetId) {
-        if (confirm('Are you sure you want to mark this asset as active?')) {
-            $.post('@Url.Action("UpdateStatus", "Assets")', { id: assetId, status: 'Active' })
-                .done(function() {
-                    showNotification('Asset status updated', 'success');
-                    location.reload();
-                })
-                .fail(function() {
-                    showNotification('Error updating status', 'error');
-                });
-        }
-    }
-
-    function markInactive(assetId) {
-        if (confirm('Are you sure you want to mark this asset as inactive?')) {
-            $.post('@Url.Action("UpdateStatus", "Assets")', { id: assetId, status: 'Inactive' })
-                .done(function() {
-                    showNotification('Asset status updated', 'success');
-                    location.reload();
-                })
-                .fail(function() {
-                    showNotification('Error updating status', 'error');
-                });
-        }
-    }
-</script>
-
-<style>
-    .empty-state {
-        padding: 2rem;
-        text-align: center;
-    }
-    
-    .table th .sort-link {
-        display: inline-block;
-        width: 100%;
-        cursor: pointer;
-    }
-    
-    .table th .sort-link:hover {
-        color: #0d6efd !important;
-    }
-    
-    .pagination .page-link {
-        cursor: pointer;
-    }
-    
-    .pagination .page-item.disabled .page-link {
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-    
-    .badge {
-        font-weight: 500;
-        letter-spacing: 0.3px;
-    }
-    
-    .user-select-all {
-        user-select: all;
-        -webkit-user-select: all;
-        -moz-user-select: all;
-        -ms-user-select: all;
-    }
-    
-    /* Responsive table */
-    @@media (max-width: 768px) {
-        .table-responsive {
-            border: 0;
-        }
-        
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .btn-group .btn {
-            border-radius: 0.25rem !important;
-            margin-bottom: 0.25rem;
-        }
-    }
-</style>
+    </style>
+}

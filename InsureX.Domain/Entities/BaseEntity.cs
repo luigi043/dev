@@ -1,18 +1,22 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InsureX.Domain.Entities;
 
 /// <summary>
 /// Base entity class that provides common properties for all domain entities
+/// Using int for ID for better performance with SQL Server
 /// </summary>
 public abstract class BaseEntity
 {
     /// <summary>
     /// Unique identifier for the entity
-    /// Using Guid for distributed systems and security (vs auto-increment int)
+    /// Using int identity for better performance with SQL Server
     /// </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
     /// <summary>
     /// UTC timestamp when the entity was created
@@ -39,7 +43,7 @@ public abstract class BaseEntity
     /// <summary>
     /// Check if the entity is newly created (not persisted yet)
     /// </summary>
-    public bool IsTransient() => Id == Guid.Empty;
+    public bool IsTransient() => Id == 0;
 
     /// <summary>
     /// Update the audit fields when entity is modified

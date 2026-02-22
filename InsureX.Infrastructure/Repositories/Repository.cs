@@ -24,13 +24,7 @@ public class Repository<T> : IRepository<T> where T : class
         return await _dbSet.FindAsync(id);
     }
 
-    public async Task<T?> GetByIdAsync(Guid id)
-    {
-        if (id == Guid.Empty)
-            throw new ArgumentException("Id cannot be empty", nameof(id));
-            
-        return await _dbSet.FindAsync(id);
-    }
+    // REMOVED: GetByIdAsync(Guid id) - not needed with int IDs
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
@@ -62,6 +56,14 @@ public class Repository<T> : IRepository<T> where T : class
         return entry.Entity;
     }
 
+    public async Task AddRangeAsync(IEnumerable<T> entities)
+    {
+        if (entities == null)
+            throw new ArgumentNullException(nameof(entities));
+            
+        await _dbSet.AddRangeAsync(entities);
+    }
+
     public Task UpdateAsync(T entity)
     {
         if (entity == null)
@@ -71,12 +73,30 @@ public class Repository<T> : IRepository<T> where T : class
         return Task.CompletedTask;
     }
 
+    public Task UpdateRangeAsync(IEnumerable<T> entities)
+    {
+        if (entities == null)
+            throw new ArgumentNullException(nameof(entities));
+            
+        _dbSet.UpdateRange(entities);
+        return Task.CompletedTask;
+    }
+
     public Task DeleteAsync(T entity)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
             
         _dbSet.Remove(entity);
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteRangeAsync(IEnumerable<T> entities)
+    {
+        if (entities == null)
+            throw new ArgumentNullException(nameof(entities));
+            
+        _dbSet.RemoveRange(entities);
         return Task.CompletedTask;
     }
 
@@ -136,24 +156,6 @@ public class Repository<T> : IRepository<T> where T : class
     public IQueryable<T> GetQueryable()
     {
         return _dbSet.AsQueryable();
-    }
-
-    public async Task ExecuteInTransactionAsync(Func<Task> action)
-    {
-        if (action == null)
-            throw new ArgumentNullException(nameof(action));
-            
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        try
-        {
-            await action();
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
     }
 
     public void Detach(T entity)

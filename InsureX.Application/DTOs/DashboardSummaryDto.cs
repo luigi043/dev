@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace InsureX.Application.DTOs;
 
 public class DashboardViewModel
@@ -15,10 +12,14 @@ public class DashboardViewModel
 
 public class RecentAlertDto
 {
+    public int Id { get; set; }
+    public int AssetId { get; set; }
     public string AssetTag { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public int Severity { get; set; }
+    public string SeverityText { get; set; } = string.Empty;
 }
 
 public class ChartDataDto

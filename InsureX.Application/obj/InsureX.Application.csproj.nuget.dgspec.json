@@ -71,9 +71,24 @@
               "version": "[6.2.3, )",
               "versionCentrallyManaged": true
             },
+            "FluentValidation.DependencyInjectionExtensions": {
+              "target": "Package",
+              "version": "[11.8.0, )",
+              "versionCentrallyManaged": true
+            },
             "Mapster": {
               "target": "Package",
               "version": "[7.0.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.CodeAnalysis.CSharp": {
+              "target": "Package",
+              "version": "[4.8.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.CodeAnalysis.CSharp.Scripting": {
+              "target": "Package",
+              "version": "[4.8.0, )",
               "versionCentrallyManaged": true
             },
             "Microsoft.EntityFrameworkCore.Design": {
@@ -98,8 +113,8 @@
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.0",
             "Microsoft.AspNetCore.OpenApi": "8.0.0",
             "Microsoft.CodeAnalysis.Common": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.8.0",
+            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
             "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
             "Microsoft.CodeAnalysis.Workspaces.Common": "4.5.0",
             "Microsoft.EntityFrameworkCore": "8.0.0",
@@ -203,8 +218,8 @@
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.0",
             "Microsoft.AspNetCore.OpenApi": "8.0.0",
             "Microsoft.CodeAnalysis.Common": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp": "4.5.0",
-            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.5.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.8.0",
+            "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
             "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
             "Microsoft.CodeAnalysis.Workspaces.Common": "4.5.0",
             "Microsoft.EntityFrameworkCore": "8.0.0",

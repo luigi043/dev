@@ -1,18 +1,12 @@
-using System;
+namespace InsureX.Domain.Interfaces;
 
-namespace InsureX.Domain.Interfaces
+/// <summary>
+/// Interface for entities that are scoped to a specific tenant
+/// </summary>
+public interface ITenantScoped
 {
     /// <summary>
-    /// Interface for entities that are scoped to a specific tenant in a multi-tenant architecture.
-    /// This ensures data isolation between different tenants.
+    /// Tenant identifier - using int for consistency with SQL Server
     /// </summary>
-    public interface ITenantScoped
-    {
-        /// <summary>
-        /// Gets or sets the unique identifier of the tenant that owns this entity.
-        /// This ID is used to isolate data between different tenants and enforce
-        /// multi-tenancy security boundaries.
-        /// </summary>
-        Guid TenantId { get; set; }
-    }
+    int TenantId { get; set; }
 }

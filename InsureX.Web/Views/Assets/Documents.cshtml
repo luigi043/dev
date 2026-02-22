@@ -1,0 +1,157 @@
+@{
+    ViewData["Title"] = "Asset Documents";
+    var assetId = ViewContext.RouteData.Values["id"];
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Asset Documents</h1>
+        <div>
+            <a asp-controller="Assets" asp-action="Details" asp-route-id="@assetId" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Asset
+            </a>
+        </div>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">Upload Document</h6>
+        </div>
+        <div class="card-body">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Document Type</label>
+                    <select class="form-select" id="documentType" required>
+                        <option value="">Select Type</option>
+                        <option value="Insurance">Insurance Certificate</option>
+                        <option value="Inspection">Inspection Report</option>
+                        <option value="Title">Title/Registration</option>
+                        <option value="Maintenance">Maintenance Record</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-control" id="description" 
+                           placeholder="Brief description of the document">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">File</label>
+                    <input type="file" class="form-control" id="file" required>
+                    <small class="text-muted">Allowed: PDF, JPG, PNG, DOC (Max 10MB)</small>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Upload Document
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">Uploaded Documents</h6>
+        </div>
+        <div class="card-body">
+            <div class="text-center text-muted py-5" id="emptyState">
+                <i class="fas fa-file-upload fa-4x mb-3"></i>
+                <h5>No Documents Yet</h5>
+                <p>Upload documents to get started</p>
+            </div>
+
+            <div class="table-responsive" id="documentsTable" style="display: none;">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>File Name</th>
+                            <th>Uploaded</th>
+                            <th>Size</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            loadDocuments();
+
+            $('#uploadForm').submit(function(e) {
+                e.preventDefault();
+                uploadDocument();
+            });
+        });
+
+        function loadDocuments() {
+            $.ajax({
+                url: `/api/v1/assets/${@assetId}/documents`,
+                type: 'GET',
+                success: function(documents) {
+                    if (documents && documents.length > 0) {
+                        $('#emptyState').hide();
+                        $('#documentsTable').show();
+                        
+                        var html = '';
+                        documents.forEach(function(doc) {
+                            html += `
+                                <tr>
+                                    <td><span class="badge bg-info">${doc.type}</span></td>
+                                    <td>${doc.description || '-'}</td>
+                                    <td>${doc.fileName}</td>
+                                    <td>${new Date(doc.uploadedAt).toLocaleDateString()}</td>
+                                    <td>${formatFileSize(doc.fileSize)}</td>
+                                    <td>
+                                        <a href="${doc.downloadUrl}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDocument('${doc.id}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        $('#documentsList').html(html);
+                    }
+                }
+            });
+        }
+
+        function uploadDocument() {
+            var formData = new FormData();
+            formData.append('type', $('#documentType').val());
+            formData.append('description', $('#description').val());
+            formData.append('file', $('#file')[0].files[0]);
+
+            $.ajax({
+                url: `/api/v1/assets/${@assetId}/documents`,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function() {
+                    toastr.success('Document uploaded successfully');
+                    $('#uploadForm')[0].reset();
+                    loadDocuments();
+                },
+                error: function(xhr) {
+                    toastr.error('Upload failed: ' + (xhr.responseJSON?.message || 'Unknown error'));
+                }
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+    </script>
+}

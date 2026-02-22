@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using InsureX.Application.Common.Interfaces;
-using System;
+using InsureX.Domain.Interfaces;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace InsureX.Infrastructure.Middleware;
 
@@ -29,7 +27,8 @@ public class TenantResolutionMiddleware
                                     context.User.FindFirst("TenantId") ??
                                     context.User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/tenantid");
 
-                if (tenantIdClaim != null && Guid.TryParse(tenantIdClaim.Value, out var tenantId))
+                // FIXED: Parse as int, not Guid
+                if (tenantIdClaim != null && int.TryParse(tenantIdClaim.Value, out var tenantId))
                 {
                     tenantContext.SetTenantId(tenantId);
                     _logger.LogDebug("Tenant context set from claims: {TenantId}", tenantId);
@@ -42,7 +41,8 @@ public class TenantResolutionMiddleware
             // Method 2: From header (for API keys, background jobs)
             if (!tenantContext.HasTenant && context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdHeader))
             {
-                if (Guid.TryParse(tenantIdHeader, out var tenantId))
+                // FIXED: Parse as int
+                if (int.TryParse(tenantIdHeader, out var tenantId))
                 {
                     tenantContext.SetTenantId(tenantId);
                     _logger.LogDebug("Tenant context set from header: {TenantId}", tenantId);
@@ -54,7 +54,6 @@ public class TenantResolutionMiddleware
             {
                 var subdomain = context.Request.Host.Host.Split('.')[0];
                 // You might want to resolve subdomain to tenant ID via a cache or service
-                // This is a placeholder - implement actual resolution logic
                 _logger.LogDebug("Potential tenant from subdomain: {Subdomain}", subdomain);
             }
 

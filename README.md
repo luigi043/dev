@@ -93,43 +93,117 @@ The project follows **Clean Architecture** with strict separation of concerns:
 ```
 InsureX/
 ├── 📁 src/
-│   ├── 📁 InsureX.Web/              # ASP.NET Core 8 MVC Frontend
-│   │   ├── Controllers/              # MVC Controllers
-│   │   ├── Views/                     # Razor Views
-│   │   ├── wwwroot/                    # Static files (CSS, JS)
-│   │   └── Program.cs                  # Application entry point
+│   ├── 📁 InsureX.Web/                 # ASP.NET Core 8 MVC Frontend
+│   │   ├── Controllers/
+│   │   │   ├── AssetsController.cs     # Asset CRUD with AJAX
+│   │   │   ├── ComplianceController.cs # Compliance management
+│   │   │   ├── PoliciesController.cs   # Policy management
+│   │   │   ├── DashboardController.cs  # Dashboard views
+│   │   │   └── HomeController.cs       # Landing pages
+│   │   ├── Views/
+│   │   │   ├── Assets/
+│   │   │   │   ├── Index.cshtml        # Asset list with search
+│   │   │   │   ├── Create.cshtml       # Create asset
+│   │   │   │   ├── Edit.cshtml         # Edit asset
+│   │   │   │   ├── Details.cshtml      # Asset details
+│   │   │   │   ├── _AssetTable.cshtml  # Partial for AJAX
+│   │   │   │   ├── _QuickView.cshtml   # Quick view modal
+│   │   │   │   ├── Compliance.cshtml   # Compliance details
+│   │   │   │   ├── Policies.cshtml     # Asset policies
+│   │   │   │   ├── Documents.cshtml    # Document management
+│   │   │   │   └── AuditLog.cshtml     # Audit history
+│   │   │   ├── Compliance/
+│   │   │   │   ├── Index.cshtml        # Compliance dashboard
+│   │   │   │   ├── Assets.cshtml       # Non-compliant assets
+│   │   │   │   ├── AssetDetails.cshtml # Asset compliance
+│   │   │   │   ├── Alerts.cshtml       # Alert management
+│   │   │   │   └── Rules.cshtml        # Rule configuration
+│   │   │   └── Shared/
+│   │   │       ├── _Layout.cshtml      # Main layout
+│   │   │       └── _ValidationScriptsPartial.cshtml
+│   │   ├── wwwroot/
+│   │   │   ├── js/
+│   │   │   │   ├── insurex-assets.js   # Asset management JS
+│   │   │   │   └── insurex-policies.js # Policy management JS
+│   │   │   └── css/
+│   │   │       └── site.css            # Custom styles
+│   │   └── Program.cs                   # Application entry
 │   │
-│   ├── 📁 InsureX.Api/               # ASP.NET Core 8 Web API
-│   │   ├── Controllers/                # API Controllers (v1)
-│   │   ├── Middleware/                  # Custom middleware
+│   ├── 📁 InsureX.Api/                  # ASP.NET Core 8 Web API
+│   │   ├── Controllers/
+│   │   │   ├── AssetsController.cs      # REST API for assets
+│   │   │   ├── PoliciesController.cs    # REST API for policies
+│   │   │   ├── ComplianceController.cs  # REST API for compliance
+│   │   │   ├── DocumentsController.cs   # Document upload API
+│   │   │   └── AuditController.cs       # Audit log API
+│   │   ├── Middleware/
+│   │   │   ├── TenantResolutionMiddleware.cs
+│   │   │   └── ExceptionHandlingMiddleware.cs
 │   │   └── Program.cs                    # API configuration
 │   │
-│   ├── 📁 InsureX.Application/        # Business Logic Layer
-│   │   ├── DTOs/                         # Data Transfer Objects
-│   │   ├── Interfaces/                    # Service interfaces
-│   │   ├── Services/                       # Business logic implementation
-│   │   └── Validators/                      # FluentValidation rules
+│   ├── 📁 InsureX.Application/           # Business Logic Layer
+│   │   ├── DTOs/
+│   │   │   ├── AssetDto.cs
+│   │   │   ├── PolicyDto.cs
+│   │   │   ├── ComplianceDto.cs
+│   │   │   └── PagedResult.cs
+│   │   ├── Interfaces/
+│   │   │   ├── IAssetService.cs
+│   │   │   ├── IPolicyService.cs
+│   │   │   └── IComplianceEngineService.cs
+│   │   ├── Services/
+│   │   │   ├── AssetService.cs
+│   │   │   ├── PolicyService.cs
+│   │   │   ├── ComplianceEngineService.cs
+│   │   │   └── DashboardService.cs
+│   │   └── DependencyInjection.cs
 │   │
-│   ├── 📁 InsureX.Domain/             # Core Domain Layer
-│   │   ├── Entities/                      # Domain entities
-│   │   ├── Enums/                           # Enumerations
-│   │   ├── Exceptions/                       # Custom exceptions
-│   │   └── Interfaces/                        # Repository interfaces
+│   ├── 📁 InsureX.Domain/                # Core Domain Layer
+│   │   ├── Entities/
+│   │   │   ├── BaseEntity.cs
+│   │   │   ├── Tenant.cs
+│   │   │   ├── Asset.cs
+│   │   │   ├── Policy.cs
+│   │   │   ├── ComplianceRule.cs
+│   │   │   └── AuditLog.cs
+│   │   ├── Enums/
+│   │   │   └── AssetStatus.cs
+│   │   ├── Exceptions/
+│   │   │   └── DomainException.cs
+│   │   └── Interfaces/
+│   │       ├── IRepository.cs
+│   │       ├── ITenantScoped.cs
+│   │       └── ITenantContext.cs
 │   │
-│   ├── 📁 InsureX.Infrastructure/      # Data Access Layer
-│   │   ├── Data/                            # DbContext and configurations
-│   │   ├── Repositories/                      # Repository implementations
-│   │   ├── Migrations/                          # EF Core migrations
-│   │   └── Services/                              # Infrastructure services
+│   ├── 📁 InsureX.Infrastructure/        # Data Access Layer
+│   │   ├── Data/
+│   │   │   ├── AppDbContext.cs
+│   │   │   └── SeedData.cs
+│   │   ├── Repositories/
+│   │   │   ├── Repository.cs
+│   │   │   ├── AssetRepository.cs
+│   │   │   ├── PolicyRepository.cs
+│   │   │   └── ComplianceRepository.cs
+│   │   ├── Migrations/
+│   │   ├── Services/
+│   │   │   ├── TenantContext.cs
+│   │   │   ├── CurrentUserService.cs
+│   │   │   └── DataSeeder.cs
+│   │   └── DependencyInjection.cs
 │   │
-│   └── 📁 Modules/                      # Razor Class Libraries
-│       ├── InsureX.Ui.Shell.Rcl/            # Shared layout components
-│       ├── InsureX.Ui.Compliance.Rcl/        # Compliance UI components
-│       └── InsureX.Ui.Workflow.Rcl/           # Workflow UI components
+│   └── 📁 Modules/
+│       └── InsureX.Ui.Shell.Rcl/         # Shared UI Components
+│           ├── Views/Shared/
+│           │   ├── _Layout.cshtml
+│           │   ├── _NavMenu.cshtml
+│           │   └── _LoginPartial.cshtml
+│           └── wwwroot/
+│               ├── css/site.css
+│               └── js/site.js
 │
 └── 📁 tests/
-    ├── InsureX.UnitTests/                # Unit tests (xUnit)
-    └── InsureX.IntegrationTests/           # Integration tests
+    ├── InsureX.UnitTests/                # Unit tests
+    └── InsureX.IntegrationTests/          # Integration tests
 ```
 
 ## ✨ Key Features

@@ -4,7 +4,7 @@ namespace InsureX.Domain.Entities;
 
 public class Asset : BaseEntity, ITenantScoped
 {
-    public Guid TenantId { get; set; }
+    public int TenantId { get; set; }  // Changed from Guid to int
     public string AssetTag { get; set; } = string.Empty;
     public string Make { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
@@ -26,7 +26,6 @@ public class Asset : BaseEntity, ITenantScoped
     public virtual ICollection<ComplianceResult> ComplianceResults { get; set; } = new List<ComplianceResult>();
 }
 
-// Static classes for constant values
 public static class AssetStatusValues
 {
     public const string Active = "Active";

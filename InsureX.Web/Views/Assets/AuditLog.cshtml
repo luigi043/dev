@@ -1,0 +1,211 @@
+@{
+    ViewData["Title"] = "Asset Audit Log";
+    var assetId = ViewContext.RouteData.Values["id"];
+    var assetTag = ViewBag.AssetTag as string ?? "Asset";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Audit Log: @assetTag</h1>
+        <a asp-controller="Assets" asp-action="Details" asp-route-id="@assetId" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Asset
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="fas fa-history me-2"></i>Activity History
+            </h6>
+        </div>
+        <div class="card-body">
+            <!-- Filter Controls -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <select class="form-select" id="actionFilter">
+                        <option value="">All Actions</option>
+                        <option value="Create">Create</option>
+                        <option value="Update">Update</option>
+                        <option value="Delete">Delete</option>
+                        <option value="StatusChange">Status Change</option>
+                        <option value="ComplianceCheck">Compliance Check</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" id="dateFrom" placeholder="From Date">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" id="dateTo" placeholder="To Date">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="loadAuditLog()">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="text-center py-5" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading audit log...</p>
+            </div>
+
+            <!-- Audit Log Table -->
+            <div class="table-responsive" id="auditTableContainer" style="display: none;">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Changes</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditLogList"></tbody>
+                </table>
+                <div id="pagination" class="mt-3"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="text-center py-5 text-muted" id="emptyState" style="display: none;">
+                <i class="fas fa-history fa-4x mb-3"></i>
+                <h5>No Audit Records</h5>
+                <p>No activities have been recorded for this asset yet.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentPage = 1;
+        const pageSize = 20;
+
+        $(document).ready(function() {
+            loadAuditLog();
+        });
+
+        function loadAuditLog() {
+            $('#loadingSpinner').show();
+            $('#auditTableContainer').hide();
+            $('#emptyState').hide();
+
+            var filters = {
+                page: currentPage,
+                pageSize: pageSize,
+                action: $('#actionFilter').val(),
+                fromDate: $('#dateFrom').val(),
+                toDate: $('#dateTo').val()
+            };
+
+            $.ajax({
+                url: `/api/v1/assets/${@assetId}/auditlog`,
+                type: 'GET',
+                data: filters,
+                success: function(response) {
+                    $('#loadingSpinner').hide();
+                    
+                    if (response.items && response.items.length > 0) {
+                        displayAuditLog(response.items);
+                        setupPagination(response);
+                        $('#auditTableContainer').show();
+                    } else {
+                        $('#emptyState').show();
+                    }
+                },
+                error: function() {
+                    $('#loadingSpinner').hide();
+                    $('#emptyState').show();
+                    toastr.error('Failed to load audit log');
+                }
+            });
+        }
+
+        function displayAuditLog(items) {
+            var html = '';
+            items.forEach(function(item) {
+                html += `
+                    <tr>
+                        <td>${new Date(item.timestamp).toLocaleString()}</td>
+                        <td>
+                            <strong>${item.userName || 'System'}</strong>
+                            <br><small class="text-muted">${item.userEmail || ''}</small>
+                        </td>
+                        <td>
+                            <span class="badge ${getActionBadgeClass(item.action)}">
+                                ${item.action}
+                            </span>
+                        </td>
+                        <td>
+                            ${formatChanges(item.changes)}
+                        </td>
+                        <td><small>${item.ipAddress || 'N/A'}</small></td>
+                    </tr>
+                `;
+            });
+            $('#auditLogList').html(html);
+        }
+
+        function getActionBadgeClass(action) {
+            switch(action.toLowerCase()) {
+                case 'create': return 'bg-success';
+                case 'update': return 'bg-primary';
+                case 'delete': return 'bg-danger';
+                case 'statuschange': return 'bg-warning';
+                default: return 'bg-info';
+            }
+        }
+
+        function formatChanges(changes) {
+            if (!changes || changes.length === 0) return 'No changes';
+            
+            var html = '<ul class="mb-0 ps-3">';
+            changes.forEach(function(change) {
+                if (change.oldValue && change.newValue) {
+                    html += `<li><strong>${change.field}:</strong> ${change.oldValue} → ${change.newValue}</li>`;
+                } else if (change.newValue) {
+                    html += `<li><strong>${change.field}:</strong> ${change.newValue}</li>`;
+                }
+            });
+            html += '</ul>';
+            return html;
+        }
+
+        function setupPagination(response) {
+            var html = '<nav><ul class="pagination justify-content-center">';
+            
+            // Previous button
+            html += `<li class="page-item ${response.page === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${response.page - 1})">Previous</a>
+            </li>`;
+            
+            // Page numbers
+            for (var i = 1; i <= response.totalPages; i++) {
+                if (i === 1 || i === response.totalPages || 
+                    (i >= response.page - 2 && i <= response.page + 2)) {
+                    html += `<li class="page-item ${i === response.page ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    </li>`;
+                } else if (i === response.page - 3 || i === response.page + 3) {
+                    html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+            
+            // Next button
+            html += `<li class="page-item ${response.page === response.totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${response.page + 1})">Next</a>
+            </li>`;
+            
+            html += '</ul></nav>';
+            $('#pagination').html(html);
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            loadAuditLog();
+        }
+    </script>
+}

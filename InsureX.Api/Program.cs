@@ -21,16 +21,14 @@ using System.Collections.Generic;
 
 // ======= Project Imports =======
 using InsureX.Infrastructure.Data;
-using InsureX.Infrastructure.Tenant;
 using InsureX.Domain.Entities;
 using InsureX.Domain.Interfaces;
 using InsureX.Infrastructure.Repositories;
 using InsureX.Application.Interfaces;
 using InsureX.Application.Services;
 using InsureX.Infrastructure.Services;
-using InsureX.Application.Common.Interfaces;
 using InsureX.Infrastructure.BackgroundServices;
-using InsureX.Infrastructure.Middleware; // Add this for tenant middleware
+using InsureX.Api.Middleware; // For tenant middleware
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,7 +133,8 @@ void ConfigureDatabase(IServiceCollection services, IConfiguration configuration
 
 void ConfigureIdentity(IServiceCollection services)
 {
-    services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    // FIXED: Use int for Identity (IdentityUser<int>)
+    services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
     {
         // Password settings
         options.Password.RequireDigit = true;
@@ -159,8 +158,7 @@ void ConfigureIdentity(IServiceCollection services)
         options.SignIn.RequireConfirmedAccount = false;
     })
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders()
-    .AddErrorDescriber<CustomIdentityErrorDescriber>();
+    .AddDefaultTokenProviders();
 
     // Configure cookie authentication
     services.ConfigureApplicationCookie(options =>
@@ -282,7 +280,6 @@ void ConfigureDependencyInjection(IServiceCollection services)
     services.AddScoped<IDashboardService, DashboardService>();
     services.AddScoped<IComplianceEngineService, ComplianceEngineService>();
     services.AddScoped<INotificationService, NotificationService>();
-    services.AddScoped<IAuditService, AuditService>();
     services.AddScoped<ICurrentUserService, CurrentUserService>();
 
     // Data Seeder
@@ -411,6 +408,7 @@ void ConfigureMiddleware(WebApplication app)
     app.UseMiddleware<RequestLoggingMiddleware>();          // 1. Log all requests
     
     // TENANT MIDDLEWARE - Must come AFTER logging but BEFORE authentication
+    // FIXED: Using the correct middleware from Api.Middleware namespace
     app.UseMiddleware<TenantResolutionMiddleware>();        // 2. Resolve tenant from request
     
     app.UseMiddleware<ExceptionHandlingMiddleware>();       // 3. Global exception handling

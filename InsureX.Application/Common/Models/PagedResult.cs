@@ -9,4 +9,4 @@ public class PagedResult<T>
     public int TotalPages { get; set; }
     public bool HasNext { get; set; }
     public bool HasPrevious => Page > 1;
-}
+}---DELETE FILE 

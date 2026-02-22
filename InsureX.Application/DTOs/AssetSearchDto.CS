@@ -4,23 +4,11 @@ public class AssetSearchDto
 {
     private int _page = 1;
     private int _pageSize = 25;
-    private string? _searchTerm;
     private string? _sortBy = "createdat";
     private string? _sortDir = "desc";
 
     // Search criteria
-    public string? SearchTerm
-    {
-        get => _searchTerm;
-        set => _searchTerm = value?.Trim();
-    }
-    
-    public string? Keyword
-    {
-        get => SearchTerm;
-        set => SearchTerm = value;
-    }
-    
+    public string? SearchTerm { get; set; }
     public string? Status { get; set; }
     public string? ComplianceStatus { get; set; }
     public int? Year { get; set; }

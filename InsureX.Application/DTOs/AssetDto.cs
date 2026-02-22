@@ -6,7 +6,7 @@ namespace InsureX.Application.DTOs;
 public class AssetDto
 {
     public int Id { get; set; }
-    public Guid TenantId { get; set; }
+    public int TenantId { get; set; }  // Changed from Guid
     public string AssetTag { get; set; } = string.Empty;
     public string Make { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
@@ -15,6 +15,7 @@ public class AssetDto
     public string? VIN { get; set; }
     public string Status { get; set; } = string.Empty;
     public string ComplianceStatus { get; set; } = string.Empty;
+    public decimal? Value { get; set; }
     public decimal? InsuredValue { get; set; }
     public DateTime? PurchaseDate { get; set; }
     public DateTime? LastInspectionDate { get; set; }
@@ -49,11 +50,7 @@ public class CreateAssetDto
     [StringLength(50)]
     public string? VIN { get; set; }
     
-    [StringLength(50)]
-    public string Status { get; set; } = AssetStatusValues.Active;
-    
-    [StringLength(50)]
-    public string ComplianceStatus { get; set; } = ComplianceStatusValues.Pending;
+    public decimal? Value { get; set; }
     
     [Range(0, double.MaxValue, ErrorMessage = "Insured value must be a positive number")]
     public decimal? InsuredValue { get; set; }
@@ -97,11 +94,7 @@ public class UpdateAssetDto
     [StringLength(50)]
     public string? VIN { get; set; }
     
-    [StringLength(50)]
-    public string Status { get; set; } = AssetStatusValues.Active;
-    
-    [StringLength(50)]
-    public string ComplianceStatus { get; set; } = ComplianceStatusValues.Pending;
+    public decimal? Value { get; set; }
     
     [Range(0, double.MaxValue, ErrorMessage = "Insured value must be a positive number")]
     public decimal? InsuredValue { get; set; }

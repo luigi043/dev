@@ -1,0 +1,31 @@
+@model ComplianceBadgeModel
+
+@{
+    string badgeClass = Model.Status?.ToLower() switch
+    {
+        "compliant" => "success",
+        "non-compliant" => "danger",
+        "warning" => "warning",
+        "pending" => "secondary",
+        _ => "info"
+    };
+}
+
+<span class="badge bg-@badgeClass">
+    <i class="bi bi-@Model.Icon"></i> @Model.Status
+</span>
+
+@functions {
+    public class ComplianceBadgeModel
+    {
+        public string Status { get; set; } = string.Empty;
+        public string Icon => Status?.ToLower() switch
+        {
+            "compliant" => "check-circle",
+            "non-compliant" => "exclamation-triangle",
+            "warning" => "exclamation-circle",
+            "pending" => "hourglass",
+            _ => "question-circle"
+        };
+    }
+}

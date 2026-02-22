@@ -25,18 +25,21 @@ public class ComplianceController : Controller
         _logger = logger;
     }
 
+    // GET: Compliance
     public async Task<IActionResult> Index()
     {
         var dashboard = await _complianceService.GetDashboardDataAsync();
         return View(dashboard);
     }
 
+    // GET: Compliance/Assets
     public async Task<IActionResult> Assets()
     {
         var nonCompliant = await _complianceService.GetNonCompliantAssetsReportAsync();
         return View(nonCompliant);
     }
 
+    // GET: Compliance/AssetDetails/5
     public async Task<IActionResult> AssetDetails(int id)
     {
         var asset = await _assetService.GetByIdAsync(id);
@@ -56,12 +59,14 @@ public class ComplianceController : Controller
         return View(status);
     }
 
+    // GET: Compliance/Alerts
     public async Task<IActionResult> Alerts()
     {
         var alerts = await _complianceService.GetActiveAlertsAsync();
         return View(alerts);
     }
 
+    // POST: Compliance/AcknowledgeAlert
     [HttpPost]
     public async Task<IActionResult> AcknowledgeAlert(int id)
     {
@@ -78,6 +83,7 @@ public class ComplianceController : Controller
         }
     }
 
+    // POST: Compliance/ResolveAlert
     [HttpPost]
     public async Task<IActionResult> ResolveAlert(int id, string notes)
     {
@@ -94,6 +100,7 @@ public class ComplianceController : Controller
         }
     }
 
+    // POST: Compliance/RunComplianceCheck
     [HttpPost]
     public async Task<IActionResult> RunComplianceCheck(int? assetId = null)
     {
@@ -117,17 +124,20 @@ public class ComplianceController : Controller
         }
     }
 
+    // GET: Compliance/Rules
     public async Task<IActionResult> Rules()
     {
         var rules = await _complianceService.GetActiveRulesAsync();
         return View(rules);
     }
 
+    // GET: Compliance/CreateRule
     public IActionResult CreateRule()
     {
         return View(new CreateComplianceRuleDto());
     }
 
+    // POST: Compliance/CreateRule
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateRule(CreateComplianceRuleDto dto)
@@ -151,6 +161,7 @@ public class ComplianceController : Controller
         }
     }
 
+    // GET: Compliance/ExportReport
     public async Task<IActionResult> ExportReport(DateTime? fromDate, DateTime? toDate)
     {
         try
@@ -158,8 +169,8 @@ public class ComplianceController : Controller
             var reportData = await _complianceService.GenerateComplianceReportAsync(fromDate, toDate);
             return File(
                 reportData,
-                "text/csv",
-                $"Compliance_Report_{DateTime.Now:yyyyMMdd}.csv"
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Compliance_Report_{DateTime.Now:yyyyMMdd}.xlsx"
             );
         }
         catch (Exception ex)
@@ -170,19 +181,19 @@ public class ComplianceController : Controller
         }
     }
 
+    // POST: Compliance/RefreshDashboard
+    [HttpPost]
     public async Task<IActionResult> RefreshDashboard()
     {
         try
         {
             var dashboard = await _complianceService.RefreshDashboardAsync();
-            TempData["Success"] = "Dashboard refreshed successfully";
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Dashboard refreshed successfully" });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error refreshing dashboard");
-            TempData["Error"] = "Error refreshing dashboard";
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = false, message = ex.Message });
         }
     }
 }

@@ -1,0 +1,234 @@
+@model List<InsureX.Application.DTOs.ComplianceAlertDto>
+@{
+    ViewData["Title"] = "Compliance Alerts";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Compliance Alerts</h1>
+        <div>
+            <button class="btn btn-success me-2" onclick="resolveAllAlerts()">
+                <i class="fas fa-check-double"></i> Resolve All
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <select class="form-select" id="severityFilter">
+                        <option value="">All Severities</option>
+                        <option value="4">Critical</option>
+                        <option value="3">High</option>
+                        <option value="2">Medium</option>
+                        <option value="1">Low</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Acknowledged">Acknowledged</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" id="dateFrom" placeholder="From Date">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="filterAlerts()">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                <h5>No Alerts Found</h5>
+                <p class="text-muted">All compliance checks are passing.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 fw-bold text-primary">Active Alerts (@Model.Count)</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>Asset</th>
+                                <th>Alert</th>
+                                <th>Description</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var alert in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge @(alert.Severity >= 3 ? "bg-danger" : alert.Severity == 2 ? "bg-warning" : "bg-info") text-white px-3 py-2">
+                                            @(alert.Severity == 4 ? "Critical" : 
+                                              alert.Severity == 3 ? "High" : 
+                                              alert.Severity == 2 ? "Medium" : "Low")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Assets" asp-action="Details" asp-route-id="@alert.AssetId">
+                                            @alert.AssetTag
+                                        </a>
+                                    </td>
+                                    <td>@alert.Title</td>
+                                    <td>@alert.Description</td>
+                                    <td>@alert.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td>
+                                    <td>
+                                        <span class="badge @(alert.Status == "Active" ? "bg-danger" : 
+                                                            alert.Status == "Acknowledged" ? "bg-warning" : "bg-success")">
+                                            @alert.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            @if (alert.Status == "Active")
+                                            {
+                                                <button class="btn btn-sm btn-success" onclick="acknowledgeAlert(@alert.Id)">
+                                                    <i class="fas fa-check"></i> Acknowledge
+                                                </button>
+                                            }
+                                            @if (alert.Status != "Resolved")
+                                            {
+                                                <button class="btn btn-sm btn-primary" onclick="showResolveModal(@alert.Id)">
+                                                    <i class="fas fa-check-double"></i> Resolve
+                                                </button>
+                                            }
+                                            <button class="btn btn-sm btn-info" onclick="viewDetails(@alert.Id)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Resolve Modal -->
+<div class="modal fade" id="resolveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Resolve Alert</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="resolveAlertId" />
+                <div class="mb-3">
+                    <label class="form-label">Resolution Notes</label>
+                    <textarea class="form-control" id="resolutionNotes" rows="3" 
+                              placeholder="Describe how this alert was resolved..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="resolveAlert()">Resolve Alert</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterAlerts() {
+            var severity = $('#severityFilter').val();
+            var status = $('#statusFilter').val();
+            var fromDate = $('#dateFrom').val();
+            var toDate = $('#dateTo').val();
+            
+            window.location.href = `@Url.Action("Alerts")?severity=${severity}&status=${status}&fromDate=${fromDate}&toDate=${toDate}`;
+        }
+
+        function acknowledgeAlert(id) {
+            $.ajax({
+                url: '@Url.Action("AcknowledgeAlert", "Compliance")',
+                type: 'POST',
+                data: { id: id },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                }
+            });
+        }
+
+        function showResolveModal(id) {
+            $('#resolveAlertId').val(id);
+            $('#resolutionNotes').val('');
+            new bootstrap.Modal(document.getElementById('resolveModal')).show();
+        }
+
+        function resolveAlert() {
+            var id = $('#resolveAlertId').val();
+            var notes = $('#resolutionNotes').val();
+            
+            $.ajax({
+                url: '@Url.Action("ResolveAlert", "Compliance")',
+                type: 'POST',
+                data: { id: id, notes: notes },
+                success: function(response) {
+                    if (response.success) {
+                        $('#resolveModal').modal('hide');
+                        toastr.success(response.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                }
+            });
+        }
+
+        function resolveAllAlerts() {
+            if (confirm('Are you sure you want to resolve all active alerts?')) {
+                $.ajax({
+                    url: '@Url.Action("ResolveAllAlerts", "Compliance")',
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    }
+                });
+            }
+        }
+
+        function viewDetails(id) {
+            window.location.href = `@Url.Action("AlertDetails")/${id}`;
+        }
+    </script>
+}

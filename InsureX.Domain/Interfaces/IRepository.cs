@@ -18,13 +18,6 @@ public interface IRepository<T> where T : class
     Task<T?> GetByIdAsync(int id);
 
     /// <summary>
-    /// Gets an entity by GUID ID
-    /// </summary>
-    /// <param name="id">The GUID identifier</param>
-    /// <returns>The entity if found, null otherwise</returns>
-    Task<T?> GetByIdAsync(Guid id);
-
-    /// <summary>
     /// Gets all entities
     /// </summary>
     /// <returns>Collection of all entities</returns>
@@ -83,38 +76,38 @@ public interface IRepository<T> where T : class
     #region Write Operations
 
     /// <summary>
-    /// Adds a new entity (without saving)
+    /// Adds a new entity
     /// </summary>
     /// <param name="entity">The entity to add</param>
     /// <returns>The added entity with generated IDs</returns>
     Task<T> AddAsync(T entity);
 
     /// <summary>
-    /// Adds multiple entities (without saving)
+    /// Adds multiple entities
     /// </summary>
     /// <param name="entities">The entities to add</param>
     Task AddRangeAsync(IEnumerable<T> entities);
 
     /// <summary>
-    /// Updates an existing entity (without saving)
+    /// Updates an existing entity
     /// </summary>
     /// <param name="entity">The entity to update</param>
     Task UpdateAsync(T entity);
 
     /// <summary>
-    /// Updates multiple entities (without saving)
+    /// Updates multiple entities
     /// </summary>
     /// <param name="entities">The entities to update</param>
     Task UpdateRangeAsync(IEnumerable<T> entities);
 
     /// <summary>
-    /// Deletes an entity (without saving)
+    /// Deletes an entity
     /// </summary>
     /// <param name="entity">The entity to delete</param>
     Task DeleteAsync(T entity);
 
     /// <summary>
-    /// Deletes multiple entities (without saving)
+    /// Deletes multiple entities
     /// </summary>
     /// <param name="entities">The entities to delete</param>
     Task DeleteRangeAsync(IEnumerable<T> entities);

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-
 namespace InsureX.Domain.Entities;
 
 public class ComplianceDashboard : BaseEntity
 {
-    public Guid TenantId { get; set; }
+    public int TenantId { get; set; }  // Changed from Guid to int
     public DateTime SnapshotDate { get; set; } = DateTime.UtcNow;
     public int TotalAssets { get; set; }
     public int CompliantAssets { get; set; }
@@ -20,5 +17,5 @@ public class ComplianceDashboard : BaseEntity
     public string RecentActivityJson { get; set; } = "[]";
     
     // Navigation property
-    public virtual Tenant Tenant { get; set; }
+    public virtual Tenant Tenant { get; set; } = null!;
 }

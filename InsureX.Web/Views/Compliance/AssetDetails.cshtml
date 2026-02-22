@@ -1,0 +1,239 @@
+@model InsureX.Application.DTOs.ComplianceStatusDto
+@{
+    ViewData["Title"] = "Asset Compliance Details";
+    var asset = ViewBag.Asset as AssetDto;
+    var history = ViewBag.History as List<ComplianceHistoryDto> ?? new();
+    var alerts = ViewBag.Alerts as List<ComplianceAlertDto> ?? new();
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Compliance Details: @asset?.AssetTag</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Compliance</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Assets">Non-Compliant Assets</a></li>
+                                        <li class="breadcrumb-item active">@asset?.AssetTag</li>
+                </ol>
+            </nav>
+        </div>
+        <div>
+            <button class="btn btn-primary me-2" onclick="runComplianceCheck()">
+                <i class="fas fa-sync"></i> Run Check
+            </button>
+            <a asp-controller="Assets" asp-action="Details" asp-route-id="@asset?.Id" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Asset
+            </a>
+        </div>
+    </div>
+
+    <!-- Asset Summary Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">Asset Summary</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <p class="mb-1 text-muted">Asset Tag</p>
+                    <p class="fw-bold">@asset?.AssetTag</p>
+                </div>
+                <div class="col-md-3">
+                    <p class="mb-1 text-muted">Make/Model</p>
+                    <p class="fw-bold">@asset?.Make @asset?.Model (@asset?.Year)</p>
+                </div>
+                <div class="col-md-3">
+                    <p class="mb-1 text-muted">Status</p>
+                    <p>
+                        <span class="badge @(asset?.Status == "Active" ? "bg-success" : "bg-secondary") px-3 py-2">
+                            @asset?.Status
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p class="mb-1 text-muted">Current Compliance</p>
+                    <p>
+                        <span class="badge @(Model.IsCompliant ? "bg-success" : "bg-danger") px-3 py-2">
+                            @Model.Status
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Score Card -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">Compliance Score</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-1 fw-bold @(Model.Score >= 80 ? "text-success" : Model.Score >= 60 ? "text-warning" : "text-danger")">
+                        @Model.Score%
+                    </div>
+                    <p class="text-muted">Last Checked: @Model.LastChecked.ToString("MMM dd, yyyy HH:mm")</p>
+                    <div class="progress mt-3" style="height: 25px;">
+                        <div class="progress-bar @(Model.Score >= 80 ? "bg-success" : Model.Score >= 60 ? "bg-warning" : "bg-danger")" 
+                             role="progressbar" 
+                             style="width: @Model.Score%;"
+                             aria-valuenow="@Model.Score" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            @Model.Score% Compliant
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">Active Alerts</h6>
+                </div>
+                <div class="card-body">
+                    @if (!alerts.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <p class="text-muted">No active alerts</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group">
+                            @foreach (var alert in alerts)
+                            {
+                                <div class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            <span class="badge @(alert.Severity >= 3 ? "bg-danger" : alert.Severity == 2 ? "bg-warning" : "bg-info") text-white">
+                                                @alert.Title
+                                            </span>
+                                        </h6>
+                                        <small class="text-muted">@alert.CreatedAt.ToShortDateString()</small>
+                                    </div>
+                                    <p class="mb-1">@alert.Description</p>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-success" onclick="acknowledgeAlert(@alert.Id)">
+                                            <i class="fas fa-check"></i> Acknowledge
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance History -->
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="fas fa-history me-2"></i>Compliance History
+            </h6>
+        </div>
+        <div class="card-body">
+            @if (!history.Any())
+            {
+                <p class="text-center text-muted py-4">No compliance history available</p>
+            }
+            else
+            {
+                <div class="timeline">
+                    @foreach (var item in history)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-date">
+                                @item.ChangedAt.ToString("MMM dd, yyyy HH:mm")
+                            </div>
+                            <div class="timeline-content">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge @(item.NewStatus == "Compliant" ? "bg-success" : "bg-danger") me-2">
+                                        @item.NewStatus
+                                    </span>
+                                    <span class="text-muted">
+                                        (was @item.PreviousStatus)
+                                    </span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.Reason))
+                                {
+                                    <p class="mt-2 mb-0">@item.Reason</p>
+                                }
+                                <small class="text-muted">By: @item.ChangedBy</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function runComplianceCheck() {
+            $.ajax({
+                url: '@Url.Action("RunComplianceCheck", "Compliance")',
+                type: 'POST',
+                data: { assetId: @Model.AssetId },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('Error running compliance check');
+                }
+            });
+        }
+
+        function acknowledgeAlert(alertId) {
+            $.ajax({
+                url: '@Url.Action("AcknowledgeAlert", "Compliance")',
+                type: 'POST',
+                data: { id: alertId },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+            border-left: 2px solid #e3e6f0;
+        }
+        .timeline-date {
+            font-weight: bold;
+            color: #4e73df;
+            margin-bottom: 5px;
+        }
+        .timeline-content {
+            background: #f8f9fc;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+    </style>
+}

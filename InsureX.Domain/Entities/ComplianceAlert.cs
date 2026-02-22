@@ -1,16 +1,14 @@
-using System;
-
 namespace InsureX.Domain.Entities;
 
 public class ComplianceAlert : BaseEntity
 {
-    public Guid AssetId { get; set; }
-    public Guid? RuleId { get; set; }
-    public string AlertType { get; set; } = string.Empty; // "Warning", "Critical", "Info"
+    public int AssetId { get; set; }  // Changed from Guid to int
+    public int? RuleId { get; set; }  // Changed from Guid? to int?
+    public string AlertType { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public int Severity { get; set; } = 3; // 1-5
-    public string Status { get; set; } = "Active"; // "Active", "Acknowledged", "Resolved"
+    public int Severity { get; set; } = 3;
+    public string Status { get; set; } = "Active";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? AcknowledgedAt { get; set; }
     public string? AcknowledgedBy { get; set; }
@@ -20,6 +18,6 @@ public class ComplianceAlert : BaseEntity
     public DateTime? DueDate { get; set; }
     
     // Navigation properties
-    public virtual Asset Asset { get; set; }
+    public virtual Asset Asset { get; set; } = null!;
     public virtual ComplianceRule? Rule { get; set; }
 }

@@ -10,13 +10,13 @@ public class DataSeeder : IDataSeeder
 {
     private readonly AppDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<Role> _roleManager;  // FIXED: Use Role, not IdentityRole
     private readonly ILogger<DataSeeder> _logger;
 
     public DataSeeder(
         AppDbContext context,
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager,
+        RoleManager<Role> roleManager,
         ILogger<DataSeeder> logger)
     {
         _context = context;
@@ -29,14 +29,18 @@ public class DataSeeder : IDataSeeder
     {
         try
         {
-            // Seed Roles
+            // Seed Roles (using int IDs)
             string[] roles = { "Admin", "Manager", "User" };
-            foreach (var role in roles)
+            foreach (var roleName in roles)
             {
-                if (!await _roleManager.RoleExistsAsync(role))
+                if (!await _roleManager.RoleExistsAsync(roleName))
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(role));
-                    _logger.LogInformation("Created role: {Role}", role);
+                    await _roleManager.CreateAsync(new Role 
+                    { 
+                        Name = roleName,
+                        NormalizedName = roleName.ToUpperInvariant()
+                    });
+                    _logger.LogInformation("Created role: {Role}", roleName);
                 }
             }
 
@@ -49,7 +53,7 @@ public class DataSeeder : IDataSeeder
                     UserName = adminEmail,
                     Email = adminEmail,
                     EmailConfirmed = true,
-                    TenantId = Guid.NewGuid()
+                    TenantId = 1  // FIXED: Use int, not Guid
                 };
 
                 var result = await _userManager.CreateAsync(admin, "Admin@123");

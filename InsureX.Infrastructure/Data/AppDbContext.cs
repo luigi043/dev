@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using InsureX.Domain.Entities;
-using InsureX.Application.Common.Interfaces;
+using InsureX.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -9,14 +9,15 @@ using System.Reflection;
 namespace InsureX.Infrastructure.Data;
 
 public class AppDbContext : IdentityDbContext<
-    ApplicationUser, 
-    Role, 
-    Guid, 
-    UserClaim, 
-    UserRole, 
-    UserLogin, 
-    RoleClaim, 
-    UserToken>
+    ApplicationUser,      // User type
+    Role,                 // Role type
+    int,                  // Key type (int)
+    UserClaim,           // User claim type
+    UserRole,            // User role type
+    UserLogin,           // User login type
+    RoleClaim,           // Role claim type
+    UserToken            // User token type
+>
 {
     private readonly ITenantContext? _tenantContext;
 
@@ -54,23 +55,23 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<Tenant>(entity =>
         {
             entity.HasKey(t => t.Id);
+            entity.Property(t => t.Id).ValueGeneratedOnAdd();
             entity.HasIndex(t => t.Subdomain).IsUnique();
             entity.Property(t => t.Name).IsRequired().HasMaxLength(200);
             entity.Property(t => t.Subdomain).HasMaxLength(100);
-            entity.Property(t => t.CreatedBy).HasMaxLength(100);
-            entity.Property(t => t.UpdatedBy).HasMaxLength(100);
-            entity.Property(t => t.DeletedBy).HasMaxLength(100);
             
             // Soft delete filter
             entity.HasQueryFilter(t => !t.IsDeleted);
         });
 
-        // ===== IDENTITY CONFIGURATION =====
+        // ===== IDENTITY CONFIGURATION (with int keys) =====
         
         // ApplicationUser configuration
         builder.Entity<ApplicationUser>(entity =>
         {
+            entity.ToTable("Users");
             entity.HasKey(u => u.Id);
+            entity.Property(u => u.Id).ValueGeneratedOnAdd();
             
             entity.HasOne(u => u.Tenant)
                 .WithMany(t => t.Users)
@@ -79,9 +80,6 @@ public class AppDbContext : IdentityDbContext<
 
             entity.Property(u => u.FirstName).HasMaxLength(100);
             entity.Property(u => u.LastName).HasMaxLength(100);
-            entity.Property(u => u.CreatedBy).HasMaxLength(100);
-            entity.Property(u => u.UpdatedBy).HasMaxLength(100);
-            entity.Property(u => u.DeletedBy).HasMaxLength(100);
             
             entity.HasIndex(u => u.TenantId);
             entity.HasIndex(u => u.IsActive);
@@ -94,11 +92,10 @@ public class AppDbContext : IdentityDbContext<
         // Role configuration
         builder.Entity<Role>(entity =>
         {
+            entity.ToTable("Roles");
             entity.HasKey(r => r.Id);
+            entity.Property(r => r.Id).ValueGeneratedOnAdd();
             entity.Property(r => r.Description).HasMaxLength(500);
-            entity.Property(r => r.CreatedBy).HasMaxLength(100);
-            entity.Property(r => r.UpdatedBy).HasMaxLength(100);
-            entity.Property(r => r.DeletedBy).HasMaxLength(100);
             
             // Soft delete filter
             entity.HasQueryFilter(r => !r.IsDeleted);
@@ -107,6 +104,7 @@ public class AppDbContext : IdentityDbContext<
         // UserRole configuration
         builder.Entity<UserRole>(entity =>
         {
+            entity.ToTable("UserRoles");
             entity.HasKey(ur => new { ur.UserId, ur.RoleId });
             
             entity.HasOne(ur => ur.User)
@@ -123,7 +121,9 @@ public class AppDbContext : IdentityDbContext<
         // RoleClaim configuration
         builder.Entity<RoleClaim>(entity =>
         {
+            entity.ToTable("RoleClaims");
             entity.HasKey(rc => rc.Id);
+            entity.Property(rc => rc.Id).ValueGeneratedOnAdd();
             
             entity.HasOne(rc => rc.Role)
                 .WithMany(r => r.RoleClaims)
@@ -134,7 +134,9 @@ public class AppDbContext : IdentityDbContext<
         // UserClaim configuration
         builder.Entity<UserClaim>(entity =>
         {
+            entity.ToTable("UserClaims");
             entity.HasKey(uc => uc.Id);
+            entity.Property(uc => uc.Id).ValueGeneratedOnAdd();
             
             entity.HasOne(uc => uc.User)
                 .WithMany(u => u.Claims)
@@ -145,6 +147,7 @@ public class AppDbContext : IdentityDbContext<
         // UserLogin configuration
         builder.Entity<UserLogin>(entity =>
         {
+            entity.ToTable("UserLogins");
             entity.HasKey(ul => new { ul.LoginProvider, ul.ProviderKey });
             
             entity.HasOne(ul => ul.User)
@@ -156,6 +159,7 @@ public class AppDbContext : IdentityDbContext<
         // UserToken configuration
         builder.Entity<UserToken>(entity =>
         {
+            entity.ToTable("UserTokens");
             entity.HasKey(ut => new { ut.UserId, ut.LoginProvider, ut.Name });
             
             entity.HasOne(ut => ut.User)
@@ -168,6 +172,7 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<Asset>(entity =>
         {
             entity.HasKey(a => a.Id);
+            entity.Property(a => a.Id).ValueGeneratedOnAdd();
             
             entity.HasOne(a => a.Tenant)
                 .WithMany()
@@ -175,17 +180,34 @@ public class AppDbContext : IdentityDbContext<
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(a => new { a.TenantId, a.AssetTag }).IsUnique();
-            entity.HasIndex(a => a.SerialNumber);
+            entity.HasIndex(a => new { a.TenantId, a.VIN });
+            entity.HasIndex(a => new { a.TenantId, a.SerialNumber });
+            entity.HasIndex(a => a.ComplianceStatus);
             entity.HasIndex(a => a.Status);
             
             entity.Property(a => a.AssetTag).IsRequired().HasMaxLength(50);
             entity.Property(a => a.Make).IsRequired().HasMaxLength(100);
             entity.Property(a => a.Model).IsRequired().HasMaxLength(100);
-            entity.Property(a => a.SerialNumber).IsRequired().HasMaxLength(100);
-            entity.Property(a => a.Value).HasPrecision(18, 2);
+            entity.Property(a => a.VIN).HasMaxLength(50);
+            entity.Property(a => a.SerialNumber).HasMaxLength(100);
+            entity.Property(a => a.Status).IsRequired().HasMaxLength(50);
+            entity.Property(a => a.ComplianceStatus).IsRequired().HasMaxLength(50);
+            entity.Property(a => a.AssetType).HasMaxLength(100);
+            entity.Property(a => a.InsuredValue).HasPrecision(18, 2);
+            entity.Property(a => a.Notes).HasMaxLength(1000);
             entity.Property(a => a.CreatedBy).HasMaxLength(100);
             entity.Property(a => a.UpdatedBy).HasMaxLength(100);
-            entity.Property(a => a.DeletedBy).HasMaxLength(100);
+            
+            // Relationships
+            entity.HasMany(a => a.Policies)
+                .WithOne(p => p.Asset)
+                .HasForeignKey(p => p.AssetId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasMany(a => a.ComplianceResults)
+                .WithOne(c => c.Asset)
+                .HasForeignKey(c => c.AssetId)
+                .OnDelete(DeleteBehavior.Cascade);
             
             // Soft delete filter
             entity.HasQueryFilter(a => !a.IsDeleted);
@@ -195,6 +217,7 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<Policy>(entity =>
         {
             entity.HasKey(p => p.Id);
+            entity.Property(p => p.Id).ValueGeneratedOnAdd();
             
             entity.HasOne(p => p.Asset)
                 .WithMany(a => a.Policies)
@@ -211,53 +234,21 @@ public class AppDbContext : IdentityDbContext<
             
             entity.Property(p => p.PolicyNumber).IsRequired().HasMaxLength(50);
             entity.Property(p => p.InsurerName).HasMaxLength(200);
-            entity.Property(p => p.CoverageType).HasMaxLength(100);
+            entity.Property(p => p.PolicyType).HasMaxLength(100);
+            entity.Property(p => p.SumInsured).HasPrecision(18, 2);
             entity.Property(p => p.Premium).HasPrecision(18, 2);
-            entity.Property(p => p.CoverageAmount).HasPrecision(18, 2);
-            entity.Property(p => p.Deductible).HasPrecision(18, 2);
             entity.Property(p => p.CreatedBy).HasMaxLength(100);
             entity.Property(p => p.UpdatedBy).HasMaxLength(100);
-            entity.Property(p => p.DeletedBy).HasMaxLength(100);
             
             // Soft delete filter
             entity.HasQueryFilter(p => !p.IsDeleted);
-        });
-
-        // ===== POLICY CLAIM CONFIGURATION =====
-        builder.Entity<PolicyClaim>(entity =>
-        {
-            entity.HasKey(c => c.Id);
-            
-            entity.HasOne(c => c.Policy)
-                .WithMany(p => p.Claims)
-                .HasForeignKey(c => c.PolicyId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(c => c.Tenant)
-                .WithMany()
-                .HasForeignKey(c => c.TenantId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasIndex(c => c.ClaimNumber).IsUnique();
-            entity.HasIndex(c => c.Status);
-            
-            entity.Property(c => c.ClaimNumber).IsRequired().HasMaxLength(50);
-            entity.Property(c => c.Description).HasMaxLength(1000);
-            entity.Property(c => c.ClaimAmount).HasPrecision(18, 2);
-            entity.Property(c => c.ApprovedAmount).HasPrecision(18, 2);
-            entity.Property(c => c.Status).HasMaxLength(50);
-            entity.Property(c => c.CreatedBy).HasMaxLength(100);
-            entity.Property(c => c.UpdatedBy).HasMaxLength(100);
-            entity.Property(c => c.DeletedBy).HasMaxLength(100);
-            
-            // Soft delete filter
-            entity.HasQueryFilter(c => !c.IsDeleted);
         });
 
         // ===== COMPLIANCE RULE CONFIGURATION =====
         builder.Entity<ComplianceRule>(entity =>
         {
             entity.HasKey(r => r.Id);
+            entity.Property(r => r.Id).ValueGeneratedOnAdd();
             
             entity.HasOne(r => r.Tenant)
                 .WithMany()
@@ -267,24 +258,15 @@ public class AppDbContext : IdentityDbContext<
             entity.HasIndex(r => new { r.TenantId, r.RuleCode }).IsUnique();
             entity.HasIndex(r => r.RuleType);
             entity.HasIndex(r => r.IsActive);
-            entity.HasIndex(r => r.Priority);
-            entity.HasIndex(r => r.EffectiveFrom);
-            entity.HasIndex(r => r.EffectiveTo);
-
+            
             entity.Property(r => r.RuleName).IsRequired().HasMaxLength(200);
             entity.Property(r => r.RuleCode).IsRequired().HasMaxLength(50);
             entity.Property(r => r.RuleType).IsRequired().HasMaxLength(50);
             entity.Property(r => r.Description).HasMaxLength(1000);
-            entity.Property(r => r.Condition).HasColumnType("nvarchar(max)");
-            entity.Property(r => r.Action).HasColumnType("nvarchar(max)");
-            entity.Property(r => r.ApplicablePolicyTypes).HasColumnType("nvarchar(max)");
-            entity.Property(r => r.ApplicableAssetTypes).HasColumnType("nvarchar(max)");
-            entity.Property(r => r.CustomScript).HasColumnType("nvarchar(max)");
-            entity.Property(r => r.MinValue).HasPrecision(18, 2);
-            entity.Property(r => r.MaxValue).HasPrecision(18, 2);
+            entity.Property(r => r.Expression).HasColumnType("nvarchar(max)");
+            entity.Property(r => r.ApplicableAssetTypes).HasMaxLength(500);
             entity.Property(r => r.CreatedBy).HasMaxLength(100);
             entity.Property(r => r.UpdatedBy).HasMaxLength(100);
-            entity.Property(r => r.DeletedBy).HasMaxLength(100);
             
             // Soft delete filter
             entity.HasQueryFilter(r => !r.IsDeleted);
@@ -294,9 +276,10 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<ComplianceCheck>(entity =>
         {
             entity.HasKey(c => c.Id);
+            entity.Property(c => c.Id).ValueGeneratedOnAdd();
             
             entity.HasOne(c => c.Asset)
-                .WithMany()
+                .WithMany(a => a.ComplianceResults)
                 .HasForeignKey(c => c.AssetId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -317,181 +300,14 @@ public class AppDbContext : IdentityDbContext<
             entity.Property(c => c.Status).IsRequired().HasMaxLength(50);
             entity.Property(c => c.Findings).HasColumnType("nvarchar(max)");
             entity.Property(c => c.Recommendations).HasColumnType("nvarchar(max)");
-            entity.Property(c => c.Evidence).HasColumnType("nvarchar(max)");
             entity.Property(c => c.CheckedBy).HasMaxLength(100);
-            entity.Property(c => c.ErrorMessage).HasMaxLength(500);
-            entity.Property(c => c.CreatedBy).HasMaxLength(100);
             
             // Soft delete filter
             entity.HasQueryFilter(c => !c.IsDeleted);
         });
 
-        // ===== COMPLIANCE ALERT CONFIGURATION =====
-        builder.Entity<ComplianceAlert>(entity =>
-        {
-            entity.HasKey(a => a.Id);
-            
-            entity.HasOne(a => a.Asset)
-                .WithMany()
-                .HasForeignKey(a => a.AssetId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(a => a.Rule)
-                .WithMany(r => r.Alerts)
-                .HasForeignKey(a => a.RuleId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entity.HasOne(a => a.ComplianceCheck)
-                .WithMany()
-                .HasForeignKey(a => a.ComplianceCheckId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entity.HasOne(a => a.ParentAlert)
-                .WithMany(a => a.ChildAlerts)
-                .HasForeignKey(a => a.ParentAlertId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(a => a.Tenant)
-                .WithMany()
-                .HasForeignKey(a => a.TenantId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasIndex(a => new { a.TenantId, a.Status });
-            entity.HasIndex(a => new { a.TenantId, a.Severity });
-            entity.HasIndex(a => a.DueDate);
-            entity.HasIndex(a => a.AlertType);
-
-            entity.Property(a => a.AlertType).IsRequired().HasMaxLength(50);
-            entity.Property(a => a.Title).IsRequired().HasMaxLength(200);
-            entity.Property(a => a.Description).HasMaxLength(2000);
-            entity.Property(a => a.Status).IsRequired().HasMaxLength(50);
-            entity.Property(a => a.AcknowledgedBy).HasMaxLength(100);
-            entity.Property(a => a.ResolvedBy).HasMaxLength(100);
-            entity.Property(a => a.ResolutionNotes).HasMaxLength(1000);
-            entity.Property(a => a.Metadata).HasColumnType("nvarchar(max)");
-            entity.Property(a => a.CreatedBy).HasMaxLength(100);
-            entity.Property(a => a.UpdatedBy).HasMaxLength(100);
-            
-            // Soft delete filter
-            entity.HasQueryFilter(a => !a.IsDeleted);
-        });
-
-        // ===== COMPLIANCE HISTORY CONFIGURATION =====
-        builder.Entity<ComplianceHistory>(entity =>
-        {
-            entity.HasKey(h => h.Id);
-            
-            entity.HasOne(h => h.Asset)
-                .WithMany()
-                .HasForeignKey(h => h.AssetId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(h => h.Rule)
-                .WithMany(r => r.ComplianceHistories)
-                .HasForeignKey(h => h.RuleId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entity.HasOne(h => h.ComplianceCheck)
-                .WithMany()
-                .HasForeignKey(h => h.ComplianceCheckId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entity.HasOne(h => h.Alert)
-                .WithMany()
-                .HasForeignKey(h => h.AlertId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entity.HasOne(h => h.Tenant)
-                .WithMany()
-                .HasForeignKey(h => h.TenantId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasIndex(h => new { h.AssetId, h.ChangeDate });
-            entity.HasIndex(h => h.ToStatus);
-
-            entity.Property(h => h.FromStatus).IsRequired().HasMaxLength(50);
-            entity.Property(h => h.ToStatus).IsRequired().HasMaxLength(50);
-            entity.Property(h => h.Reason).HasMaxLength(1000);
-            entity.Property(h => h.TriggeredBy).HasMaxLength(100);
-            entity.Property(h => h.Evidence).HasColumnType("nvarchar(max)");
-            entity.Property(h => h.CreatedBy).HasMaxLength(100);
-            
-            // Soft delete filter
-            entity.HasQueryFilter(h => !h.IsDeleted);
-        });
-
-        // ===== COMPLIANCE DASHBOARD CONFIGURATION =====
-        builder.Entity<ComplianceDashboard>(entity =>
-        {
-            entity.HasKey(d => d.Id);
-            
-            entity.HasOne(d => d.Tenant)
-                .WithMany()
-                .HasForeignKey(d => d.TenantId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasIndex(d => new { d.TenantId, d.SnapshotDate });
-            entity.HasIndex(d => d.IsCurrent);
-
-            entity.Property(d => d.TopIssues).HasColumnType("nvarchar(max)");
-            entity.Property(d => d.AssetTypeBreakdown).HasColumnType("nvarchar(max)");
-            entity.Property(d => d.RuleTypeBreakdown).HasColumnType("nvarchar(max)");
-            entity.Property(d => d.TrendData).HasColumnType("nvarchar(max)");
-            entity.Property(d => d.AlertsBySeverity).HasColumnType("nvarchar(max)");
-            entity.Property(d => d.Notes).HasMaxLength(500);
-            entity.Property(d => d.CreatedBy).HasMaxLength(100);
-        });
-
-        // ===== COMPLIANCE REPORT CONFIGURATION =====
-        builder.Entity<ComplianceReport>(entity =>
-        {
-            entity.HasKey(r => r.Id);
-            
-            entity.HasOne(r => r.Tenant)
-                .WithMany()
-                .HasForeignKey(r => r.TenantId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasIndex(r => new { r.TenantId, r.GeneratedAt });
-            entity.HasIndex(r => r.ReportType);
-            entity.HasIndex(r => r.Status);
-
-            entity.Property(r => r.ReportName).IsRequired().HasMaxLength(200);
-            entity.Property(r => r.ReportType).IsRequired().HasMaxLength(50);
-            entity.Property(r => r.Format).IsRequired().HasMaxLength(20);
-            entity.Property(r => r.GeneratedBy).HasMaxLength(100);
-            entity.Property(r => r.FilePath).HasMaxLength(500);
-            entity.Property(r => r.Status).HasMaxLength(50);
-            entity.Property(r => r.Parameters).HasColumnType("nvarchar(max)");
-            entity.Property(r => r.Summary).HasColumnType("nvarchar(max)");
-            entity.Property(r => r.ErrorMessage).HasMaxLength(500);
-            entity.Property(r => r.CreatedBy).HasMaxLength(100);
-            
-            // Soft delete filter
-            entity.HasQueryFilter(r => !r.IsDeleted);
-        });
-
-        // ===== AUDIT LOG CONFIGURATION =====
-        builder.Entity<AuditLog>(entity =>
-        {
-            entity.HasKey(l => l.Id);
-            
-            entity.HasIndex(l => new { l.EntityId, l.EntityType });
-            entity.HasIndex(l => l.Timestamp);
-            entity.HasIndex(l => l.UserId);
-            
-            entity.Property(l => l.EntityType).IsRequired().HasMaxLength(100);
-            entity.Property(l => l.Action).IsRequired().HasMaxLength(50);
-            entity.Property(l => l.UserId).HasMaxLength(100);
-            entity.Property(l => l.IpAddress).HasMaxLength(50);
-            entity.Property(l => l.UserAgent).HasMaxLength(500);
-            entity.Property(l => l.OldValues).HasColumnType("nvarchar(max)");
-            entity.Property(l => l.NewValues).HasColumnType("nvarchar(max)");
-            entity.Property(l => l.Changes).HasColumnType("nvarchar(max)");
-        });
-
         // Apply global tenant filters if tenant context exists
-        if (_tenantContext?.TenantId != null)
+        if (_tenantContext?.HasTenant == true)
         {
             ApplyGlobalTenantFilters(builder);
         }
@@ -499,38 +315,22 @@ public class AppDbContext : IdentityDbContext<
 
     private void ApplyGlobalTenantFilters(ModelBuilder builder)
     {
-        var tenantId = _tenantContext!.TenantId.Value;
+        var tenantId = _tenantContext!.GetCurrentTenantId();
 
         // Apply to all ITenantScoped entities
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
             if (typeof(ITenantScoped).IsAssignableFrom(entityType.ClrType))
             {
-                var method = typeof(AppDbContext)
-                    .GetMethod(nameof(SetTenantFilter), BindingFlags.NonPublic | BindingFlags.Instance)
-                    ?.MakeGenericMethod(entityType.ClrType);
-                method?.Invoke(this, new object[] { builder });
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+                var tenantProperty = Expression.Property(parameter, nameof(ITenantScoped.TenantId));
+                var tenantConstant = Expression.Constant(tenantId);
+                var condition = Expression.Equal(tenantProperty, tenantConstant);
+                var lambda = Expression.Lambda(condition, parameter);
+                
+                builder.Entity(entityType.ClrType).HasQueryFilter(lambda);
             }
         }
-
-        // Special handling for ComplianceCheck (needs to go through Asset)
-        builder.Entity<ComplianceCheck>()
-            .HasQueryFilter(c => !c.IsDeleted && c.TenantId == tenantId);
-        
-        // Special handling for ComplianceHistory (needs to go through Asset)
-        builder.Entity<ComplianceHistory>()
-            .HasQueryFilter(h => !h.IsDeleted && h.TenantId == tenantId);
-        
-        // Special handling for PolicyClaim
-        builder.Entity<PolicyClaim>()
-            .HasQueryFilter(c => !c.IsDeleted && c.TenantId == tenantId);
-        
-        // Special handling for AuditLog (no tenant filter)
-    }
-
-    private void SetTenantFilter<T>(ModelBuilder builder) where T : class, ITenantScoped
-    {
-        builder.Entity<T>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == _tenantContext!.TenantId);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -552,10 +352,6 @@ public class AppDbContext : IdentityDbContext<
                 case EntityState.Added:
                     entry.Entity.CreatedAt = now;
                     entry.Entity.CreatedBy = currentUser;
-                    if (entry.Entity is ITenantScoped tenantScoped && tenantScoped.TenantId == Guid.Empty)
-                    {
-                        tenantScoped.TenantId = _tenantContext?.TenantId ?? Guid.Empty;
-                    }
                     break;
                     
                 case EntityState.Modified:
@@ -586,77 +382,4 @@ public class AppDbContext : IdentityDbContext<
         // Fallback to system
         return "system";
     }
-}// Configure Asset entity
-builder.Entity<Asset>(entity =>
-{
-    // Primary key
-    entity.HasKey(e => e.Id);
-    
-    // Tenant isolation - critical for multi-tenancy
-    entity.HasOne<Tenant>()
-        .WithMany()
-        .HasForeignKey(e => e.TenantId)
-        .OnDelete(DeleteBehavior.Restrict);
-    
-    // Indexes for performance
-    entity.HasIndex(e => new { e.TenantId, e.AssetTag }).IsUnique();
-    entity.HasIndex(e => new { e.TenantId, e.VIN });
-    entity.HasIndex(e => new { e.TenantId, e.SerialNumber });
-    entity.HasIndex(e => e.ComplianceStatus);
-    entity.HasIndex(e => e.Status);
-    
-    // Property configurations
-    entity.Property(e => e.AssetTag)
-        .IsRequired()
-        .HasMaxLength(50);
-    
-    entity.Property(e => e.Make)
-        .IsRequired()
-        .HasMaxLength(100);
-    
-    entity.Property(e => e.Model)
-        .IsRequired()
-        .HasMaxLength(100);
-    
-    entity.Property(e => e.VIN)
-        .HasMaxLength(50);
-    
-    entity.Property(e => e.SerialNumber)
-        .HasMaxLength(100);
-    
-    entity.Property(e => e.Status)
-        .IsRequired()
-        .HasMaxLength(50)
-        .HasDefaultValue(AssetStatusValues.Active);
-    
-    entity.Property(e => e.ComplianceStatus)
-        .IsRequired()
-        .HasMaxLength(50)
-        .HasDefaultValue(ComplianceStatusValues.Pending);
-    
-    entity.Property(e => e.AssetType)
-        .HasMaxLength(100);
-    
-    entity.Property(e => e.InsuredValue)
-        .HasPrecision(18, 2);
-    
-    entity.Property(e => e.Notes)
-        .HasMaxLength(1000);
-    
-    entity.Property(e => e.CreatedBy)
-        .HasMaxLength(100);
-    
-    entity.Property(e => e.UpdatedBy)
-        .HasMaxLength(100);
-    
-    // Relationships
-    entity.HasMany(e => e.Policies)
-        .WithOne()
-        .HasForeignKey("AssetId")
-        .OnDelete(DeleteBehavior.Restrict);
-    
-    entity.HasMany(e => e.ComplianceResults)
-        .WithOne(c => c.Asset)
-        .HasForeignKey(c => c.AssetId)
-        .OnDelete(DeleteBehavior.Cascade);
-});
+}
