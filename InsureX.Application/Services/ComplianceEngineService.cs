@@ -15,28 +15,24 @@ namespace InsureX.Application.Services;
 
 public class ComplianceEngineService : IComplianceEngineService
 {
-    private readonly AppInterfaces.ITenantContext _tenantContext;
-    private readonly IComplianceRepository _complianceRepo;
-    private readonly IAssetRepository _assetRepo;
-    private readonly ITenantContext _tenantContext;
+     private readonly IComplianceRepository _complianceRepository;
+    private readonly IAssetRepository _assetRepository;
+    private readonly ITenantContext _tenantContext;  // Only ONE declaration
     private readonly INotificationService _notificationService;
-    private readonly ILogger<ComplianceEngineService> _logger;
-    private readonly IScriptRuleEvaluator _scriptEvaluator;
+    private readonly IScriptRuleEvaluator _ruleEvaluator;
 
     public ComplianceEngineService(
-        IComplianceRepository complianceRepo,
-        IAssetRepository assetRepo,
+        IComplianceRepository complianceRepository,
+        IAssetRepository assetRepository,
         ITenantContext tenantContext,
         INotificationService notificationService,
-        ILogger<ComplianceEngineService> logger,
-        IScriptRuleEvaluator scriptEvaluator)
+        IScriptRuleEvaluator ruleEvaluator)
     {
-        _complianceRepo = complianceRepo;
-        _assetRepo = assetRepo;
+        _complianceRepository = complianceRepository;
+        _assetRepository = assetRepository;
         _tenantContext = tenantContext;
         _notificationService = notificationService;
-        _logger = logger;
-        _scriptEvaluator = scriptEvaluator;
+        _ruleEvaluator = ruleEvaluator;
     }
 
     public async Task<List<ComplianceRuleDto>> GetActiveRulesAsync()

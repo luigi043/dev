@@ -28,5 +28,8 @@ namespace InsureX.Domain.Interfaces
         Task<double> GetAverageComplianceScoreAsync();
         Task<int> GetAssetsByStatusCountAsync(string status);
         Task<List<Asset>> GetNonCompliantAssetsAsync(int severity = 0);
+         Task<IEnumerable<ComplianceRule>> GetActiveRulesAsync(Guid tenantId);
+    Task<ComplianceResult> EvaluateAssetAsync(Guid assetId);
+    Task LogComplianceCheckAsync(Guid assetId, bool isCompliant, string? reason);
     }
 }

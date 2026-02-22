@@ -8,6 +8,8 @@ public class ComplianceCheckResultDto
     public int AssetId { get; set; }
     public string AssetTag { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    public bool IsCompliant { get; set; }
+    public string? Reason { get; set; }
     public int Score { get; set; }
     public DateTime CheckedAt { get; set; }
     public string Findings { get; set; } = string.Empty;
