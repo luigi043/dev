@@ -8,7 +8,7 @@ public class HomeController : Controller
 {
     public IActionResult Index()
     {
-        return View();
+        return Content("InsureX.Web is running!");
     }
 
     public IActionResult Privacy()
