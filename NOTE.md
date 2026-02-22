@@ -95,7 +95,9 @@
 
 dotnet clean
 dotnet build
-dotnet run --project src/InsureX.Web
+dotnet run --project InsureX.Web
 
-cd src/InsureX.Api
+cd InsureX.Api
 dotnet run
+
+dotnet test tests\InsureX.Application.Tests

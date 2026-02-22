@@ -71,6 +71,10 @@
               "target": "Package",
               "version": "[2.2.0, )"
             },
+            "Microsoft.CodeAnalysis.CSharp.Scripting": {
+              "target": "Package",
+              "version": "[4.6.0, )"
+            },
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[10.0.3, )"

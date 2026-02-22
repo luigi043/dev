@@ -1,5 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;  // ADD THIS for BackgroundService
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using InsureX.Application.Interfaces;
 using System;
@@ -49,17 +49,27 @@ public class ComplianceBackgroundService : BackgroundService
 
         _logger.LogInformation("Starting automated compliance checks");
 
-        // Check assets needing update
-        var results = await complianceService.CheckAssetsNeedingUpdateAsync();
-        
-        // Update expired rules
-        var expiredRules = await complianceService.UpdateExpiredRulesAsync();
-        
-        // Resolve stale alerts
-        var staleAlerts = await complianceService.ResolveStaleAlertsAsync(30);
+        try
+        {
+            // Check assets needing update
+            var results = await complianceService.CheckAssetsNeedingUpdateAsync();
+            _logger.LogInformation("Checked {Count} assets needing update", results.Count);
 
-        _logger.LogInformation(
-            "Compliance check completed: {Results} assets checked, {ExpiredRules} rules expired, {StaleAlerts} alerts resolved",
-            results.Count, expiredRules, staleAlerts);
+            // Update expired rules
+            var expiredRules = await complianceService.UpdateExpiredRulesAsync();
+            _logger.LogInformation("Updated {Count} expired rules", expiredRules);
+
+            // Resolve stale alerts
+            var staleAlerts = await complianceService.ResolveStaleAlertsAsync(30);
+            _logger.LogInformation("Resolved {Count} stale alerts", staleAlerts);
+
+            _logger.LogInformation(
+                "Compliance check completed: {Results} assets checked, {ExpiredRules} rules expired, {StaleAlerts} alerts resolved",
+                results.Count, expiredRules, staleAlerts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during compliance checks");
+        }
     }
 }
